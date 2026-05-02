@@ -1,0 +1,169 @@
+@use '../styles/variables' as *;
+
+.card {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  padding: $space-6;
+  box-shadow: $shadow-md;
+  width: 100%;
+  max-width: 480px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $primary;
+  margin-bottom: $space-3;
+}
+
+.heading {
+  font-family: $font-heading;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: $dark;
+  margin-bottom: $space-2;
+}
+
+.subtext {
+  font-size: 14px;
+  color: $gray-600;
+  margin-bottom: $space-5;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: $dark;
+  }
+
+  input,
+  select {
+    height: 48px;
+    border: 1px solid $gray-200;
+    border-radius: $radius;
+    padding: 0 $space-3;
+    font-size: 15px;
+    color: $dark;
+    background: $white;
+    outline: none;
+    transition: border-color 0.15s ease;
+    appearance: none;
+    -webkit-appearance: none;
+
+    &::placeholder {
+      color: $gray-400;
+    }
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.12);
+    }
+  }
+}
+
+.selectWrapper {
+  position: relative;
+
+  select {
+    width: 100%;
+    padding-right: 40px;
+    cursor: pointer;
+
+    &:invalid,
+    &.placeholder {
+      color: $gray-400;
+    }
+  }
+
+  .chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: $gray-600;
+    font-size: 11px;
+  }
+}
+
+.submitBtn {
+  height: 52px;
+  background: $primary;
+  color: $white;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.15s ease, transform 0.1s ease;
+  margin-top: $space-1;
+
+  &:hover {
+    background: $primary-dark;
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid $gray-200;
+  margin: $space-3 0 $space-2;
+}
+
+.spotsLeft {
+  text-align: right;
+  font-size: 13px;
+  color: $gray-600;
+}
+
+.success {
+  text-align: center;
+  padding: $space-6 $space-4;
+
+  .successIcon {
+    font-size: 48px;
+    margin-bottom: $space-3;
+  }
+
+  h3 {
+    font-family: $font-heading;
+    font-size: 22px;
+    font-weight: 800;
+    color: $dark;
+    margin-bottom: $space-2;
+  }
+
+  p {
+    font-size: 14px;
+    color: $gray-600;
+  }
+}
+
+.error {
+  font-size: 13px;
+  color: $accent-red;
+  margin-top: -$space-2;
+}
