@@ -1,66 +1,61 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Navbar from '@/components/Navbar';
+import WaitlistForm from '@/components/WaitlistForm';
+import styles from './page.module.scss';
 
-export default function Home() {
+const FEATURES = [
+  'AI that breaks down any judgment, ratio decidendi, obiter dicta, key principles in plain English.',
+  'Exam prep tailored to Nigerian Bar and semester exams with practice questions and model answers.',
+  'Search thousands of Nigerian court judgments and legal precedents instantly.',
+  'Study guides for contracts, torts, criminal law, constitutional law and more.',
+];
+
+const STATS = [
+  { value: '100', label: 'Free Founding Spots' },
+  { value: '3+', label: 'Study Tools Built' },
+  { value: '0', label: 'Cost to Join' },
+];
+
+export default function WaitlistPage() {
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+      <Navbar />
+
+      <section className={styles.hero}>
+        <div className={styles.left}>
+          <p className={styles.eyebrow}>For Nigerian Law Undergraduates</p>
+
+          <h1 className={styles.headline}>
+            The study tool your lecturer{' '}
+            <span>never gave you.</span>
+          </h1>
+
+          <p className={styles.description}>
+            LegalErrand uses AI to breakdown court cases, simplify legal
+            concepts, and prepare you for your exams.
+            <br />
+            Built specifically for Nigerian law undergraduates from 100 level to finals.
           </p>
+
+          <div className={styles.stats}>
+            {STATS.map(s => (
+              <div key={s.label} className={styles.stat}>
+                <div className={styles.statValue}>{s.value}</div>
+                <div className={styles.statLabel}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.features}>
+            {FEATURES.map(f => (
+              <div key={f} className={styles.featureItem}>{f}</div>
+            ))}
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className={styles.right}>
+          <WaitlistForm />
         </div>
-      </main>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,130 @@
+@use '../styles/variables' as *;
+
+.page {
+  min-height: 100vh;
+  background: $white;
+}
+
+// ─── Hero ────────────────────────────────────────────────────────────────────
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-8;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $space-8 $space-8;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    padding: $space-6 $space-4;
+    gap: $space-6;
+  }
+}
+
+// ─── Left column ─────────────────────────────────────────────────────────────
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  padding-top: $space-4;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $primary;
+}
+
+.headline {
+  font-family: $font-heading;
+  font-size: clamp(36px, 4.5vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: $dark;
+
+  span {
+    color: $primary;
+  }
+}
+
+.description {
+  font-size: 17px;
+  line-height: 1.65;
+  color: $gray-800;
+  max-width: 500px;
+}
+
+// ─── Stats ───────────────────────────────────────────────────────────────────
+
+.stats {
+  display: flex;
+  gap: 0;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  overflow: hidden;
+}
+
+.stat {
+  flex: 1;
+  padding: $space-3 $space-4;
+  border-right: 1px solid $gray-200;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  .statValue {
+    font-family: $font-heading;
+    font-size: 28px;
+    font-weight: 800;
+    color: $primary;
+    line-height: 1.1;
+  }
+
+  .statLabel {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $gray-600;
+    margin-top: 4px;
+  }
+}
+
+// ─── Features ────────────────────────────────────────────────────────────────
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.featureItem {
+  background: $primary;
+  border-radius: $radius;
+  padding: $space-3 $space-4;
+  font-size: 15px;
+  font-weight: 500;
+  color: $white;
+  line-height: 1.4;
+}
+
+// ─── Right column ────────────────────────────────────────────────────────────
+
+.right {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  justify-content: flex-end;
+
+  @media (max-width: 900px) {
+    position: static;
+    justify-content: center;
+    order: -1;
+  }
+}
