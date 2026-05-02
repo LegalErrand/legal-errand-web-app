@@ -83,9 +83,9 @@ export default function WaitlistForm() {
     <div className={styles.card}>
       <p className={styles.eyebrow}>Early Access Waitlist</p>
       <h2 className={styles.heading}>Get in before everyone else.</h2>
-      <p className={styles.subtext}>
+      {/* <p className={styles.subtext}>
         First {TOTAL_SPOTS} students get founding member access. Secure your spot.
-      </p>
+      </p> */}
 
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <div className={styles.field}>
@@ -156,7 +156,7 @@ export default function WaitlistForm() {
       </form>
 
       <hr className={styles.divider} />
-      <p className={styles.spotsLeft}>Only {spotsLeft} spots remaining</p>
+      {/* <p className={styles.spotsLeft}>Only {spotsLeft} spots remaining</p> */}
     </div>
   );
 }
