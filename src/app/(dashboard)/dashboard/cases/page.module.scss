@@ -1,0 +1,237 @@
+@use '../../../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  padding: $space-4 $space-5;
+  background: $white;
+  border-bottom: 1px solid $gray-200;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.pageTitle {
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.content {
+  flex: 1;
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  max-width: 800px;
+  width: 100%;
+}
+
+// ─── Explain card ─────────────────────────────────────────────────────────────
+
+.explainCard {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-5;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.sectionTitle {
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.sectionSub {
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modeTabs {
+  display: flex;
+  gap: $space-2;
+}
+
+.modeTab {
+  padding: 6px $space-3;
+  background: none;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover { border-color: $primary; }
+}
+
+.modeTabActive {
+  background: $primary;
+  border-color: $primary;
+  color: $white;
+
+  &:hover { background: $primary-dark; border-color: $primary-dark; }
+}
+
+.explainForm {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.input {
+  height: 48px;
+  padding: 0 $space-3;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: $gray-400; }
+  &:focus { border-color: $primary; }
+}
+
+.textarea {
+  padding: $space-3;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+  line-height: 1.6;
+
+  &::placeholder { color: $gray-400; }
+  &:focus { border-color: $primary; }
+}
+
+.formError {
+  font-size: 13px;
+  color: $accent-red;
+  margin: 0;
+}
+
+.submitBtn {
+  align-self: flex-start;
+  padding: 12px $space-5;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) { background: $primary-dark; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ─── History ──────────────────────────────────────────────────────────────────
+
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: $white;
+  border-radius: 12px;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $gray-100;
+  text-decoration: none;
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: $gray-100; }
+
+  svg { flex-shrink: 0; color: $gray-400; margin-left: auto; }
+}
+
+.caseIcon {
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  background: rgba($primary, 0.1);
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.caseBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.caseTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.caseMeta {
+  font-size: 11px;
+  color: $gray-400;
+  margin: 0;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 100px;
+  background: $gray-200;
+  color: $gray-600;
+}
+
+.status_complete { background: rgba(#16A34A, 0.1); color: #16A34A; }
+.status_pending  { background: rgba($primary, 0.1); color: $primary; }
+.status_processing { background: rgba($accent-blue, 0.1); color: $accent-blue; }
+.status_error    { background: rgba($accent-red, 0.1); color: $accent-red; }
+
+.stateMsg {
+  font-size: 13px;
+  color: $gray-400;
+  margin: 0;
+}

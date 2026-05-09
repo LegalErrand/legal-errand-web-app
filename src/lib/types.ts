@@ -27,9 +27,12 @@ export interface ApiResponse<T = void> {
   error?: string;
 }
 
-export interface UploadResponse {
-  url: string;
-  key: string;
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 // ─── Geo ──────────────────────────────────────────────────────────────────────
@@ -37,4 +40,343 @@ export interface UploadResponse {
 export interface GeoResult {
   name: string;
   code: string;
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponseData extends AuthTokens {
+  user?: AuthUserSummary;
+}
+
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  accountType: 'Undergraduate' | 'Law School Student';
+  referralCode?: string;
+}
+
+export interface VerifyEmailRequest {
+  email: string;
+  otp: string;
+}
+
+export interface AuthTokens {
+  accessToken?: string;
+  refreshToken?: string;
+  token?: string;
+}
+
+export interface AuthUserSummary {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  avatar?: string;
+  username?: string;
+}
+
+export interface VerifyEmailResponseData extends AuthTokens {
+  user?: AuthUserSummary;
+}
+
+export interface VerifyOtpResponse {
+  resetToken: string;
+}
+
+// ─── Health ───────────────────────────────────────────────────────────────────
+
+export interface HealthResponse {
+  success: boolean;
+  message: string;
+  timestamp: string;
+}
+
+// ─── Library / Uploads ────────────────────────────────────────────────────────
+
+export interface PresignedUrlRequest {
+  fileName: string;
+  mimeType: string;
+  folder?: 'DOCUMENTS' | 'LIBRARY' | 'AVATARS';
+}
+
+export interface PresignedUrlResponse {
+  signedUrl: string;
+  s3Key: string;
+  expiresIn: number;
+}
+
+export interface UploadCompleteRequest {
+  title: string;
+  subject?: string;
+  s3Key: string;
+  s3Url: string;
+  fileSize: number;
+}
+
+export interface LibraryDocument {
+  id: string;
+  title: string;
+  subject?: string;
+  type?: string;
+  s3Url?: string;
+  s3Key?: string;
+  fileSize?: number;
+  isBookmarked?: boolean;
+  uploadedBy?: string;
+  description?: string;
+  isVerified?: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface SignedUrlData {
+  signedUrl: string;
+  expiresIn: number;
+}
+
+export interface BookmarkData {
+  bookmarked: boolean;
+}
+
+// ─── User ─────────────────────────────────────────────────────────────────────
+
+export interface UpdateBioDataRequest {
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  country?: string;
+  city?: string;
+  schoolName?: string;
+  levelYear?: string;
+  matricNumber?: string;
+  phoneNumber?: string;
+}
+
+export interface UpdateAvatarRequest {
+  avatar: string;
+  s3Key: string;
+}
+
+export interface AvatarUrlData {
+  avatarUrl?: string;
+  signedUrl?: string;
+}
+
+// ─── Dashboard ────────────────────────────────────────────────────────────────
+
+export interface SubjectMastery {
+  subject: string;
+  score: number;
+  questionsAttempted?: number;
+}
+
+export interface ActivityItem {
+  id: string;
+  type: 'quiz' | 'case_explainer' | 'ai_session' | 'document' | string;
+  title: string;
+  score?: number;
+  subject?: string;
+  createdAt: string;
+  meta?: string;
+}
+
+export interface Goal {
+  id: string;
+  title: string;
+  description?: string;
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  deadline?: string;
+  isCompleted: boolean;
+}
+
+export interface DashboardData {
+  streak?: number;
+  lastStudyDate?: string;
+  subjectMastery?: SubjectMastery[];
+  recentActivity?: ActivityItem[];
+  activeGoals?: Goal[];
+  reasoningScore?: { latest: number };
+  stats?: Record<string, number>;
+  user?: AuthUserSummary;
+}
+
+// ─── Questions ────────────────────────────────────────────────────────────────
+
+export interface Question {
+  id: string;
+  subject: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  type: string;
+  prompt?: string;
+  text?: string;
+  scenario?: string;
+  estimatedMinutes?: number;
+}
+
+export interface QuestionAttempt {
+  id: string;
+  questionId: string;
+  answer: string;
+  scores: {
+    issueIdentification: number;
+    ruleStatement: number;
+    application: number;
+    conclusion: number;
+    total: number;
+  };
+  aiFeedback: string;
+  createdAt: string;
+}
+
+// ─── Notes ────────────────────────────────────────────────────────────────────
+
+export interface NoteTemplate {
+  id: string;
+  name: string;
+  description: string;
+  content: string;
+  category?: string;
+}
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  subject?: string;
+  tags?: string[];
+  folder?: string;
+  source?: string;
+  qualityScore?: number;
+  qualityFeedback?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface NoteAnalysis {
+  qualityScore: number;
+  qualityFeedback: string;
+}
+
+export interface CreateNoteRequest {
+  title: string;
+  content: string;
+  subject?: string;
+  tags?: string[];
+  folder?: string;
+  source?: string;
+}
+
+// ─── Case Explainer ───────────────────────────────────────────────────────────
+
+export interface RelatedCase {
+  citation: string;
+  description?: string;
+  relation?: string;
+}
+
+export interface CaseExplanation {
+  id: string;
+  citation?: string;
+  documentId?: string;
+  facts?: string;
+  issue?: string;
+  holding?: string;
+  reasoning?: string;
+  significance?: string;
+  relatedCases?: RelatedCase[];
+  practiceQuestions?: string[];
+  status?: 'pending' | 'processing' | 'complete' | 'error';
+  createdAt?: string;
+}
+
+export interface CaseHistoryItem {
+  id: string;
+  citation?: string;
+  title?: string;
+  documentId?: string;
+  status?: string;
+  createdAt: string;
+}
+
+export interface ExplainCaseRequest {
+  documentId?: string;
+  text?: string;
+  citation?: string;
+}
+
+// ─── Research ─────────────────────────────────────────────────────────────────
+
+export interface ResearchResult {
+  documentId: string;
+  title: string;
+  matchScore: number;
+  excerpt?: string;
+  subject?: string;
+  type?: string;
+  courtLevel?: string;
+  citation?: string;
+}
+
+export interface ResearchSession {
+  id: string;
+  query: string;
+  refinedQuery?: string;
+  results: ResearchResult[];
+  memo?: string;
+  createdAt: string;
+}
+
+export interface SearchResearchRequest {
+  query: string;
+  jurisdiction?: string;
+  courtLevel?: string;
+}
+
+export interface SearchResearchResponse {
+  sessionId: string;
+  refinedQuery: string;
+  results: ResearchResult[];
+}
+
+// ─── AI Chat ──────────────────────────────────────────────────────────────────
+
+export interface AiConversation {
+  sessionId: string;
+  title?: string;
+  messageCount: number;
+  lastMessage?: string;
+  createdAt: string;
+}
+
+export interface AiChatRequest {
+  message: string;
+  sessionId?: string;
+}
+
+export interface AiChatResponse {
+  reply: string;
+  sessionId: string;
+}
+
+export interface SocraticStartRequest {
+  topic: string;
+  subject?: string;
+}
+
+export interface SocraticStartResponse {
+  sessionId: string;
+  question: string;
+}
+
+export interface SocraticRespondRequest {
+  sessionId: string;
+  message: string;
 }

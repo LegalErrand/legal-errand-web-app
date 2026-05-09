@@ -32,29 +32,21 @@
   }
 }
 
-.badge {
-  display: flex;
+
+.ctaBtn {
+  display: inline-flex;
   align-items: center;
-  gap: $space-2;
-  border: 1.5px solid $dark;
-  border-radius: 100px;
-  padding: 6px $space-3;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: $dark;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  padding: 10px $space-4;
   background: $primary;
-  animation: pulse 2s ease-in-out infinite;
-}
+  color: $white;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 0.15s;
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  &:hover {
+    background: $primary-dark;
+  }
 }

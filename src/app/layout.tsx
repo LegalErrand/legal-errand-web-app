@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import NextTopLoader from 'nextjs-toploader';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import '../styles/globals.scss';
 
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     images: ['/social-share.png'],
   },
   icons: {
-    icon: '/favivon.svg',
+    icon: '/favicon.svg',
   },
 };
 
@@ -40,6 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <NextTopLoader color="#D97706" showSpinner={false} />
         <ErrorBoundary>
           {children}
         </ErrorBoundary>

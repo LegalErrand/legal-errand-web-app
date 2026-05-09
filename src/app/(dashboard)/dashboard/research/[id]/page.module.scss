@@ -1,0 +1,181 @@
+@use '../../../../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  padding: $space-3 $space-5;
+  background: $white;
+  border-bottom: 1px solid $gray-200;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.backBtn {
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  text-decoration: none;
+
+  &:hover { color: $dark; }
+}
+
+.content {
+  flex: 1;
+  padding: $space-5;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.sessionHead {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.queryTitle {
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.refined {
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+
+  em { font-style: normal; font-weight: 600; color: $dark; }
+}
+
+.sessionDate {
+  font-size: 12px;
+  color: $gray-400;
+  margin: 0;
+}
+
+.memoCard {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-4 $space-5;
+  box-shadow: $shadow-sm;
+}
+
+.cardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $primary;
+  margin: 0 0 $space-2;
+}
+
+.memoBody {
+  font-size: 14px;
+  color: $dark;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.resultsHeading {
+  font-family: $font-heading;
+  font-size: 15px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.resultsList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.resultCard {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-4;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.resultHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-2;
+}
+
+.resultTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: $dark;
+  text-decoration: none;
+  flex: 1;
+
+  &:hover { color: $primary; }
+}
+
+.matchScore {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16A34A;
+  background: rgba(#16A34A, 0.08);
+  padding: 3px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.citation {
+  font-size: 12px;
+  color: $gray-600;
+  font-style: italic;
+  margin: 0;
+}
+
+.excerpt {
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: $gray-600;
+  background: $gray-100;
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+.state {
+  font-size: 14px;
+  color: $gray-600;
+  padding: $space-4 0;
+}
+
+.stateError {
+  font-size: 14px;
+  color: $accent-red;
+  padding: $space-7;
+  text-align: center;
+}

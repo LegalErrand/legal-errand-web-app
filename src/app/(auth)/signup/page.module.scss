@@ -1,0 +1,220 @@
+@use '../../../styles/variables' as *;
+
+// ─── Page shell ───────────────────────────────────────────────────────────────
+
+.page {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  min-height: 100vh;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Left image panel ─────────────────────────────────────────────────────────
+
+.panel {
+  position: relative;
+  background: $dark;
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.panelLogo {
+  position: absolute;
+  top: $space-4;
+  left: $space-4;
+  z-index: 2;
+  // invert dark text to white; amber icon stays visible via hue-rotate trick
+  filter: brightness(0) invert(1);
+}
+
+.panelImg {
+  object-fit: cover;
+  opacity: 0.55;
+}
+
+// ─── Right content ────────────────────────────────────────────────────────────
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #EFF2F7;
+  padding: $space-7 $space-4;
+}
+
+.formWrap {
+  width: 100%;
+  max-width: 520px;
+}
+
+.heading {
+  font-family: $font-heading;
+  font-size: 28px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 $space-2;
+}
+
+.sub {
+  font-size: 14px;
+  color: $gray-600;
+  margin: 0 0 $space-5;
+}
+
+// ─── Form card ────────────────────────────────────────────────────────────────
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  background: $white;
+  border-radius: 12px;
+  padding: $space-5;
+  box-shadow: $shadow-sm;
+  margin-bottom: $space-4;
+}
+
+.formError {
+  font-size: 14px;
+  color: $accent-red;
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-3;
+}
+
+// ─── Fields ───────────────────────────────────────────────────────────────────
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+  padding: 0 $space-3;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-family: inherit;
+  color: $dark;
+  background: $white;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+
+  &::placeholder { color: $gray-400; }
+  &:focus { border-color: $primary; }
+}
+
+.inputErr {
+  border-color: $accent-red;
+}
+
+.errMsg {
+  font-size: 12px;
+  color: $accent-red;
+}
+
+.hint {
+  font-size: 12px;
+  color: $primary;
+}
+
+// ─── Password ─────────────────────────────────────────────────────────────────
+
+.pwdWrap {
+  position: relative;
+
+  .input { padding-right: 56px; }
+}
+
+.showBtn {
+  position: absolute;
+  right: $space-3;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+
+  &:hover { color: $dark; }
+}
+
+// ─── Account type ─────────────────────────────────────────────────────────────
+
+.checkGroup {
+  display: flex;
+  gap: $space-4;
+}
+
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 14px;
+  color: $dark;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #16A34A;
+  cursor: pointer;
+}
+
+// ─── Submit button ────────────────────────────────────────────────────────────
+
+.submitBtn {
+  width: 100%;
+  height: 48px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: $space-1;
+
+  &:hover { background: $primary-dark; }
+}
+
+// ─── Footer line ──────────────────────────────────────────────────────────────
+
+.loginLine {
+  text-align: center;
+  font-size: 14px;
+  color: $gray-600;
+  margin: 0;
+}
+
+.loginLink {
+  color: $primary;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}

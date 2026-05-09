@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './Navbar.module.scss';
 
 export default function Navbar() {
@@ -8,10 +9,9 @@ export default function Navbar() {
         <div className={styles.logo}>
           <Image src="/logo.svg" alt="LegalErrand" width={160} height={36} priority />
         </div>
-        <div className={styles.badge}>
-          <span className={styles.dot} />
-          Now Building
-        </div>
+        <Link href="/signup" className={styles.ctaBtn}>
+          Get Started
+        </Link>
       </div>
     </nav>
   );
