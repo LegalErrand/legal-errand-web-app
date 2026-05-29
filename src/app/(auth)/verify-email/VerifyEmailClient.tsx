@@ -3,15 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getFetchErrorMessage, resendVerificationOtp, verifyEmail } from '@/lib/api';
 import {
+  getFetchErrorMessage,
+  resendVerificationOtp,
+  verifyEmail,
   clearPendingVerificationEmail,
   getPendingVerificationEmail,
   pickAccessTokenFromPayload,
   setAccessToken,
   setSessionEmail,
   setSessionProfile,
-} from '@/lib/authStorage';
+} from '@/lib';
 import styles from './page.module.scss';
 
 const OTP_LENGTH = 6;
@@ -56,7 +58,11 @@ export default function VerifyEmailClient() {
 
   function handlePaste(e: React.ClipboardEvent) {
     e.preventDefault();
-    const digits = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH).split('');
+    const digits = e.clipboardData
+      .getData('text')
+      .replace(/\D/g, '')
+      .slice(0, OTP_LENGTH)
+      .split('');
     const next = [...otp];
     digits.forEach((d, i) => {
       next[i] = d;
@@ -142,8 +148,8 @@ export default function VerifyEmailClient() {
       <main className={styles.main}>
         <h1 className={styles.heading}>6 Digit Otp code</h1>
         <p className={styles.sub}>
-          We have sent a 6 digit otp code to your School Email Address, use this to
-          Activate your account and verify your account.
+          We have sent a 6 digit otp code to your School Email Address, use this to Activate your
+          account and verify your account.
         </p>
 
         {email && <p className={styles.emailHint}>{email}</p>}
@@ -187,7 +193,12 @@ export default function VerifyEmailClient() {
             <p className={styles.resendText}>
               {resent ? 'Code resent! Check your email.' : "I Didn't get 6 digit code"}
             </p>
-            <button type="button" className={styles.resendBtn} onClick={handleResend} disabled={loading || !email}>
+            <button
+              type="button"
+              className={styles.resendBtn}
+              onClick={handleResend}
+              disabled={loading || !email}
+            >
               Resend Code
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path

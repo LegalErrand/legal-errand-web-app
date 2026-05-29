@@ -44,7 +44,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #EFF2F7;
+  background: #eff2f7;
   padding: $space-7 $space-4;
 }
 
@@ -120,8 +120,12 @@
   transition: border-color 0.15s;
   box-sizing: border-box;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .inputErr {
@@ -143,7 +147,9 @@
 .pwdWrap {
   position: relative;
 
-  .input { padding-right: 56px; }
+  .input {
+    padding-right: 56px;
+  }
 }
 
 .showBtn {
@@ -158,7 +164,9 @@
   color: $gray-600;
   cursor: pointer;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $dark;
+  }
 }
 
 // ─── Account type ─────────────────────────────────────────────────────────────
@@ -180,7 +188,7 @@
 .checkbox {
   width: 16px;
   height: 16px;
-  accent-color: #16A34A;
+  accent-color: #16a34a;
   cursor: pointer;
 }
 
@@ -199,7 +207,9 @@
   transition: background 0.15s;
   margin-top: $space-1;
 
-  &:hover { background: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+  }
 }
 
 // ─── Footer line ──────────────────────────────────────────────────────────────
@@ -216,5 +226,7 @@
   font-weight: 600;
   text-decoration: none;
 
-  &:hover { text-decoration: underline; }
+  &:hover {
+    text-decoration: underline;
+  }
 }

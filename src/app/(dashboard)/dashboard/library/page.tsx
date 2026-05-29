@@ -2,22 +2,23 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
   getLibraryDocuments,
   getMyDocuments,
+  getBookmarks,
   toggleBookmark,
   deleteDocument,
   getFetchErrorMessage,
   getUploadUrl,
   completeUpload,
-} from '@/lib/api';
-import { getAccessToken } from '@/lib/authStorage';
-import type { LibraryDocument } from '@/lib/types';
-import LibraryUploadModal from './LibraryUploadModal';
+  getAccessToken,
+} from '@/lib';
+import type { LibraryDocument } from '@/lib';
+import { SearchIcon, DocCard } from '@/components';
+import LibraryUploadModal from '@/components/LibraryUploadModal';
 import styles from './page.module.scss';
 
-type Tab = 'my' | 'free';
+type Tab = 'my' | 'free' | 'bookmarks';
 
 export default function LibraryPage() {
   const router = useRouter();
@@ -34,10 +35,13 @@ export default function LibraryPage() {
     setError('');
     try {
       const params = q ? { search: q, limit: 20 } : { limit: 20 };
-      const res = activeTab === 'my'
-        ? await getMyDocuments(t, params)
-        : await getLibraryDocuments(t, params);
-      setDocs(res.data?.data ?? []);
+      const res =
+        activeTab === 'my'
+          ? await getMyDocuments(t, params)
+          : activeTab === 'bookmarks'
+            ? await getBookmarks(t, params)
+            : await getLibraryDocuments(t, params);
+      setDocs(res.data ?? []);
     } catch (err) {
       setError(getFetchErrorMessage(err));
     } finally {
@@ -47,7 +51,10 @@ export default function LibraryPage() {
 
   useEffect(() => {
     const t = getAccessToken();
-    if (!t) { router.replace('/login'); return; }
+    if (!t) {
+      router.replace('/login');
+      return;
+    }
     setToken(t);
     void load(t, tab, search);
   }, [router, load, tab, search]);
@@ -56,15 +63,19 @@ export default function LibraryPage() {
     if (!token) return;
     try {
       await toggleBookmark(id, token);
-      setDocs((prev) => prev.map((d) => d.id === id ? { ...d, isBookmarked: !d.isBookmarked } : d));
-    } catch { /* silent */ }
+      setDocs((prev) =>
+        prev.map((d) => (d._id === id ? { ...d, isBookmarked: !d.isBookmarked } : d))
+      );
+    } catch {
+      /* silent */
+    }
   }
 
   async function handleDelete(id: string) {
     if (!token || !confirm('Delete this document?')) return;
     try {
       await deleteDocument(id, token);
-      setDocs((prev) => prev.filter((d) => d.id !== id));
+      setDocs((prev) => prev.filter((d) => d._id !== id));
     } catch (err) {
       setError(getFetchErrorMessage(err));
     }
@@ -72,58 +83,79 @@ export default function LibraryPage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.topBar}>
-        <h1 className={styles.pageTitle}>Library</h1>
-        <button className={styles.uploadBtn} onClick={() => setShowUpload(true)}>+ Upload Document</button>
-      </header>
+      {/* Search bar at top */}
+      <div className={styles.searchBar}>
+        <SearchIcon size={16} className={styles.searchIcon} />
+        <input
+          className={styles.searchInput}
+          placeholder="Search documents, cases & statutes"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* Tabs below search */}
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${tab === 'my' ? styles.tabActive : ''}`}
+          onClick={() => setTab('my')}
+        >
+          My Document
+        </button>
+        <button
+          className={`${styles.tab} ${tab === 'free' ? styles.tabActive : ''}`}
+          onClick={() => setTab('free')}
+        >
+          Free Library
+        </button>
+        <button
+          className={`${styles.tab} ${tab === 'bookmarks' ? styles.tabActive : ''}`}
+          onClick={() => setTab('bookmarks')}
+        >
+          Marketplace
+        </button>
+      </div>
 
       <div className={styles.content}>
-        <div className={styles.toolbar}>
-          <div className={styles.tabs}>
-            <button className={`${styles.tab} ${tab === 'my' ? styles.tabActive : ''}`} onClick={() => setTab('my')}>My Documents</button>
-            <button className={`${styles.tab} ${tab === 'free' ? styles.tabActive : ''}`} onClick={() => setTab('free')}>Free Library</button>
-          </div>
-          <div className={styles.searchWrap}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true" className={styles.searchIcon}>
-              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
-              <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-            <input className={styles.searchInput} placeholder="Search documents…" value={search} onChange={(e) => setSearch(e.target.value)} />
-          </div>
+        {/* Section heading + upload button */}
+        <div className={styles.sectionRow}>
+          <h1 className={styles.sectionTitle}>
+            {tab === 'my' ? 'My Document' : tab === 'free' ? 'Free Library' : 'Marketplace'}
+          </h1>
+          <button className={styles.uploadBtn} onClick={() => setShowUpload(true)}>
+            Upload PDF
+          </button>
         </div>
 
-        {error && <p className={styles.errorMsg} role="alert">{error}</p>}
+        {error && (
+          <p className={styles.errorMsg} role="alert">
+            {error}
+          </p>
+        )}
 
         {loading ? (
           <p className={styles.emptyState}>Loading…</p>
         ) : docs.length === 0 ? (
           <div className={styles.emptyBox}>
-            <p>{tab === 'my' ? 'You have no documents yet. Upload one to get started.' : 'No documents found.'}</p>
+            <p>
+              {tab === 'my'
+                ? 'You have no documents yet. Upload one to get started.'
+                : tab === 'bookmarks'
+                  ? 'No bookmarked documents yet.'
+                  : 'No documents found.'}
+            </p>
           </div>
         ) : (
           <div className={styles.grid}>
             {docs.map((doc) => (
-              <div key={doc.id} className={styles.card}>
-                <div className={styles.cardIcon} aria-hidden="true">📄</div>
-                <div className={styles.cardBody}>
-                  <Link href={`/dashboard/library/${doc.id}`} className={styles.cardTitle}>{doc.title}</Link>
-                  {doc.subject && <span className={styles.cardMeta}>{doc.subject}</span>}
-                  {doc.fileSize && <span className={styles.cardMeta}>{(doc.fileSize / 1024 / 1024).toFixed(1)} MB</span>}
-                </div>
-                <div className={styles.cardActions}>
-                  <button
-                    className={`${styles.bookmarkBtn} ${doc.isBookmarked ? styles.bookmarked : ''}`}
-                    onClick={() => handleBookmark(doc.id)}
-                    aria-label={doc.isBookmarked ? 'Remove bookmark' : 'Bookmark'}
-                    title={doc.isBookmarked ? 'Bookmarked' : 'Bookmark'}
-                  >
-                    {doc.isBookmarked ? '★' : '☆'}
-                  </button>
-                  {tab === 'my' && (
-                    <button className={styles.deleteBtn} onClick={() => handleDelete(doc.id)} aria-label="Delete" title="Delete">✕</button>
-                  )}
-                </div>
-              </div>
+              <DocCard
+                key={doc._id}
+                id={doc._id}
+                title={doc.title}
+                subject={doc.subject}
+                description={doc.description}
+                href={`/dashboard/library/${doc._id}`}
+              />
             ))}
           </div>
         )}
@@ -135,7 +167,10 @@ export default function LibraryPage() {
           getUploadUrl={getUploadUrl}
           completeUpload={completeUpload}
           onClose={() => setShowUpload(false)}
-          onSuccess={() => { setShowUpload(false); void load(token, tab, search); }}
+          onSuccess={() => {
+            setShowUpload(false);
+            void load(token, tab, search);
+          }}
         />
       )}
     </div>

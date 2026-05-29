@@ -1,0 +1,108 @@
+@use '../styles/variables' as *;
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  background: $white;
+}
+
+.editorInner {
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+// ─── Toolbar ──────────────────────────────────────────────────────────────────
+
+.toolbar {
+  display: flex;
+  gap: 4px;
+  padding: $space-2 $space-3;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  align-self: flex-start;
+}
+
+.toolBtn {
+  width: 32px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: $gray-800;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  &:hover {
+    background: $gray-100;
+    color: $primary;
+  }
+}
+
+// ─── Title input ──────────────────────────────────────────────────────────────
+
+.titleInput {
+  padding: $space-2 0;
+  border: none;
+  border-bottom: 2px solid $primary;
+  outline: none;
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 700;
+  color: $dark;
+  background: transparent;
+  width: 100%;
+
+  &::placeholder {
+    color: $gray-200;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1;
+}
+
+.metaTag {
+  font-size: 11px;
+  font-weight: 600;
+  color: $primary;
+  background: rgba($primary, 0.08);
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+// ─── Content area ─────────────────────────────────────────────────────────────
+
+.contentArea {
+  flex: 1;
+  min-height: 300px;
+  padding: $space-3;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: $font-body;
+  font-size: 14px;
+  line-height: 1.8;
+  color: $dark;
+  background: transparent;
+
+  &::placeholder {
+    color: $gray-200;
+  }
+}

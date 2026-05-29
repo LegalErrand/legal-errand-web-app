@@ -1,0 +1,197 @@
+@use '../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: $space-4;
+}
+
+.modal {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-5;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  box-shadow: $shadow-lg;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  font-family: $font-heading;
+  font-size: 18px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: $gray-600;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+
+  &:hover {
+    color: $dark;
+  }
+}
+
+.error {
+  font-size: 13px;
+  color: $accent-red;
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+}
+
+.req {
+  color: $accent-red;
+}
+
+.input {
+  height: 44px;
+  padding: 0 $space-3;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+.fileWrap {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 $space-3;
+  border: 1px dashed $gray-200;
+  border-radius: $radius;
+  cursor: pointer;
+  font-size: 14px;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: $primary;
+  }
+}
+
+.fileName {
+  color: $dark;
+  font-weight: 600;
+}
+.filePlaceholder {
+  color: $gray-400;
+}
+.fileInput {
+  display: none;
+}
+
+.progressWrap {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 6px;
+  background: $gray-200;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  width: var(--pct, 0%);
+  background: $primary;
+  border-radius: 100px;
+  transition: width 0.2s;
+}
+
+.progressLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: $primary;
+  width: 36px;
+  text-align: right;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-2;
+  margin-top: $space-1;
+}
+
+.cancelBtn {
+  padding: 10px $space-4;
+  background: none;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: $dark;
+    color: $dark;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.submitBtn {
+  padding: 10px $space-4;
+  background: $primary;
+  border: none;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 700;
+  color: $white;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

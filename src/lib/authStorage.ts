@@ -71,7 +71,9 @@ export function getSessionProfile(): SessionOnboardingProfile {
 }
 
 /** Resolve bearer token from `/auth/verify-email` (and similar) response payloads. */
-export function pickAccessTokenFromPayload(data: AuthTokens | Record<string, unknown> | undefined): string | undefined {
+export function pickAccessTokenFromPayload(
+  data: AuthTokens | Record<string, unknown> | undefined
+): string | undefined {
   if (!data || typeof data !== 'object') return undefined;
   const d = data as Record<string, unknown>;
   if (typeof d.accessToken === 'string' && d.accessToken) return d.accessToken;

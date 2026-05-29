@@ -3,10 +3,16 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { fetchAvatarDisplayUrl, getFetchErrorMessage, updateBioData } from '@/lib/api';
-import { getAccessToken, getSessionEmail, getSessionProfile } from '@/lib/authStorage';
-import type { BioDataFormErrors } from '@/lib/validation';
-import { validateBioDataFields } from '@/lib/validation';
+import {
+  fetchAvatarDisplayUrl,
+  getFetchErrorMessage,
+  updateBioData,
+  getAccessToken,
+  getSessionEmail,
+  getSessionProfile,
+  validateBioDataFields,
+} from '@/lib';
+import type { BioDataFormErrors } from '@/lib';
 import BioDataCredentials from './BioDataCredentials';
 import BioDataProfileCard from './BioDataProfileCard';
 import styles from './page.module.scss';
@@ -92,7 +98,7 @@ export default function BioDataClient() {
           matricNumber: matric.trim() || undefined,
           phoneNumber,
         },
-        t,
+        t
       );
       if (!res.success) {
         setFormError(res.message ?? res.error ?? 'Could not save profile.');
@@ -175,7 +181,10 @@ export default function BioDataClient() {
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
               />
-              <span>I confirm that all details provided in this form are accurate, complete, and personally supplied by me.</span>
+              <span>
+                I confirm that all details provided in this form are accurate, complete, and
+                personally supplied by me.
+              </span>
             </label>
             <button type="submit" className={styles.submitBtn} disabled={!agreed || saving}>
               {saving ? 'Saving…' : 'Save & Continue'}

@@ -79,6 +79,7 @@ export interface AuthUserSummary {
   email?: string;
   avatar?: string;
   username?: string;
+  role?: string;
 }
 
 export interface VerifyEmailResponseData extends AuthTokens {
@@ -106,8 +107,9 @@ export interface PresignedUrlRequest {
 }
 
 export interface PresignedUrlResponse {
-  signedUrl: string;
+  uploadUrl: string; // presigned PUT URL for direct S3 upload
   s3Key: string;
+  s3Url: string;
   expiresIn: number;
 }
 
@@ -120,7 +122,8 @@ export interface UploadCompleteRequest {
 }
 
 export interface LibraryDocument {
-  id: string;
+  _id: string;
+  id?: string; // Mongoose virtual — not always present; use _id
   title: string;
   subject?: string;
   type?: string;
@@ -133,6 +136,13 @@ export interface LibraryDocument {
   isVerified?: boolean;
   createdAt: string;
   updatedAt?: string;
+  metadata?: {
+    court?: string;
+    year?: number;
+    citation?: string;
+    jurisdiction?: string;
+    description?: string;
+  };
 }
 
 export interface SignedUrlData {
@@ -294,6 +304,7 @@ export interface CaseExplanation {
   relatedCases?: RelatedCase[];
   practiceQuestions?: string[];
   status?: 'pending' | 'processing' | 'complete' | 'error';
+  progress?: number;
   createdAt?: string;
 }
 
@@ -379,4 +390,42 @@ export interface SocraticStartResponse {
 export interface SocraticRespondRequest {
   sessionId: string;
   message: string;
+}
+
+// ─── Achievements ─────────────────────────────────────────────────────────────
+
+export interface Achievement {
+  id: string;
+  name: string;
+  category: 'streak' | 'quiz' | 'learning' | 'research' | 'special' | string;
+  earned: boolean;
+}
+
+export interface AchievementsData {
+  badges: Achievement[];
+  currentStreak: number;
+  longestStreak: number;
+}
+
+// ─── Reasoning Score ──────────────────────────────────────────────────────────
+
+export interface ReasoningScoreEntry {
+  overall: number;
+  calculatedAt: string;
+}
+
+export interface ReasoningScoreData {
+  latest: ReasoningScoreEntry | null;
+  history: ReasoningScoreEntry[];
+}
+
+// ─── Progress / Question Stats ────────────────────────────────────────────────
+
+/** Shape returned by GET /questions/stats */
+export interface QuestionStats {
+  totalAttempted: number;
+  averageScore?: number;
+  subjectBreakdown?: Record<string, { attempted: number; averageScore: number }>;
+  topSubject?: string;
+  recentAttempts?: number;
 }

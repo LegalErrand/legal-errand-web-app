@@ -4,7 +4,10 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: $white;
 }
+
+// ─── Top bar: breadcrumb + actions ────────────────────────────────────────────
 
 .topBar {
   display: flex;
@@ -17,14 +20,92 @@
   gap: $space-3;
 }
 
-.backBtn {
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
-  font-weight: 600;
   color: $gray-600;
   text-decoration: none;
-  white-space: nowrap;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $primary;
+  }
+}
+
+.breadSep {
+  color: $gray-400;
+}
+
+.breadCurrent {
+  font-weight: 600;
+  color: $dark;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-left: auto;
+}
+
+.exportBtn {
+  padding: 8px $space-3;
+  background: $white;
+  color: $dark;
+  border: 1.5px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
+}
+
+.saveNoteBtn {
+  padding: 8px $space-4;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.bellBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: $gray-600;
+}
+
+.avatarBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $gray-200;
+  border: none;
+  cursor: pointer;
 }
 
 .headerCenter {
@@ -42,6 +123,18 @@
   color: $accent-red;
 }
 
+// keep backward compat
+.backBtn {
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  text-decoration: none;
+
+  &:hover {
+    color: $dark;
+  }
+}
+
 .aiBtn {
   padding: 8px $space-3;
   background: $dark;
@@ -54,25 +147,144 @@
   white-space: nowrap;
   transition: opacity 0.12s;
 
-  &:hover { opacity: 0.85; }
+  &:hover {
+    opacity: 0.85;
+  }
 }
+
+// ─── Three-column workspace ───────────────────────────────────────────────────
 
 .workspace {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: $sidebar-width 1fr;
   overflow: hidden;
 }
 
 .withSidebar {
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: $sidebar-width 1fr 300px;
 
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
+  @media (max-width: 1100px) {
+    grid-template-columns: $sidebar-width 1fr;
   }
 }
+
+// ─── Left template list sidebar ───────────────────────────────────────────────
+
+.templateSidebar {
+  border-right: 1px solid $gray-200;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: $space-3 0;
+  background: $white;
+
+  @media (max-width: 700px) {
+    display: none;
+  }
+}
+
+.templateSidebarHeading {
+  font-size: 11px;
+  font-weight: 700;
+  color: $gray-400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0 $space-3 $space-2;
+  margin: 0;
+}
+
+.templateItem {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2;
+  padding: 10px $space-3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+  width: 100%;
+
+  &:hover {
+    background: $gray-50;
+  }
+}
+
+.templateItemActive {
+  background: $orange-50;
+
+  .templateItemName {
+    color: $primary;
+  }
+}
+
+.templateItemIcon {
+  width: 28px;
+  height: 28px;
+  background: $gray-100;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: $gray-600;
+
+  .templateItemActive & {
+    background: rgba($primary, 0.12);
+    color: $primary;
+  }
+}
+
+.templateItemText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.templateItemName {
+  font-size: 12px;
+  font-weight: 600;
+  color: $dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.templateItemSub {
+  font-size: 10px;
+  color: $gray-400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ─── Floating AI button ───────────────────────────────────────────────────────
+
+.floatingAiBtn {
+  position: fixed;
+  bottom: $space-4;
+  right: $space-4;
+  z-index: 50;
+  padding: 10px $space-3;
+  background: $dark;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: $shadow-md;
+  transition: opacity 0.12s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+// ─── State messages ───────────────────────────────────────────────────────────
 
 .state {
   padding: $space-7;

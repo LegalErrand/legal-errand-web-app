@@ -4,25 +4,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-.topBar {
-  display: flex;
-  align-items: center;
-  padding: $space-4 $space-5;
   background: $white;
-  border-bottom: 1px solid $gray-200;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.pageTitle {
-  font-family: $font-heading;
-  font-size: 20px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0;
 }
 
 .content {
@@ -30,35 +12,35 @@
   padding: $space-5;
   display: flex;
   flex-direction: column;
-  gap: $space-5;
-  max-width: 900px;
-  width: 100%;
+  gap: $space-4;
 }
 
-.searchCard {
-  background: $white;
-  border-radius: 12px;
-  padding: $space-5;
-  box-shadow: $shadow-sm;
-}
-
-.sectionTitle {
+.pageHeading {
   font-family: $font-heading;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 700;
   color: $dark;
+  margin: 0 0 4px;
+}
+
+.pageSub {
+  font-size: 14px;
+  color: $gray-600;
   margin: 0 0 $space-3;
 }
+
+// ─── Search form ──────────────────────────────────────────────────────────────
 
 .searchForm {
   display: flex;
   flex-direction: column;
-  gap: $space-2;
+  gap: $space-3;
 }
 
 .queryRow {
   display: flex;
-  gap: $space-2;
+  gap: $space-3;
+  align-items: center;
 
   @media (max-width: 600px) {
     flex-direction: column;
@@ -77,25 +59,34 @@
   outline: none;
   transition: border-color 0.15s;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .searchBtn {
-  padding: 0 $space-4;
+  padding: 0 $space-5;
   height: 48px;
   background: $primary;
   color: $white;
   border: none;
   border-radius: $radius;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
   transition: background 0.15s;
+  white-space: nowrap;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .jurisdictionInput {
@@ -107,10 +98,14 @@
   font-family: inherit;
   color: $dark;
   outline: none;
-  transition: border-color 0.15s;
+  max-width: 300px;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .searchErr {
@@ -119,33 +114,48 @@
   margin: 0;
 }
 
-// ─── Results ──────────────────────────────────────────────────────────────────
-
 .refinedQuery {
-  font-size: 13px;
+  font-size: 14px;
   color: $gray-600;
-  margin: 0 0 $space-3;
+  margin: 0;
 
-  em { font-style: normal; font-weight: 600; color: $dark; }
+  em {
+    font-style: normal;
+    font-weight: 600;
+    color: $dark;
+  }
 }
 
-.resultsList {
+// ─── Main split ───────────────────────────────────────────────────────────────
+
+.mainSplit {
+  display: flex;
+  gap: $space-5;
+  align-items: flex-start;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
+}
+
+.resultsCol {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: $space-3;
 }
 
+// ─── Result card ──────────────────────────────────────────────────────────────
+
 .resultCard {
   background: $white;
-  border-radius: 12px;
+  border-radius: $radius-lg;
   padding: $space-4;
-  box-shadow: $shadow-sm;
+  border: 1px solid $gray-200;
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  transition: box-shadow 0.15s;
-
-  &:hover { box-shadow: $shadow-md; }
 }
 
 .resultHeader {
@@ -153,6 +163,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: $space-2;
+  flex-wrap: wrap;
 }
 
 .resultTitle {
@@ -163,53 +174,183 @@
   flex: 1;
   line-height: 1.4;
 
-  &:hover { color: $primary; }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .matchScore {
-  font-size: 11px;
-  font-weight: 700;
-  color: #16A34A;
-  background: rgba(#16A34A, 0.08);
-  padding: 3px 8px;
-  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $green-500;
   white-space: nowrap;
+}
+
+.courtBadge {
+  display: inline-flex;
+  padding: 3px 10px;
+  background: $green-100;
+  color: $green-500;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.matchBarWrap {
+  height: 4px;
+  background: $gray-200;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.matchBar {
+  height: 100%;
+  width: var(--bar-pct, 0%);
+  background: $green-500;
+  border-radius: 2px;
 }
 
 .resultCitation {
   font-size: 12px;
   color: $gray-600;
-  font-style: italic;
   margin: 0;
 }
 
 .resultExcerpt {
   font-size: 13px;
-  color: $gray-600;
+  color: $gray-800;
   margin: 0;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.6;
 }
 
 .resultTags {
   display: flex;
   flex-wrap: wrap;
-  gap: $space-1;
+  gap: 6px;
 }
 
 .tag {
+  padding: 3px 10px;
+  background: $blue-100;
+  color: $blue-600;
+  border-radius: 100px;
   font-size: 11px;
   font-weight: 600;
-  color: $gray-600;
-  background: $gray-100;
-  padding: 3px 8px;
-  border-radius: 100px;
 }
 
-// ─── History ──────────────────────────────────────────────────────────────────
+// ─── Filter panel ─────────────────────────────────────────────────────────────
+
+.filterPanel {
+  width: 200px;
+  flex-shrink: 0;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+}
+
+.filterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filterHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.filterReset {
+  font-size: 12px;
+  font-weight: 500;
+  color: $primary;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.filterGroupLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filterCheckRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  cursor: pointer;
+}
+
+.filterCheckRow input {
+  accent-color: $primary;
+}
+
+.filterCheckLabel {
+  font-size: 13px;
+  color: $gray-800;
+}
+
+.filterTagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filterTag {
+  padding: 4px 10px;
+  background: $gray-100;
+  color: $gray-600;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  &:hover {
+    background: $orange-50;
+    color: $primary;
+  }
+}
+
+.filterTagActive {
+  background: $primary;
+  color: $white;
+
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+  }
+}
+
+// ─── History section ──────────────────────────────────────────────────────────
 
 .historySection {
   display: flex;
@@ -217,13 +358,21 @@
   gap: $space-3;
 }
 
+.sectionTitle {
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
 .sessionList {
   list-style: none;
   margin: 0;
   padding: 0;
   background: $white;
-  border-radius: 12px;
-  box-shadow: $shadow-sm;
+  border-radius: $radius-lg;
+  border: 1px solid $gray-200;
   overflow: hidden;
 }
 
@@ -232,7 +381,9 @@
   align-items: center;
   border-bottom: 1px solid $gray-100;
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .sessionLink {
@@ -241,7 +392,9 @@
   text-decoration: none;
   transition: background 0.12s;
 
-  &:hover { background: $gray-100; }
+  &:hover {
+    background: $gray-50;
+  }
 }
 
 .sessionQuery {
@@ -249,9 +402,6 @@
   font-weight: 600;
   color: $dark;
   margin: 0 0 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .sessionMeta {
@@ -264,15 +414,18 @@
   background: none;
   border: none;
   font-size: 12px;
-  color: $gray-400;
   cursor: pointer;
+  color: $gray-400;
   padding: $space-3;
   transition: color 0.12s;
 
-  &:hover { color: $accent-red; }
+  &:hover {
+    color: $accent-red;
+  }
 }
 
 .stateMsg {
   font-size: 13px;
   color: $gray-400;
+  margin: 0;
 }

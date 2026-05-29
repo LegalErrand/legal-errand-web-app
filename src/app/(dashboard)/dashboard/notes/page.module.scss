@@ -4,244 +4,626 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-.topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $space-4 $space-5;
   background: $white;
-  border-bottom: 1px solid $gray-200;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.pageTitle {
-  font-family: $font-heading;
-  font-size: 20px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0;
-}
-
-.newBtn {
-  padding: 10px $space-4;
-  background: $primary;
-  color: $white;
-  border: none;
-  border-radius: $radius;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
-}
-
-.content {
-  flex: 1;
-  padding: $space-5;
-  display: flex;
-  flex-direction: column;
-  gap: $space-5;
 }
 
 .error {
   font-size: 13px;
   color: $accent-red;
+  margin: 0 0 $space-2;
+}
+
+// ─── Gallery view ─────────────────────────────────────────────────────────────
+
+.galleryBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: $space-5 $space-5 $space-4;
+  background: $white;
+  flex-shrink: 0;
+  gap: $space-4;
+}
+
+.galleryTitle {
+  font-family: $font-heading;
+  font-size: 22px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 4px;
+}
+
+.gallerySub {
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.savedNotesBtn {
+  flex-shrink: 0;
+  padding: 8px 18px;
+  background: $white;
+  border: 1.5px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
+}
+
+.galleryContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 $space-5 $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: $gray-400;
+  margin: 0 0 $space-3;
+  text-transform: uppercase;
+}
+
+// ─── Recommended row ──────────────────────────────────────────────────────────
+
+.recommendedRow {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: $space-4;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.blankCard {
+  background: $primary;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-2;
+  color: $white;
+  text-align: left;
+  transition: opacity 0.15s;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.blankIcon {
+  width: 44px;
+  height: 44px;
+  background: rgba($white, 0.2);
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $white;
+}
+
+.blankLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: $white;
+}
+
+.blankDesc {
+  font-size: 12px;
+  color: rgba($white, 0.85);
+  line-height: 1.5;
+}
+
+.selectFree {
+  margin-top: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: $dark;
+  background: $white;
+  padding: 6px 14px;
+  border-radius: $radius;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.12s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+// ─── Featured IRAC card ───────────────────────────────────────────────────────
+
+.featuredCard {
+  border-radius: $radius-lg;
+  overflow: hidden;
+  border: 1px solid $gray-200;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  background: $white;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.featuredImg {
+  background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
+  background-image: url('/images/onboarding-image.png');
+  background-size: cover;
+  background-position: center;
+  min-height: 160px;
+}
+
+.featuredBody {
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.featuredTags {
+  display: flex;
+  gap: 6px;
+}
+
+.featuredTag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: $gray-200;
+  color: $gray-800;
+  text-transform: capitalize;
+}
+
+.featuredTitle {
+  font-family: $font-heading;
+  font-size: 17px;
+  font-weight: 700;
+  color: $dark;
   margin: 0;
 }
 
-.sectionTitle {
-  font-family: $font-heading;
-  font-size: 15px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0 0 $space-3;
+.featuredDesc {
+  font-size: 13px;
+  color: $gray-600;
+  line-height: 1.5;
+  margin: 0;
 }
 
-// ─── Templates ────────────────────────────────────────────────────────────────
+.useTemplateBtn {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 9px $space-4;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
 
-.templateGrid {
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Professional templates grid ──────────────────────────────────────────────
+
+.proGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: $space-3;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.templateCard {
+.proCard {
   background: $white;
   border: 1px solid $gray-200;
-  border-radius: 12px;
-  padding: $space-3;
+  border-radius: $radius-lg;
+  padding: $space-4;
   cursor: pointer;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  gap: $space-2;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 
-  &:hover { border-color: $primary; box-shadow: $shadow-sm; }
+  &:hover:not(:disabled) {
+    border-color: $primary;
+    box-shadow: $shadow-sm;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
-.templateName {
-  font-size: 13px;
+.proIcon {
+  width: 40px;
+  height: 40px;
+  background: $gray-100;
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary;
+}
+
+.proTitle {
+  font-size: 14px;
   font-weight: 700;
   color: $dark;
+  margin: 0;
 }
 
-.templateDesc {
-  font-size: 11px;
+.proDesc {
+  font-size: 12px;
   color: $gray-600;
-  line-height: 1.4;
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-// ─── Notes section ────────────────────────────────────────────────────────────
-
-.notesHeader {
+.proFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $space-3;
-  flex-wrap: wrap;
-  gap: $space-2;
+  margin-top: auto;
+  padding-top: $space-2;
+  border-top: 1px solid $gray-100;
 }
 
-.searchWrap {
+.proCategory {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: $gray-600;
+  text-transform: uppercase;
+}
+
+// ─── Saved notes view ─────────────────────────────────────────────────────────
+
+.savedBar {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4 $space-5;
+  background: $white;
+  flex-shrink: 0;
+}
+
+.savedSearch {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: $space-2;
-  background: $white;
+  background: $gray-50;
   border: 1px solid $gray-200;
-  border-radius: $radius;
+  border-radius: $radius-lg;
   padding: 0 $space-3;
-  max-width: 280px;
+  height: 44px;
 }
 
-.searchIcon { color: $gray-400; flex-shrink: 0; }
+.searchIcon {
+  color: $gray-400;
+  flex-shrink: 0;
+}
 
 .searchInput {
   flex: 1;
-  height: 36px;
   border: none;
   background: transparent;
-  font-size: 13px;
+  font-size: 14px;
   font-family: inherit;
   color: $dark;
   outline: none;
 
-  &::placeholder { color: $gray-400; }
+  &::placeholder {
+    color: $gray-400;
+  }
 }
+
+.newNoteBtn {
+  padding: 9px 18px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+.savedContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 $space-5 $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.savedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ─── Subject tabs (pill style) ────────────────────────────────────────────────
+
+.subjectTabs {
+  display: flex;
+  gap: $space-1;
+  flex-wrap: wrap;
+}
+
+.subjectTab {
+  padding: 7px 16px;
+  background: $gray-100;
+  border: none;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: $gray-600;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  &:hover {
+    background: $orange-50;
+    color: $primary;
+  }
+}
+
+.subjectTabActive {
+  background: $primary;
+  color: $white;
+  font-weight: 600;
+
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+  }
+}
+
+.paginationRow {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.pageArrow {
+  width: 30px;
+  height: 30px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: $gray-600;
+  transition: background 0.12s;
+
+  &:hover {
+    background: $gray-100;
+  }
+}
+
+// ─── Note cards grid ─────────────────────────────────────────────────────────
 
 .noteGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: $space-3;
+
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .noteCard {
   background: $white;
-  border-radius: 12px;
-  box-shadow: $shadow-sm;
+  border-radius: $radius-lg;
+  border: 1px solid $gray-200;
+  padding: $space-4;
   position: relative;
   transition: box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 
-  &:hover { box-shadow: $shadow-md; }
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
+}
+
+.noteCardTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.noteSubjectBadge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: lowercase;
+  color: $gray-600;
+  background: $gray-100;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.scoreWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.scoreCircle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+
+.scoreText {
+  position: absolute;
+  font-size: 9px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+}
+
+.scoreLabel {
+  font-size: 9px;
+  color: $gray-400;
+  font-weight: 500;
 }
 
 .noteLink {
-  display: block;
-  padding: $space-3 $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   text-decoration: none;
-  padding-right: 40px;
 }
 
 .noteTitle {
   font-size: 13px;
   font-weight: 700;
   color: $dark;
-  margin: 0 0 4px;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.4;
 }
 
-.noteMeta {
-  display: block;
-  font-size: 11px;
-  color: $gray-400;
-  margin-bottom: $space-2;
-}
-
-.scoreWrap {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  margin-bottom: 6px;
-}
-
-.scoreTrack {
-  flex: 1;
-  height: 4px;
-  background: $gray-200;
-  border-radius: 100px;
+.noteExcerpt {
+  font-size: 12px;
+  color: $gray-600;
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.scoreFill {
-  height: 100%;
-  background: #16A34A;
-  border-radius: 100px;
-}
-
-.scoreLabel {
-  font-size: 10px;
-  font-weight: 700;
-  color: #16A34A;
-  white-space: nowrap;
-}
-
 .noteDate {
-  font-size: 10px;
+  font-size: 11px;
   color: $gray-400;
-  margin: 0;
+  margin: 4px 0 0;
 }
 
 .deleteNoteBtn {
   position: absolute;
-  top: $space-2;
+  bottom: $space-2;
   right: $space-2;
   background: none;
   border: none;
-  font-size: 12px;
-  color: $gray-400;
+  font-size: 11px;
+  color: $gray-200;
   cursor: pointer;
   padding: 4px;
-  line-height: 1;
   border-radius: 4px;
-  transition: color 0.12s, background 0.12s;
+  line-height: 1;
+  transition:
+    color 0.12s,
+    background 0.12s;
 
-  &:hover { color: $accent-red; background: rgba($accent-red, 0.08); }
+  &:hover {
+    color: $accent-red;
+    background: rgba($accent-red, 0.08);
+  }
 }
 
 .emptyBox {
-  background: $white;
-  border-radius: 12px;
+  background: $gray-50;
+  border-radius: $radius-lg;
   padding: $space-7;
   text-align: center;
-  box-shadow: $shadow-sm;
   font-size: 14px;
   color: $gray-600;
+}
+
+.inlineLink {
+  background: none;
+  border: none;
+  color: $primary;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
 }
 
 .stateMsg {
   font-size: 14px;
   color: $gray-400;
+  padding: $space-5 0;
+}
+
+.syncMsg {
+  font-size: 11px;
+  color: $gray-400;
+  text-align: right;
+  margin-top: auto;
+  padding-top: $space-4;
 }

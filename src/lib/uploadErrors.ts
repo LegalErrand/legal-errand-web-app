@@ -22,14 +22,11 @@ export function mapUploadError(result: UploadResult): string {
 
   // ─── Message keyword shortcuts ────────────────────────────────────────────
   if (message.includes('cancelled')) return 'Upload cancelled.';
-  if (message.includes('expired'))   return 'Upload session expired. Please retry.';
-  if (message.includes('network'))   return 'Network error. Check your connection and retry.';
+  if (message.includes('expired')) return 'Upload session expired. Please retry.';
+  if (message.includes('network')) return 'Network error. Check your connection and retry.';
 
   // Validation messages are already user-friendly — pass them through.
-  if (
-    message.includes('Invalid file type') ||
-    message.includes('MB or smaller')
-  ) return message;
+  if (message.includes('Invalid file type') || message.includes('MB or smaller')) return message;
 
   return message || 'Upload failed. Please try again.';
 }

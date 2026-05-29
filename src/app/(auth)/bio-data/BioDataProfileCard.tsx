@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import AvatarUploader from '@/components/AvatarUploader';
+import { AvatarUploader } from '@/components';
 import styles from './page.module.scss';
 
 export interface BioDataProfileCardProps {

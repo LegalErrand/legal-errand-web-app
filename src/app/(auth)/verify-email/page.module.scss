@@ -4,7 +4,7 @@
 
 .page {
   min-height: 100vh;
-  background: #EFF2F7;
+  background: #eff2f7;
   display: flex;
   flex-direction: column;
 }
@@ -53,11 +53,13 @@
   font-size: 14px;
   font-weight: 600;
   color: $gray-600;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .stepActive {
-  background: #E3F5EC;
+  background: #e3f5ec;
   color: $dark;
 }
 
@@ -222,5 +224,7 @@
     cursor: not-allowed;
   }
 
-  svg { flex-shrink: 0; }
+  svg {
+    flex-shrink: 0;
+  }
 }

@@ -8,9 +8,13 @@ import {
   getDashboard,
   getDashboardGoals,
   getRandomQuestion,
-} from '@/lib/api';
-import { getAccessToken } from '@/lib/authStorage';
-import type { DashboardData, Goal, Question } from '@/lib/types';
+  getAchievements,
+  getReasoningScore,
+  getAccessToken,
+} from '@/lib';
+import type { DashboardData, Goal, Question, Achievement } from '@/lib';
+import DashboardLower from '@/components/DashboardLower';
+import ActivityHistoryModal from '@/components/ActivityHistoryModal';
 import styles from './page.module.scss';
 
 export default function DashboardPage() {
@@ -18,29 +22,37 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
+  const [earnedBadges, setEarnedBadges] = useState<Achievement[]>([]);
+  const [reasoningScore, setReasoningScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = getAccessToken();
-    if (!token) { router.replace('/login'); return; }
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
 
     void (async () => {
       try {
-        const [dashRes, goalsRes, qRes] = await Promise.allSettled([
+        const [dashRes, goalsRes, qRes, achRes, rsRes] = await Promise.allSettled([
           getDashboard(token),
           getDashboardGoals(token),
           getRandomQuestion(token),
+          getAchievements(token),
+          getReasoningScore(token),
         ]);
-        if (dashRes.status === 'fulfilled' && dashRes.value.data) {
-          setData(dashRes.value.data);
+        if (dashRes.status === 'fulfilled' && dashRes.value.data) setData(dashRes.value.data);
+        if (goalsRes.status === 'fulfilled' && goalsRes.value.data) setGoals(goalsRes.value.data);
+        if (qRes.status === 'fulfilled' && qRes.value.data) setQuestion(qRes.value.data);
+        if (achRes.status === 'fulfilled' && achRes.value.data) {
+          setEarnedBadges((achRes.value.data.badges ?? []).filter((b) => b.earned));
         }
-        if (goalsRes.status === 'fulfilled' && goalsRes.value.data) {
-          setGoals(goalsRes.value.data);
-        }
-        if (qRes.status === 'fulfilled' && qRes.value.data) {
-          setQuestion(qRes.value.data);
+        if (rsRes.status === 'fulfilled' && rsRes.value.data?.latest) {
+          setReasoningScore(rsRes.value.data.latest.overall);
         }
       } finally {
         setLoading(false);
@@ -65,17 +77,41 @@ export default function DashboardPage() {
   return (
     <div className={styles.page}>
       <header className={styles.topBar}>
-        <form className={styles.searchWrap} onSubmit={(e) => {
-          e.preventDefault();
-          const q = searchQuery.trim();
-          router.push(q ? `/dashboard/reasoning?q=${encodeURIComponent(q)}` : '/dashboard/reasoning');
-        }}>
-          <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <form
+          className={styles.searchWrap}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const q = searchQuery.trim();
+            router.push(
+              q ? `/dashboard/reasoning?q=${encodeURIComponent(q)}` : '/dashboard/reasoning'
+            );
+          }}
+        >
+          <svg
+            className={styles.searchIcon}
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
             <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
           </svg>
-          <input ref={searchRef} className={styles.searchInput} type="text" placeholder="Ask LegalErrand AI a Legal Question"
-            aria-label="Ask a legal question" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <input
+            ref={searchRef}
+            className={styles.searchInput}
+            type="text"
+            placeholder="Ask LegalErrand AI a Legal Question"
+            aria-label="Ask a legal question"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </form>
         <button className={styles.notifBtn} aria-label="Notifications">
           <Image src="/icons/notifications.svg" alt="" width={22} height={22} />
@@ -93,7 +129,9 @@ export default function DashboardPage() {
               <Image src="/icons/fire.svg" alt="Streak" width={28} height={28} />
               <div className={styles.streakText}>
                 <span className={styles.streakLabel}>Study Streak</span>
-                <span className={styles.streakDays}>{streak} {streak === 1 ? 'Day' : 'Days'}</span>
+                <span className={styles.streakDays}>
+                  {streak} {streak === 1 ? 'Day' : 'Days'}
+                </span>
               </div>
             </div>
           )}
@@ -112,13 +150,22 @@ export default function DashboardPage() {
             {question ? (
               <>
                 <h2 className={styles.challengeTitle}>{question.subject} Question</h2>
-                <p className={styles.challengeSub}>{question.prompt ?? question.text ?? question.scenario ?? 'Test your legal knowledge with today\'s challenge.'}</p>
-                <Link href="/dashboard/reasoning" className={styles.quizBtn}>Start Challenge</Link>
+                <p className={styles.challengeSub}>
+                  {question.prompt ??
+                    question.text ??
+                    question.scenario ??
+                    "Test your legal knowledge with today's challenge."}
+                </p>
+                <Link href="/dashboard/reasoning" className={styles.quizBtn}>
+                  Start Challenge
+                </Link>
               </>
             ) : (
               <>
                 <h2 className={styles.challengeTitle}>Daily Challenge</h2>
-                <p className={styles.challengeSub}>No challenge available right now. Check back soon.</p>
+                <p className={styles.challengeSub}>
+                  No challenge available right now. Check back soon.
+                </p>
               </>
             )}
           </div>
@@ -133,7 +180,12 @@ export default function DashboardPage() {
               {nextGoal.description && <p className={styles.nextDesc}>{nextGoal.description}</p>}
               <div className={styles.nextProgress}>
                 <div className={styles.nextProgressTrack}>
-                  <div className={styles.nextProgressFill} style={{ width: `${Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%` }} />
+                  <div
+                    className={styles.nextProgressFill}
+                    style={{
+                      ['--pct' as string]: `${Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%`,
+                    }}
+                  />
                 </div>
                 <span className={styles.nextProgressPct}>
                   {Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%
@@ -147,59 +199,15 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className={styles.lowerGrid}>
-          <section className={styles.masteryCard}>
-            <div className={styles.masteryHeader}>
-              <span className={styles.cardTitle}>Subject Mastery</span>
-            </div>
-            {mastery.length > 0 ? (
-              <div className={styles.masteryList}>
-                {mastery.map(({ subject, score }) => (
-                  <div key={subject} className={styles.masteryRow}>
-                    <span className={styles.masteryName}>{subject}</span>
-                    <div className={styles.masteryTrack}>
-                      <div className={styles.masteryFill} style={{ width: `${Math.min(100, score)}%` }} />
-                    </div>
-                    <span className={styles.masteryPct}>{Math.min(100, score)}%</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className={styles.emptyState}>Complete quizzes to see your subject mastery.</p>
-            )}
-          </section>
-
-          <section className={styles.notesCard}>
-            <div className={styles.notesHeader}>
-              <span className={styles.cardTitle}>Recent Activity</span>
-            </div>
-            {activity.length > 0 ? (
-              <ul className={styles.notesList}>
-                {activity.slice(0, 5).map((item) => (
-                  <li key={item.id} className={styles.noteItem}>
-                    <div className={`${styles.noteIcon} ${item.type === 'case_explainer' ? styles.noteIconCase : styles.noteIconDoc}`} aria-hidden="true">
-                      {item.type === 'case_explainer' ? '⚖' : '📄'}
-                    </div>
-                    <div className={styles.noteBody}>
-                      <p className={styles.noteTitle}>{item.title}</p>
-                      <p className={styles.noteMeta}>
-                        {item.subject && `${item.subject} · `}
-                        {new Date(item.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={styles.emptyState}>No recent activity yet. Start learning!</p>
-            )}
-            <Link href="/dashboard/notes" className={styles.historyBtn}>View all notes →</Link>
-          </section>
-        </div>
+        <DashboardLower
+          mastery={mastery}
+          activity={activity}
+          earnedBadges={earnedBadges}
+          reasoningScore={reasoningScore}
+          onViewHistory={() => setShowHistory(true)}
+        />
       </div>
+      {showHistory && <ActivityHistoryModal data={data} onClose={() => setShowHistory(false)} />}
     </div>
   );
 }

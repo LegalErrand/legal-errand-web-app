@@ -1,0 +1,258 @@
+@use '../styles/variables' as *;
+
+// ─── Stats strip (reasoning score + badges) ───────────────────────────────────
+
+.statsStrip {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  flex-wrap: wrap;
+}
+
+.statPill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $white;
+  border-radius: $radius;
+  padding: $space-2 $space-3;
+  box-shadow: $shadow-sm;
+  min-width: 90px;
+}
+
+.statPillValue {
+  font-family: $font-heading;
+  font-size: 22px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+}
+
+.statPillLabel {
+  font-size: 11px;
+  color: $gray-600;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+.badge {
+  font-size: 22px;
+  cursor: default;
+}
+
+.badgeMore {
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray-600;
+}
+
+// ─── Lower grid ───────────────────────────────────────────────────────────────
+
+.lowerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Subject Mastery card ─────────────────────────────────────────────────────
+
+.masteryCard {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-4 $space-5;
+  box-shadow: $shadow-sm;
+}
+
+.masteryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-4;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: $dark;
+}
+
+.masteryList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.masteryRow {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.masteryName {
+  font-size: 13px;
+  color: $dark;
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.masteryTrack {
+  flex: 1;
+  height: 6px;
+  background: $gray-200;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.masteryFill {
+  height: 100%;
+  width: var(--pct, 0%);
+  background: $primary;
+  border-radius: 100px;
+}
+
+.masteryPct {
+  font-size: 13px;
+  font-weight: 700;
+  color: $dark;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+// ─── Recent Activity card ─────────────────────────────────────────────────────
+
+.notesCard {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-4 $space-5;
+  box-shadow: $shadow-sm;
+}
+
+.notesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-3;
+  color: $gray-400;
+}
+
+.notesList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.noteItem {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: 10px 0;
+  border-bottom: 1px solid $gray-100;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $gray-400;
+    margin-left: auto;
+  }
+}
+
+.noteIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.noteIconCase {
+  background: rgba($primary, 0.1);
+}
+.noteIconDoc {
+  background: rgba($accent-blue, 0.1);
+}
+
+.noteBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.noteTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.noteMeta {
+  font-size: 11px;
+  color: $gray-400;
+  margin: 0;
+}
+
+.noteFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $space-3;
+  gap: $space-2;
+}
+
+.historyBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.viewHistoryBtn {
+  background: none;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  padding: 5px $space-2;
+  font-family: inherit;
+  transition:
+    border-color 0.12s,
+    color 0.12s;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
+}
+
+.emptyState {
+  font-size: 13px;
+  color: $gray-400;
+  margin: $space-3 0 0;
+  line-height: 1.5;
+}
