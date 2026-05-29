@@ -1,0 +1,157 @@
+@use '../styles/variables' as *;
+
+.aiPanel {
+  border-left: 1px solid $gray-200;
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.aiPanelHeader {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-3 $space-2;
+  border-bottom: 1px solid $gray-200;
+  flex-shrink: 0;
+  color: $primary;
+}
+
+.aiPanelTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: $dark;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.aiSection {
+  padding: $space-3;
+  border-bottom: 1px solid $gray-200;
+  flex-shrink: 0;
+}
+
+.aiSectionLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 $space-1;
+}
+
+.aiSummaryText {
+  font-size: 12px;
+  color: $gray-600;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.quizQuestion {
+  font-size: 12px;
+  color: $dark;
+  font-weight: 600;
+  margin: 0 0 $space-2;
+  line-height: 1.5;
+}
+
+.quizOptions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.quizOption {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2;
+  padding: $space-2;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  background: $gray-50;
+  cursor: pointer;
+  text-align: left;
+  font-size: 11px;
+  font-family: inherit;
+  color: $dark;
+  transition: border-color 0.12s, background 0.12s;
+
+  &:hover { border-color: $primary; background: $orange-50; }
+}
+
+.quizOptionSelected {
+  border-color: $primary;
+  background: $orange-50;
+}
+
+.quizLetter {
+  font-weight: 700;
+  color: $primary;
+  flex-shrink: 0;
+}
+
+.quizFeedback {
+  font-size: 11px;
+  color: $green-500;
+  margin: $space-1 0 0;
+  font-weight: 600;
+}
+
+.aiAnswerText {
+  font-size: 12px;
+  color: $dark;
+  line-height: 1.6;
+  margin: 0;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.aiChatForm {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-3;
+  margin-top: auto;
+  border-top: 1px solid $gray-200;
+  flex-shrink: 0;
+}
+
+.aiChatInput {
+  width: 100%;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  padding: $space-2;
+  font-size: 12px;
+  font-family: inherit;
+  color: $dark;
+  resize: none;
+  background: $gray-50;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+
+  &:focus { border-color: $primary; }
+  &::placeholder { color: $gray-400; }
+}
+
+.aiSendBtn {
+  padding: 8px $space-3;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+  align-self: flex-end;
+
+  &:hover:not(:disabled) { background: $primary-dark; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}

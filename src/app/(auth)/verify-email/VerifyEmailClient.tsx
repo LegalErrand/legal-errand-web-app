@@ -3,15 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getFetchErrorMessage, resendVerificationOtp, verifyEmail } from '@/lib/api';
-import {
-  clearPendingVerificationEmail,
-  getPendingVerificationEmail,
-  pickAccessTokenFromPayload,
-  setAccessToken,
-  setSessionEmail,
-  setSessionProfile,
-} from '@/lib/authStorage';
+import { getFetchErrorMessage, resendVerificationOtp, verifyEmail, clearPendingVerificationEmail, getPendingVerificationEmail, pickAccessTokenFromPayload, setAccessToken, setSessionEmail, setSessionProfile } from "@/lib";
 import styles from './page.module.scss';
 
 const OTP_LENGTH = 6;

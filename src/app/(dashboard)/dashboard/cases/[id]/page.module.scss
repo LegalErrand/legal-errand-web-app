@@ -4,27 +4,69 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: $white;
 }
+
+// ─── Top bar ──────────────────────────────────────────────────────────────────
 
 .topBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $space-3 $space-5;
+  padding: 0 $space-5;
   background: $white;
   border-bottom: 1px solid $gray-200;
   position: sticky;
   top: 0;
   z-index: 10;
+  gap: $space-4;
 }
 
-.backBtn {
-  font-size: 13px;
-  font-weight: 600;
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
+.tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.tabLink {
+  display: flex;
+  align-items: center;
+  padding: 16px $space-3;
+  font-size: 14px;
+  font-weight: 500;
   color: $gray-600;
   text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s;
+  margin-bottom: -1px;
 
   &:hover { color: $dark; }
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  padding: 16px $space-3;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-600;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s;
+  margin-bottom: -1px;
+
+  &:hover:not(:disabled) { color: $dark; }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+
+.tabActive {
+  color: $primary;
+  font-weight: 600;
+  border-bottom-color: $primary;
 }
 
 .headerActions {
@@ -40,7 +82,7 @@
   border: none;
   border-radius: $radius;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: opacity 0.12s;
 
@@ -51,78 +93,304 @@
 .savedBadge {
   font-size: 13px;
   font-weight: 700;
-  color: #16A34A;
+  color: $green-500;
 }
+
+// ─── Content area ─────────────────────────────────────────────────────────────
 
 .content {
   flex: 1;
   padding: $space-5;
-  max-width: 800px;
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: $space-4;
 }
 
-.caseHeader {
+.analysisWrap {
+  display: flex;
+  justify-content: center;
+  padding: $space-5;
+}
+
+// ─── Analysis / processing card ───────────────────────────────────────────────
+
+.analysisCard {
+  background: $white;
+  border-radius: $radius-xl;
+  border: 1px solid $gray-200;
+  padding: $space-5;
+  max-width: 560px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  box-shadow: $shadow-sm;
+}
+
+.analysisHeader {
   display: flex;
   align-items: flex-start;
+  gap: $space-3;
+}
+
+.spinIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: $gray-100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $gray-600;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spinning { animation: spin 1.4s linear infinite; }
+
+.analysisTitle {
+  font-family: $font-heading;
+  font-size: 18px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 4px;
+}
+
+.analysisCitation {
+  font-size: 12px;
+  color: $gray-600;
+  margin: 0;
+}
+
+// ─── Progress ─────────────────────────────────────────────────────────────────
+
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressLabelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progressLabel {
+  font-size: 13px;
+  color: $gray-600;
+  font-weight: 500;
+}
+
+.progressPct {
+  font-size: 13px;
+  font-weight: 700;
+  color: $dark;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 8px;
+  background: $gray-200;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  width: var(--pct, 0%);
+  background: $primary;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+// ─── Step list ────────────────────────────────────────────────────────────────
+
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-3;
+  border-radius: $radius;
+  background: $gray-100;
+}
+
+.step_complete    { background: rgba($green-500, 0.06); }
+.step_in_progress { background: rgba($primary, 0.06); }
+.step_pending     { background: $gray-100; }
+
+.stepIcon { display: flex; align-items: center; flex-shrink: 0; }
+
+.stepLabel {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: $dark;
+}
+
+.stepStatus {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.step_complete    .stepStatus { color: $green-500; }
+.step_in_progress .stepStatus { color: $primary; }
+.step_pending     .stepStatus { color: $gray-400; }
+
+// ─── Action buttons ───────────────────────────────────────────────────────────
+
+.analysisActions {
+  display: flex;
+  align-items: center;
   gap: $space-3;
   flex-wrap: wrap;
 }
 
-.citation {
+.processingBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px $space-4;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.processingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $white;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.cancelBtn {
+  padding: 10px $space-4;
+  background: rgba($accent-red, 0.08);
+  color: $accent-red;
+  border: 1.5px solid rgba($accent-red, 0.4);
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:hover { background: rgba($accent-red, 0.15); }
+}
+
+.viewBreakdownBtn {
+  padding: 10px $space-5;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: $primary-dark; }
+}
+
+// ─── Breakdown split layout ───────────────────────────────────────────────────
+
+.breakdownLayout {
+  display: flex;
+  gap: $space-4;
+  align-items: flex-start;
+  padding: $space-5;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
+}
+
+.breakdownMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.breakdownSide {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+}
+
+.caseHeadingWrap {
+  border-bottom: 1px solid $gray-200;
+  padding-bottom: $space-3;
+  margin-bottom: $space-2;
+}
+
+.caseTitle {
   font-family: $font-heading;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: $dark;
+  margin: 0 0 $space-1;
+}
+
+.caseCitation {
+  font-size: 13px;
+  color: $primary;
+  font-weight: 600;
   margin: 0;
-  flex: 1;
+  padding-bottom: $space-2;
+  border-bottom: 2px solid rgba($primary, 0.2);
+  display: inline-block;
 }
 
-.status {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 4px 10px;
-  border-radius: 100px;
-  background: $gray-200;
-  color: $gray-600;
-  white-space: nowrap;
-  align-self: center;
-}
-
-.status_complete   { background: rgba(#16A34A, 0.1); color: #16A34A; }
-.status_pending    { background: rgba($primary, 0.1); color: $primary; }
-.status_processing { background: rgba($accent-blue, 0.1); color: $accent-blue; }
-.status_error      { background: rgba($accent-red, 0.1); color: $accent-red; }
-
-.processingCard {
-  background: rgba($accent-blue, 0.05);
-  border: 1px solid rgba($accent-blue, 0.2);
-  border-radius: 12px;
-  padding: $space-5;
-  font-size: 14px;
-  color: $gray-600;
-  text-align: center;
+.caseRef {
+  font-size: 13px;
+  color: $primary;
+  font-weight: 600;
+  margin: 0;
 }
 
 .card {
   background: $white;
-  border-radius: 12px;
-  padding: $space-4 $space-5;
+  border-radius: $radius-lg;
+  padding: $space-4;
   box-shadow: $shadow-sm;
+  border: 1px solid $gray-200;
 }
 
 .cardTitle {
   font-family: $font-heading;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: $primary;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin: 0 0 $space-3;
+  margin: 0 0 $space-2;
 }
 
 .cardBody {
@@ -132,30 +400,82 @@
   margin: 0;
 }
 
+// ─── Side action buttons ──────────────────────────────────────────────────────
+
+.sideAction {
+  width: 100%;
+  padding: 9px $space-3;
+  background: $white;
+  color: $dark;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+
+  &:hover { background: $gray-50; }
+}
+
+.sideActionPrimary {
+  background: $primary;
+  color: $white;
+  border-color: $primary;
+  font-weight: 600;
+
+  &:hover { background: $primary-dark; border-color: $primary-dark; }
+}
+
+.relatedCasesHeading {
+  font-size: 13px;
+  font-weight: 700;
+  color: $dark;
+  margin: $space-3 0 $space-2;
+}
+
 .relatedList {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  gap: $space-2;
 }
 
 .relatedItem {
-  padding-left: $space-3;
+  padding-left: $space-2;
   border-left: 3px solid $primary;
 }
 
+.relatedCitationRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
 .relatedCitation {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: $dark;
 }
 
+.relatedRelation {
+  font-size: 10px;
+  font-weight: 700;
+  color: $primary;
+  background: $orange-50;
+  padding: 2px 6px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 .relatedDesc {
-  font-size: 13px;
+  font-size: 12px;
   color: $gray-600;
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   line-height: 1.5;
 }
 
@@ -172,6 +492,8 @@
   color: $dark;
   line-height: 1.6;
 }
+
+// ─── State messages ───────────────────────────────────────────────────────────
 
 .state {
   padding: $space-7;

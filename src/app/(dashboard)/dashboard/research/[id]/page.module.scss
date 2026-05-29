@@ -9,12 +9,30 @@
 .topBar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: $space-3 $space-5;
   background: $white;
   border-bottom: 1px solid $gray-200;
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+.memoBtn {
+  height: 36px;
+  padding: 0 $space-3;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) { background: $primary-dark; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 .backBtn {
@@ -152,10 +170,40 @@
   line-height: 1.5;
 }
 
+.resultFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: $space-1;
+}
+
+.saveNoteBtn {
+  height: 30px;
+  padding: 0 $space-3;
+  background: transparent;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) { border-color: $primary; color: $primary; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.saveNoteBtnDone {
+  border-color: #16A34A;
+  color: #16A34A;
 }
 
 .tag {

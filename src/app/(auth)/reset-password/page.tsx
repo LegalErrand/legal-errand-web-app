@@ -4,7 +4,7 @@ import { useRef, useState, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { verifyOtp, resendVerificationOtp, getFetchErrorMessage } from '@/lib/api';
+import { verifyOtp, resendVerificationOtp, getFetchErrorMessage } from "@/lib";
 import styles from './page.module.scss';
 
 function ResetPasswordContent() {

@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { searchResearch, getResearchSessions, deleteResearchSession, getFetchErrorMessage } from '@/lib/api';
-import { getAccessToken } from '@/lib/authStorage';
-import type { ResearchResult, ResearchSession } from '@/lib/types';
+import { searchResearch, getResearchSessions, deleteResearchSession, getFetchErrorMessage, getAccessToken } from "@/lib";
+import type { ResearchResult, ResearchSession } from "@/lib";
 import styles from './page.module.scss';
 
 export default function ResearchPage() {
@@ -70,58 +69,95 @@ export default function ResearchPage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.topBar}>
-        <h1 className={styles.pageTitle}>Legal Research</h1>
-      </header>
-
       <div className={styles.content}>
-        <section className={styles.searchCard}>
-          <h2 className={styles.sectionTitle}>Search Legal Sources</h2>
-          <form onSubmit={handleSearch} className={styles.searchForm}>
-            <div className={styles.queryRow}>
-              <input
-                className={styles.queryInput}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="e.g. Admissibility of electronic evidence under Nigerian law"
-              />
-              <button type="submit" className={styles.searchBtn} disabled={searching || !query.trim()}>
-                {searching ? 'Searching…' : 'Search'}
-              </button>
-            </div>
+        <h1 className={styles.pageHeading}>Legal Research</h1>
+        <p className={styles.pageSub}>Explore the entire corpus of Nigerian law using natural language.</p>
+
+        <form onSubmit={handleSearch} className={styles.searchForm}>
+          <div className={styles.queryRow}>
             <input
-              className={styles.jurisdictionInput}
-              value={jurisdiction}
-              onChange={(e) => setJurisdiction(e.target.value)}
-              placeholder="Jurisdiction (optional, e.g. Nigeria)"
+              className={styles.queryInput}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="What are the defense to negligence under Nigerian tort law?"
             />
-            {searchErr && <p className={styles.searchErr} role="alert">{searchErr}</p>}
-          </form>
-        </section>
+            <button type="submit" className={styles.searchBtn} disabled={searching || !query.trim()}>
+              {searching ? 'Searching…' : 'Search'}
+            </button>
+          </div>
+          {searchErr && <p className={styles.searchErr} role="alert">{searchErr}</p>}
+        </form>
 
         {(results.length > 0 || refinedQuery) && (
-          <section>
+          <>
             {refinedQuery && (
-              <p className={styles.refinedQuery}>Refined query: <em>{refinedQuery}</em></p>
+              <p className={styles.refinedQuery}>Showing results for: <em>&quot;{refinedQuery}&quot;</em></p>
             )}
-            <div className={styles.resultsList}>
-              {results.map((r) => (
-                <div key={r.documentId} className={styles.resultCard}>
-                  <div className={styles.resultHeader}>
-                    <Link href={`/dashboard/library/${r.documentId}`} className={styles.resultTitle}>{r.title}</Link>
-                    <span className={styles.matchScore}>{Math.round(r.matchScore * 100)}% match</span>
+            <div className={styles.mainSplit}>
+              <div className={styles.resultsCol}>
+                {results.map((r) => (
+                  <div key={r.documentId} className={styles.resultCard}>
+                    <div className={styles.resultHeader}>
+                      <Link href={`/dashboard/library/${r.documentId}`} className={styles.resultTitle}>{r.title}</Link>
+                      <span className={styles.matchScore}>{Math.round(r.matchScore * 100)}% Match</span>
+                    </div>
+                    {r.courtLevel && <span className={styles.courtBadge}>{r.courtLevel}</span>}
+                    <div className={styles.matchBarWrap}>
+                      <div className={styles.matchBar} style={{ ['--bar-pct' as string]: `${Math.round(r.matchScore * 100)}%` }} />
+                    </div>
+                    {r.citation && <p className={styles.resultCitation}>{r.citation}</p>}
+                    {r.excerpt && <p className={styles.resultExcerpt}>{r.excerpt}</p>}
+                    <div className={styles.resultTags}>
+                      {r.subject && <span className={styles.tag}>{r.subject}</span>}
+                      {r.type && <span className={styles.tag}>{r.type}</span>}
+                    </div>
                   </div>
-                  {r.citation && <p className={styles.resultCitation}>{r.citation}</p>}
-                  {r.excerpt && <p className={styles.resultExcerpt}>{r.excerpt}</p>}
-                  <div className={styles.resultTags}>
-                    {r.subject && <span className={styles.tag}>{r.subject}</span>}
-                    {r.type && <span className={styles.tag}>{r.type}</span>}
-                    {r.courtLevel && <span className={styles.tag}>{r.courtLevel}</span>}
+                ))}
+              </div>
+
+              {/* Filter panel */}
+              <div className={styles.filterPanel}>
+                <div className={styles.filterHeader}>
+                  <h3 className={styles.filterHeading}>Filters</h3>
+                  <button className={styles.filterReset} onClick={() => setJurisdiction('')} type="button">Reset</button>
+                </div>
+                <div className={styles.filterGroup}>
+                  <p className={styles.filterGroupLabel}>Jurisdiction</p>
+                  {['Federal', 'State'].map(j => (
+                    <label key={j} className={styles.filterCheckRow}>
+                      <input type="checkbox" checked={jurisdiction === j}
+                        onChange={e => setJurisdiction(e.target.checked ? j : '')} />
+                      <span className={styles.filterCheckLabel}>{j}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className={styles.filterGroup}>
+                  <p className={styles.filterGroupLabel}>Court Level</p>
+                  <label className={styles.filterCheckRow}>
+                    <input type="checkbox" />
+                    <span className={styles.filterCheckLabel}>Supreme court</span>
+                  </label>
+                  <label className={styles.filterCheckRow}>
+                    <input type="checkbox" />
+                    <span className={styles.filterCheckLabel}>Appeal Court</span>
+                  </label>
+                  <label className={styles.filterCheckRow}>
+                    <input type="checkbox" />
+                    <span className={styles.filterCheckLabel}>High Court</span>
+                  </label>
+                </div>
+                <div className={styles.filterGroup}>
+                  <p className={styles.filterGroupLabel}>Subject Area</p>
+                  <div className={styles.filterTagRow}>
+                    <button type="button" className={styles.filterTag}>Tort law</button>
+                    <button type="button" className={styles.filterTag}>Cases</button>
+                    <button type="button" className={styles.filterTag}>Statute</button>
+                    <button type="button" className={styles.filterTag}>Principles</button>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          </section>
+          </>
         )}
 
         <section className={styles.historySection}>

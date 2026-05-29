@@ -268,6 +268,7 @@
 
 .nextProgressFill {
   height: 100%;
+  width: var(--pct, 0%);
   background: $primary;
   border-radius: 100px;
 }
@@ -377,6 +378,7 @@
 
 .masteryFill {
   height: 100%;
+  width: var(--pct, 0%);
   background: $primary;
   border-radius: 100px;
 }
@@ -464,21 +466,40 @@
   margin: 0;
 }
 
-.historyBtn {
-  display: block;
-  width: 100%;
+.noteFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: $space-3;
+  gap: $space-2;
+}
+
+.historyBtn {
   background: none;
   border: none;
   font-size: 13px;
   font-weight: 600;
   color: $primary;
   cursor: pointer;
-  text-align: left;
   padding: 0;
   text-decoration: none;
 
   &:hover { text-decoration: underline; }
+}
+
+.viewHistoryBtn {
+  background: none;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  padding: 5px $space-2;
+  font-family: inherit;
+  transition: border-color 0.12s, color 0.12s;
+
+  &:hover { border-color: $primary; color: $primary; }
 }
 
 // ─── States ───────────────────────────────────────────────────────────────────
@@ -497,4 +518,50 @@
   color: $gray-400;
   margin: $space-3 0 0;
   line-height: 1.5;
+}
+
+// ─── Stats strip (reasoning score + badges) ───────────────────────────────────
+
+.statsStrip {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  flex-wrap: wrap;
+}
+
+.statPill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $white;
+  border-radius: $radius;
+  padding: $space-2 $space-3;
+  box-shadow: $shadow-sm;
+  min-width: 90px;
+}
+
+.statPillValue {
+  font-family: $font-heading;
+  font-size: 22px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+}
+
+.statPillLabel {
+  font-size: 11px;
+  color: $gray-600;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+.badge {
+  font-size: 22px;
+  cursor: default;
+}
+
+.badgeMore {
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray-600;
 }

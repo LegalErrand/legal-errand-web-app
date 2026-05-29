@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { resetPassword, getFetchErrorMessage } from '@/lib/api';
+import { resetPassword, getFetchErrorMessage } from "@/lib";
 import styles from './page.module.scss';
 
 function UpdatePasswordContent() {

@@ -1,0 +1,130 @@
+@use '../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $space-4;
+}
+
+.modal {
+  background: $white;
+  border-radius: 16px;
+  padding: $space-7 $space-6;
+  width: 100%;
+  max-width: 540px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @media (max-width: 600px) {
+    padding: $space-5 $space-4;
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: $space-4;
+  right: $space-4;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid $primary;
+  background: transparent;
+  color: $primary;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: $primary;
+    color: $white;
+  }
+}
+
+.logoRow {
+  margin-bottom: $space-2;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $primary;
+}
+
+.heading {
+  font-family: $font-heading;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  color: $dark;
+  line-height: 1.2;
+}
+
+.brand {
+  color: $primary;
+}
+
+.divider {
+  border: none;
+  border-top: 3px solid $primary;
+  width: 60px;
+  margin: $space-1 0;
+}
+
+.body {
+  font-size: 16px;
+  line-height: 1.6;
+  color: $gray-800;
+}
+
+.highlight {
+  color: $primary;
+  font-weight: 600;
+}
+
+.shareSection {
+  margin-top: $space-4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+}
+
+.shareLabel {
+  font-size: 13px;
+  color: $gray-600;
+}
+
+.whatsappBtn {
+  width: 100%;
+  height: 56px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { forgotPassword, getFetchErrorMessage } from '@/lib/api';
+import { forgotPassword, getFetchErrorMessage } from "@/lib";
 import styles from './page.module.scss';
 
 export default function ForgotPasswordPage() {

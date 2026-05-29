@@ -3,7 +3,8 @@
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100%;
+  height: 100%;
 }
 
 .topBar {
@@ -63,39 +64,99 @@
   &:hover { background: $primary-dark; }
 }
 
-.viewerWrap {
+.docMetaRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+
+.docMetaChip {
+  font-size: 11px;
+  color: $gray-600;
+  background: $gray-100;
+  border-radius: 100px;
+  padding: 2px 8px;
+}
+
+// ─── 3-panel layout ───────────────────────────────────────────────────────────
+
+.viewerLayout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 200px 1fr 280px;
+  overflow: hidden;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 0 1fr 260px;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chaptersPanel {
+  border-right: 1px solid $gray-200;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: $space-3 0;
+  background: $white;
+
+  @media (max-width: 1100px) {
+    display: none;
+  }
+}
+
+.chaptersPanelTitle {
+  font-size: 10px;
+  font-weight: 700;
+  color: $gray-400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0 $space-3 $space-2;
+  margin: 0;
+}
+
+.chapterItem {
+  display: block;
+  width: 100%;
+  padding: 7px $space-3;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.1s, color 0.1s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover { background: $gray-50; color: $dark; }
+}
+
+.chapterItemActive {
+  color: $primary;
+  background: $orange-50;
+}
+
+.chaptersEmpty {
+  padding: $space-3;
+  font-size: 12px;
+  color: $gray-400;
+}
+
+.centerPanel {
   flex: 1;
   min-height: 0;
   background: #F0F0F0;
-}
-
-.pdfViewer {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-.noPreview {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  gap: $space-3;
-  font-size: 14px;
-  color: $gray-600;
-}
-
-.state {
-  padding: $space-7;
-  text-align: center;
-  font-size: 14px;
-  color: $gray-600;
-}
-
-.stateError {
-  padding: $space-7;
-  text-align: center;
-  font-size: 14px;
-  color: $accent-red;
+  overflow: hidden;
 }

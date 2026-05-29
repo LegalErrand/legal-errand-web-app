@@ -1,0 +1,394 @@
+@use '../../../../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: $gray-50;
+}
+
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-5;
+  background: $white;
+  border-bottom: 1px solid $gray-200;
+  flex-shrink: 0;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.breadLink {
+  color: $gray-600;
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover { color: $primary; }
+}
+
+.breadSep {
+  color: $gray-400;
+}
+
+.breadCurrent {
+  color: $dark;
+  font-weight: 600;
+}
+
+.submitBtn {
+  padding: 10px $space-4;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) { background: $primary-dark; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: $accent-red;
+  padding: $space-2 $space-5;
+  flex-shrink: 0;
+}
+
+// ─── Split layout ─────────────────────────────────────────────────────────────
+
+.split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: $space-4;
+  padding: $space-4 $space-5;
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
+// ─── Case panel ───────────────────────────────────────────────────────────────
+
+.casePanel {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  overflow-y: auto;
+}
+
+.caseCard {
+  background: $white;
+  border-radius: $radius-lg;
+  border: 1px solid $gray-200;
+  padding: $space-5;
+}
+
+.caseTitle {
+  font-family: $font-heading;
+  font-size: 17px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 $space-3;
+}
+
+.caseText {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  p {
+    font-size: 14px;
+    color: $gray-800;
+    line-height: 1.7;
+    margin: 0;
+  }
+}
+
+.questionBox {
+  padding: $space-3 0 0;
+}
+
+.questionLabel { display: none; }
+
+.questionText {
+  font-size: 14px;
+  font-weight: 700;
+  color: $dark;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ─── Navigation buttons inside case panel ─────────────────────────────────────
+
+.caseNavRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $space-4;
+  padding-top: $space-3;
+  border-top: 1px solid $gray-100;
+}
+
+.prevBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: $gray-100;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s;
+
+  &:hover { background: $gray-200; }
+}
+
+.nextBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: $primary;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $white;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: $primary-dark; }
+}
+
+// ─── Workspace panel ──────────────────────────────────────────────────────────
+
+.workspacePanel {
+  background: $white;
+  border-radius: $radius-lg;
+  border: 1px solid $gray-200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    min-height: 320px;
+  }
+}
+
+.workspaceHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $gray-100;
+  flex-shrink: 0;
+}
+
+.workspaceTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+}
+
+.toolbar {
+  display: flex;
+  gap: 4px;
+  padding: $space-2 $space-3;
+  border-bottom: 1px solid $gray-100;
+  flex-shrink: 0;
+}
+
+.toolBtn {
+  width: 30px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $gray-200;
+  border-radius: 4px;
+  background: $white;
+  font-size: 13px;
+  color: $gray-800;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+
+  &:hover { border-color: $primary; color: $primary; background: rgba($primary, 0.05); }
+}
+
+.workspace {
+  flex: 1;
+  padding: $space-3 $space-4;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 13px;
+  color: $dark;
+  line-height: 1.7;
+  background: transparent;
+
+  &::placeholder { color: $gray-400; }
+}
+
+// ─── Bottom bar ───────────────────────────────────────────────────────────────
+
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: $space-3 $space-5;
+  background: $gray-50;
+  flex-shrink: 0;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: $white;
+  border: 1.5px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s;
+
+  &:hover:not(:disabled) { border-color: $primary; color: $primary; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.saveProgressBtn {
+  padding: 9px 20px;
+  background: $white;
+  border: 1.5px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) { border-color: $primary; color: $primary; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// ─── States ───────────────────────────────────────────────────────────────────
+
+.stateMsg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: $gray-600;
+}
+
+.submittedBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  text-align: center;
+  padding: $space-7 $space-5;
+}
+
+.submittedIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $green-100;
+  color: $green-500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.submittedTitle {
+  font-family: $font-heading;
+  font-size: 22px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.submittedSub {
+  font-size: 14px;
+  color: $gray-600;
+  max-width: 400px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.submittedActions {
+  margin-top: $space-2;
+}
+
+.backToBank {
+  display: inline-block;
+  padding: 11px 28px;
+  background: $primary;
+  color: $white;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:hover { background: $primary-dark; }
+}
+
+// ─── Score breakdown ──────────────────────────────────────────────────────────
+
+.scoreBreakdown {
+  width: 100%;
+  max-width: 420px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  margin-top: $space-2;
+}
+
+.scoreRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: $gray-800;
+}
+
+.scoreVal {
+  font-weight: 700;
+}
+
+.scoreValHigh   { color: $green-500; }
+.scoreValMedium { color: $primary; }
+.scoreValLow    { color: $accent-red; }
+
+.submittedIconPass { background: $green-100; color: $green-500; }
+.submittedIconFail { background: rgba($accent-red, 0.1); color: $accent-red; }

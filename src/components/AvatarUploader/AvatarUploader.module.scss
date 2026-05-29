@@ -1,0 +1,124 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $space-3;
+  width: 100%;
+  max-width: 360px;
+}
+
+// ─── Preview ──────────────────────────────────────────────────────────────────
+
+.preview {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid $gray-200;
+  background: $gray-100;
+}
+
+// ─── File picker ──────────────────────────────────────────────────────────────
+
+.filePicker {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-2 $space-4;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $gray-200;
+  }
+}
+
+// ─── Upload button ────────────────────────────────────────────────────────────
+
+.uploadBtn {
+  padding: $space-2 $space-5;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+// ─── Progress ─────────────────────────────────────────────────────────────────
+
+.progressArea {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  width: 100%;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 6px;
+  background: $gray-200;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  width: var(--pct, 0%);
+  background: $primary;
+  border-radius: 100px;
+  transition: width 0.12s linear;
+}
+
+.progressLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray-600;
+  min-width: 34px;
+  text-align: right;
+}
+
+// ─── Cancel button ────────────────────────────────────────────────────────────
+
+.cancelBtn {
+  padding: 4px $space-3;
+  border: 1.5px solid $accent-red;
+  border-radius: $radius;
+  background: transparent;
+  color: $accent-red;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: $accent-red;
+    color: $white;
+  }
+}
+
+// ─── Feedback ─────────────────────────────────────────────────────────────────
+
+.message {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.success  { color: $primary; }
+.error    { color: $accent-red; }

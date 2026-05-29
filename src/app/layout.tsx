@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import NextTopLoader from 'nextjs-toploader';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import { ErrorBoundary } from "@/components";
 import '../styles/globals.scss';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://legalerrand.com';

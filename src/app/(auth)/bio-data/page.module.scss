@@ -288,6 +288,10 @@
   &:focus { border-color: $primary; }
 }
 
+.inputMt {
+  margin-top: $space-2;
+}
+
 .phoneWrap {
   display: flex;
   align-items: stretch;

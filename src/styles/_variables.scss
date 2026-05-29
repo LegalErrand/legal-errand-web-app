@@ -10,11 +10,18 @@ $accent-red: #FB3748;
 
 $dark: #1E293B;
 $white: #FFFFFF;
+$gray-50: #F9FAFB;
 $gray-100: #F8F9FA;
 $gray-200: #E9ECEF;
 $gray-400: #9CA3AF;
 $gray-600: #6B7280;
 $gray-800: #374151;
+
+$orange-50: #FFF7ED;
+$green-500: #16A34A;
+$green-100: #DCFCE7;
+$blue-100: #DBEAFE;
+$blue-600: #2563EB;
 
 // Typography
 $font-heading: 'Bricolage Grotesque', sans-serif;
@@ -32,6 +39,11 @@ $space-8: 64px;
 
 // Border radius
 $radius: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+
+// Sidebar
+$sidebar-width: 220px;
 
 // Shadows
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);

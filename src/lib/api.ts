@@ -8,6 +8,7 @@ import type {
   VerifyEmailRequest,
   VerifyEmailResponseData,
   VerifyOtpResponse,
+  QuestionStats,
   HealthResponse,
   PresignedUrlRequest,
   PresignedUrlResponse,
@@ -40,6 +41,8 @@ import type {
   SocraticStartResponse,
   SocraticRespondRequest,
   AuthUserSummary,
+  AchievementsData,
+  ReasoningScoreData,
 } from './types';
 
 const BASE_URL =
@@ -48,6 +51,17 @@ const BASE_URL =
 /** User-facing message from thrown API/network errors. */
 export function getFetchErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message) {
+    // Network-level errors (connection refused, DNS failure, etc.)
+    const msg = error.message.toLowerCase();
+    if (
+      msg.includes('fetch failed') ||
+      msg.includes('failed to fetch') ||
+      msg.includes('networkerror') ||
+      msg.includes('network request failed') ||
+      msg.includes('econnrefused')
+    ) {
+      return 'Unable to reach the server. Please check your connection and try again.';
+    }
     try {
       const parsed = JSON.parse(error.message) as { message?: string; error?: string };
       return parsed.message ?? parsed.error ?? error.message;
@@ -322,14 +336,14 @@ export function submitAnswer(
 export function getLibraryDocuments(
   token: string,
   params?: { subject?: string; type?: string; search?: string; page?: number; limit?: number }
-): Promise<ApiResponse<PaginatedResponse<LibraryDocument>>> {
+): Promise<ApiResponse<LibraryDocument[]>> {
   return authedGet('/library', token, params as Record<string, string | number | undefined>);
 }
 
 export function getMyDocuments(
   token: string,
   params?: { search?: string; page?: number; limit?: number }
-): Promise<ApiResponse<PaginatedResponse<LibraryDocument>>> {
+): Promise<ApiResponse<LibraryDocument[]>> {
   return authedGet('/library/my-documents', token, params as Record<string, string | number | undefined>);
 }
 
@@ -467,6 +481,37 @@ export function endSocraticSession(
   return authedPost<ApiResponse<{ summary: string; score: number }>>('/ai/socratic/end', token, { sessionId });
 }
 
+// ─── Questions (full CRUD + stats) ───────────────────────────────────────────
+
+export function getQuestions(
+  token: string,
+  params?: { subject?: string; difficulty?: string; type?: string; page?: number; limit?: number }
+): Promise<ApiResponse<PaginatedResponse<Question>>> {
+  return authedGet('/questions', token, params as Record<string, string | number | undefined>);
+}
+
+export function getQuestion(id: string, token: string): Promise<ApiResponse<Question>> {
+  return authedGet<ApiResponse<Question>>(`/questions/${id}`, token);
+}
+
+export function getQuestionStats(token: string): Promise<ApiResponse<QuestionStats>> {
+  return authedGet<ApiResponse<QuestionStats>>('/questions/stats', token);
+}
+
+export function getMyAttempts(
+  token: string,
+  params?: { page?: number; limit?: number }
+): Promise<ApiResponse<PaginatedResponse<QuestionAttempt>>> {
+  return authedGet('/questions/my-attempts', token, params as Record<string, number | undefined>);
+}
+
+export function getQuestionAttempts(
+  id: string,
+  token: string
+): Promise<ApiResponse<QuestionAttempt[]>> {
+  return authedGet<ApiResponse<QuestionAttempt[]>>(`/questions/${id}/attempts`, token);
+}
+
 /** Display URL when the user has an avatar; returns `undefined` on 404 (no avatar yet) without throwing. */
 export async function fetchAvatarDisplayUrl(token: string): Promise<string | undefined> {
   const res = await fetch(`${BASE_URL}/user/avatar-url`, {
@@ -497,4 +542,51 @@ export async function fetchAvatarDisplayUrl(token: string): Promise<string | und
   } catch {
     return undefined;
   }
+}
+
+// ─── Auth: logout ─────────────────────────────────────────────────────────────
+
+export function logout(token: string): Promise<ApiResponse> {
+  return authedPost<ApiResponse>('/auth/logout', token);
+}
+
+// ─── Dashboard: reasoning score & achievements ────────────────────────────────
+
+export function getReasoningScore(token: string): Promise<ApiResponse<ReasoningScoreData>> {
+  return authedGet<ApiResponse<ReasoningScoreData>>('/dashboard/reasoning-score', token);
+}
+
+export function getAchievements(token: string): Promise<ApiResponse<AchievementsData>> {
+  return authedGet<ApiResponse<AchievementsData>>('/dashboard/achievements', token);
+}
+
+// ─── Library: bookmarks ───────────────────────────────────────────────────────
+
+export function getBookmarks(
+  token: string,
+  params?: { search?: string; page?: number; limit?: number }
+): Promise<ApiResponse<LibraryDocument[]>> {
+  return authedGet('/library/bookmarks', token, params as Record<string, string | number | undefined>);
+}
+
+// ─── Research: memo & save-to-notes ──────────────────────────────────────────
+
+export function generateResearchMemo(
+  id: string, token: string
+): Promise<ApiResponse<{ memo: string }>> {
+  return authedPost<ApiResponse<{ memo: string }>>(`/research/sessions/${id}/memo`, token);
+}
+
+export function saveResearchToNotes(
+  id: string, resultIndex: number, token: string
+): Promise<ApiResponse<{ note: Note }>> {
+  return authedPost<ApiResponse<{ note: Note }>>(`/research/sessions/${id}/save-to-notes`, token, { resultIndex });
+}
+
+// ─── Notes: expand ───────────────────────────────────────────────────────────
+
+export function expandNote(
+  id: string, token: string
+): Promise<ApiResponse<{ expanded: string }>> {
+  return authedPost<ApiResponse<{ expanded: string }>>(`/notes/${id}/expand`, token);
 }

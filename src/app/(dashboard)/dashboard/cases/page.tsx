@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { explainCase, getCaseExplainerHistory, getFetchErrorMessage } from '@/lib/api';
-import { getAccessToken } from '@/lib/authStorage';
-import type { CaseHistoryItem, ExplainCaseRequest } from '@/lib/types';
+import { explainCase, getCaseExplainerHistory, getFetchErrorMessage, getAccessToken } from "@/lib";
+import type { CaseHistoryItem, ExplainCaseRequest } from "@/lib";
 import styles from './page.module.scss';
 
 export default function CasesPage() {
@@ -60,53 +59,45 @@ export default function CasesPage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.topBar}>
-        <h1 className={styles.pageTitle}>Case Explainer</h1>
-      </header>
+      {/* Top tabs */}
+      <div className={styles.tabs}>
+        <button className={`${styles.tabBtn} ${styles.tabActive}`}>Cases</button>
+        <button className={styles.tabBtn} disabled>Analysis</button>
+        <button className={styles.tabBtn} disabled>Breakdown</button>
+      </div>
 
       <div className={styles.content}>
-        <section className={styles.explainCard}>
-          <h2 className={styles.sectionTitle}>Explain a Case</h2>
-          <p className={styles.sectionSub}>Enter a case citation or paste the case text to get an AI-powered breakdown.</p>
+        <h1 className={styles.pageHeading}>Explain a New case</h1>
+        <p className={styles.pageSub}>Analyze Precedents with Legal AI-powered judicial insights</p>
 
-          <div className={styles.modeTabs}>
+        <form onSubmit={handleExplain}>
+          <label className={styles.inputLabel}>Paste Judgment Text</label>
+          <textarea
+            className={styles.textarea}
+            value={caseText}
+            onChange={(e) => setCaseText(e.target.value)}
+            placeholder="Enter the full text of the case or judicial findings here....."
+            rows={7}
+          />
+          {error && <p className={styles.formError} role="alert">{error}</p>}
+
+          <div className={styles.bottomRow}>
             <button
-              className={`${styles.modeTab} ${inputMode === 'citation' ? styles.modeTabActive : ''}`}
+              type="button"
+              className={styles.selectLibraryLink}
               onClick={() => setInputMode('citation')}
             >
-              By Citation
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" stroke="currentColor" strokeWidth="1.8" />
+              </svg>
+              Select from Library
             </button>
-            <button
-              className={`${styles.modeTab} ${inputMode === 'text' ? styles.modeTabActive : ''}`}
-              onClick={() => setInputMode('text')}
-            >
-              Paste Text
+            <button type="submit" className={styles.startBtn} disabled={submitting}>
+              {submitting ? 'Analysing…' : 'Start Analysis'}
             </button>
           </div>
-
-          <form onSubmit={handleExplain} className={styles.explainForm}>
-            {inputMode === 'citation' ? (
-              <input
-                className={styles.input}
-                value={citation}
-                onChange={(e) => setCitation(e.target.value)}
-                placeholder="e.g. Donoghue v Stevenson [1932] AC 562"
-              />
-            ) : (
-              <textarea
-                className={styles.textarea}
-                value={caseText}
-                onChange={(e) => setCaseText(e.target.value)}
-                placeholder="Paste the full case text here…"
-                rows={6}
-              />
-            )}
-            {error && <p className={styles.formError} role="alert">{error}</p>}
-            <button type="submit" className={styles.submitBtn} disabled={submitting}>
-              {submitting ? 'Analysing…' : 'Explain Case'}
-            </button>
-          </form>
-        </section>
+        </form>
 
         <section className={styles.historySection}>
           <h2 className={styles.sectionTitle}>Recent Cases</h2>

@@ -1,0 +1,264 @@
+@use '../../../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.topBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: $space-5 $space-6 $space-4;
+  border-bottom: 1px solid $gray-200;
+  background: $white;
+  flex-shrink: 0;
+}
+
+.pageTitle {
+  font-family: $font-heading;
+  font-size: 22px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 4px;
+}
+
+.pageSub {
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: $space-5 $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+// ─── Tab row ──────────────────────────────────────────────────────────────────
+
+.tabRow {
+  display: flex;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1.5px solid $gray-200;
+  background: $white;
+  font-size: 13px;
+  font-weight: 500;
+  color: $gray-600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+  &:hover { border-color: $primary; color: $primary; }
+}
+
+.tabActive {
+  background: $primary;
+  border-color: $primary;
+  color: $white;
+  font-weight: 600;
+
+  &:hover { color: $white; }
+}
+
+// ─── Subject mastery cards ────────────────────────────────────────────────────
+
+.masteryRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-4;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.masteryCard {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-4;
+  border: 1px solid $gray-200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.masteryLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: $gray-400;
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.masteryScoreRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.masterySubject {
+  font-size: 14px;
+  font-weight: 700;
+  color: $dark;
+}
+
+.masteryScore {
+  font-size: 18px;
+  font-weight: 700;
+  color: $primary;
+}
+
+.masteryTrack {
+  width: 100%;
+  height: 6px;
+  background: $gray-100;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.masteryFill {
+  height: 100%;
+  width: var(--pct, 0%);
+  background: $primary;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+// ─── Question grid ────────────────────────────────────────────────────────────
+
+.questionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-4;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 700px)  { grid-template-columns: 1fr; }
+}
+
+.qCard {
+  background: $white;
+  border-radius: 12px;
+  border: 1px solid $gray-200;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: $shadow-sm; }
+}
+
+.qCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qCategory {
+  font-size: 11px;
+  font-weight: 600;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba($primary, 0.08);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.qTime {
+  font-size: 12px;
+  color: $gray-600;
+  font-weight: 500;
+}
+
+.qTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.qDesc {
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+  line-height: 1.5;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.startBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px $space-3;
+  background: $white;
+  border: 1.5px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  cursor: pointer;
+  margin-top: $space-1;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  width: 100%;
+  justify-content: center;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: rgba($primary, 0.04);
+  }
+}
+
+// ─── States ───────────────────────────────────────────────────────────────────
+
+.stateMsg {
+  font-size: 14px;
+  color: $gray-600;
+  padding: $space-6 0;
+  text-align: center;
+}
+
+.emptyState {
+  text-align: center;
+  padding: $space-7 $space-4;
+  color: $gray-600;
+  font-size: 14px;
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: $accent-red;
+}
+
+.miniDonutWrap {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.miniDonutLabel {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--donut-color, #D97706);
+}

@@ -4,8 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { login, getFetchErrorMessage } from '@/lib/api';
-import { setAccessToken, setSessionEmail, setSessionProfile, pickAccessTokenFromPayload } from '@/lib/authStorage';
+import { login, getFetchErrorMessage, setAccessToken, setSessionEmail, setSessionProfile, pickAccessTokenFromPayload } from "@/lib";
 import styles from './page.module.scss';
 
 export default function LoginPage() {

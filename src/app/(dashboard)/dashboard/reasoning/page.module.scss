@@ -1,20 +1,23 @@
 @use '../../../../styles/variables' as *;
 
+// The reasoning page has its own full-page layout that overlays the global shell.
+// It fills the entire viewport independently.
+
 .page {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
 
-// ─── Left sidebar ─────────────────────────────────────────────────────────────
+// ─── Left sidebar (replaces global sidebar for this page) ────────────────────
 
 .sidebar {
-  width: 260px;
+  width: $sidebar-width;
   flex-shrink: 0;
-  background: $white;
-  border-right: 1px solid $gray-200;
+  background: $gray-50;
   display: flex;
   flex-direction: column;
+  padding: $space-4 0 $space-3;
   overflow: hidden;
 
   @media (max-width: 900px) {
@@ -22,50 +25,46 @@
   }
 }
 
-.modeSwitch {
-  display: flex;
-  padding: $space-3;
-  gap: $space-1;
-  border-bottom: 1px solid $gray-200;
+.logoWrap {
+  padding: 0 $space-3 $space-4;
 }
 
-.modeBtn {
-  flex: 1;
-  padding: 8px;
-  background: none;
-  border: 1px solid $gray-200;
+.chatHistoryLabel {
+  font-size: 12px;
+  color: $gray-600;
+  padding: 0 $space-3 $space-2;
+  margin: 0;
+}
+
+.newConvBtn {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  margin: 0 $space-3 $space-3;
+  padding: 10px $space-3;
+  background: $primary;
+  color: $white;
+  border: none;
   border-radius: $radius;
   font-size: 13px;
   font-weight: 600;
-  color: $gray-600;
   cursor: pointer;
-  transition: all 0.12s;
+  transition: background 0.15s;
+  width: calc(100% - #{$space-3} * 2);
 
-  &:hover { border-color: $primary; color: $primary; }
+  &:hover { background: $primary-dark; }
 }
 
-.modeBtnActive {
-  background: $dark;
-  border-color: $dark;
-  color: $white;
-
-  &:hover { background: #111827; border-color: #111827; color: $white; }
+.sidebarDivider {
+  border: none;
+  border-top: 1px solid $gray-200;
+  margin: 0 $space-3 $space-3;
 }
 
 .convList {
   flex: 1;
   overflow-y: auto;
-  padding: $space-2;
-}
-
-.convHeading {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $gray-400;
-  padding: $space-2 $space-2 $space-1;
-  margin: 0;
+  padding: 0 $space-2;
 }
 
 .convEmpty {
@@ -82,16 +81,16 @@
   overflow: hidden;
   transition: background 0.12s;
 
-  &:hover { background: $gray-100; }
+  &:hover { background: $gray-200; }
 }
 
-.convItemActive { background: rgba($primary, 0.08); }
+.convItemActive { background: rgba($primary, 0.1); }
 
 .convBtn {
   flex: 1;
   background: none;
   border: none;
-  padding: 8px $space-2;
+  padding: 7px $space-2;
   text-align: left;
   cursor: pointer;
   min-width: 0;
@@ -126,6 +125,46 @@
   &:hover { color: $accent-red; }
 }
 
+.sidebarUser {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3;
+  margin-top: auto;
+}
+
+.sidebarAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $gray-200;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarUserInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebarUserName {
+  font-size: 12px;
+  font-weight: 600;
+  color: $dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarUserRole {
+  font-size: 11px;
+  color: $gray-600;
+}
+
 // ─── Main area ────────────────────────────────────────────────────────────────
 
 .main {
@@ -134,36 +173,141 @@
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
+  background: $white;
 }
 
-.topBar {
+.mainTopBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $space-3 $space-5;
-  background: $white;
-  border-bottom: 1px solid $gray-200;
+  padding: $space-3 $space-4;
   flex-shrink: 0;
 }
 
+.modePills {
+  display: flex;
+  border: 1.5px solid $primary;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.modePill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px $space-3;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover { background: $orange-50; }
+}
+
+.modePillActive {
+  background: $primary;
+  color: $white;
+
+  &:hover { background: $primary-dark; }
+}
+
+.topBarActions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.bellBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: $gray-600;
+}
+
+.avatarBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: $gray-200;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+// ─── Old topBar kept for backwards compat with child components ───────────────
+
+.topBar {
+  display: none;
+}
+
 .pageTitle {
-  font-family: $font-heading;
-  font-size: 18px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0;
+  display: none;
 }
 
 .newChatBtn {
-  padding: 8px $space-3;
-  background: none;
-  border: 1px solid $gray-200;
-  border-radius: $radius;
-  font-size: 13px;
-  font-weight: 600;
-  color: $dark;
-  cursor: pointer;
-  transition: border-color 0.12s;
+  display: none;
+}
 
-  &:hover { border-color: $primary; color: $primary; }
+.modeSwitch {
+  display: none;
+}
+
+.modeBtn {
+  display: none;
+}
+
+.modeBtnActive {
+  display: none;
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 12px;
+  font-weight: 600;
+  color: $white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }

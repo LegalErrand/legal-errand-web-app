@@ -4,9 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { register, getFetchErrorMessage } from '@/lib/api';
-import { setPendingVerificationEmail, setSessionEmail, setSessionProfile } from '@/lib/authStorage';
-import { validateSignupFields } from '@/lib/validation';
+import { register, getFetchErrorMessage, setPendingVerificationEmail, setSessionEmail, setSessionProfile, validateSignupFields } from "@/lib";
 import styles from './page.module.scss';
 
 type AccountType = 'undergraduate' | 'law-school';

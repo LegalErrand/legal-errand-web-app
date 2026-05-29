@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { fetchAvatarDisplayUrl, getFetchErrorMessage, updateBioData } from '@/lib/api';
-import { getAccessToken, getSessionEmail, getSessionProfile } from '@/lib/authStorage';
-import type { BioDataFormErrors } from '@/lib/validation';
-import { validateBioDataFields } from '@/lib/validation';
+import { fetchAvatarDisplayUrl, getFetchErrorMessage, updateBioData, getAccessToken, getSessionEmail, getSessionProfile, validateBioDataFields } from "@/lib";
+import type { BioDataFormErrors } from "@/lib";
 import BioDataCredentials from './BioDataCredentials';
 import BioDataProfileCard from './BioDataProfileCard';
 import styles from './page.module.scss';

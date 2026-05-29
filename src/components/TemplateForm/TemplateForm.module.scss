@@ -1,0 +1,173 @@
+@use '../../styles/variables' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: $space-4 $space-5;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-2;
+  margin-bottom: $space-4;
+}
+
+.metaField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $gray-400;
+  font-weight: 700;
+}
+
+.metaInput {
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  padding: 8px $space-2;
+  font-size: 13px;
+  width: 100%;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: $primary; }
+}
+
+.citationInput {
+  margin-bottom: $space-3;
+}
+
+.titleInput {
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: $dark;
+  width: 100%;
+  margin-bottom: $space-3;
+  padding: 0;
+  font-family: $font-heading;
+  background: transparent;
+
+  &::placeholder { color: $gray-400; }
+}
+
+.section {
+  margin-bottom: $space-4;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-2;
+}
+
+.sectionNumber {
+  font-size: 11px;
+  font-weight: 700;
+  color: $primary;
+  text-transform: uppercase;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background: $gray-200;
+}
+
+.sectionTextarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  padding: $space-2;
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+  color: $dark;
+  background: $gray-50;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &:focus { outline: none; border-color: $primary; }
+}
+
+.sectionTextareaLg {
+  min-height: 200px;
+}
+
+.listItem {
+  display: flex;
+  gap: $space-1;
+  margin-bottom: $space-1;
+  align-items: center;
+}
+
+.listInput {
+  flex: 1;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  padding: 8px $space-2;
+  font-size: 13px;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: $primary; }
+}
+
+.removeBtn {
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  color: $gray-400;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.12s;
+  flex-shrink: 0;
+
+  &:hover { color: #EF4444; }
+}
+
+.addBtn {
+  width: 100%;
+  padding: 8px;
+  border: 1.5px dashed $gray-200;
+  border-radius: $radius;
+  background: none;
+  color: $gray-400;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover { border-color: $primary; color: $primary; }
+}

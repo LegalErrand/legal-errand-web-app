@@ -1,7 +1,7 @@
-import type { BioDataFormErrors } from '@/lib/validation';
+import { LEVELS, NIGERIAN_UNIVERSITIES } from '@/lib';
+import type { BioDataFormErrors } from '@/lib';
+import { SearchableSelect, CountrySelect } from '@/components';
 import styles from './page.module.scss';
-
-const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'United Kingdom', 'United States'] as const;
 
 export interface BioDataCredentialsProps {
   country: string;
@@ -19,48 +19,37 @@ export interface BioDataCredentialsProps {
   onPhoneChange: (value: string) => void;
 }
 
+const SCHOOL_OPTIONS = NIGERIAN_UNIVERSITIES as unknown as string[];
+const LEVEL_OPTIONS = LEVELS as unknown as string[];
+
+const isKnownSchool = (v: string) => !v || SCHOOL_OPTIONS.includes(v);
+
 export default function BioDataCredentials(props: BioDataCredentialsProps) {
   const {
-    country,
-    city,
-    school,
-    level,
-    matric,
-    phone,
+    country, city, school, level, matric, phone,
     fieldErrors,
-    onCountryChange,
-    onCityChange,
-    onSchoolChange,
-    onLevelChange,
-    onMatricChange,
-    onPhoneChange,
+    onCountryChange, onCityChange, onSchoolChange, onLevelChange, onMatricChange, onPhoneChange,
   } = props;
+
+  const schoolIsOther = school !== '' && !isKnownSchool(school);
+  const schoolSelectValue = schoolIsOther ? 'Other' : school;
+
+  function handleSchoolSelect(value: string) {
+    onSchoolChange(value === 'Other' ? '' : value);
+  }
 
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>Other Credentials</h2>
       <div className={styles.credsGrid}>
+
         <div className={styles.field}>
           <label className={styles.label}>
             Country of Residence <span className={styles.req}>*</span>
           </label>
-          <div className={styles.selectWrap}>
-            <select
-              className={styles.select}
-              value={country}
-              onChange={(e) => onCountryChange(e.target.value)}
-              aria-invalid={!!fieldErrors.country}
-            >
-              <option value="">Select Country</option>
-              {COUNTRIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-          {fieldErrors.country && <span className={styles.fieldError}>{fieldErrors.country}</span>}
+          <CountrySelect value={country} onChange={onCountryChange} error={fieldErrors.country} />
         </div>
+
         <div className={styles.field}>
           <label className={styles.label}>
             City <span className={styles.req}>*</span>
@@ -75,34 +64,45 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
           />
           {fieldErrors.city && <span className={styles.fieldError}>{fieldErrors.city}</span>}
         </div>
+
         <div className={styles.field}>
           <label className={styles.label}>
             School Name <span className={styles.req}>*</span>
           </label>
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="e.g Yabatech"
-            value={school}
-            onChange={(e) => onSchoolChange(e.target.value)}
-            aria-invalid={!!fieldErrors.schoolName}
+          <SearchableSelect
+            value={schoolSelectValue}
+            onChange={handleSchoolSelect}
+            options={SCHOOL_OPTIONS}
+            placeholder="Select your school"
+            searchPlaceholder="Search schools..."
+            error={fieldErrors.schoolName}
           />
-          {fieldErrors.schoolName && <span className={styles.fieldError}>{fieldErrors.schoolName}</span>}
+          {(schoolIsOther || schoolSelectValue === 'Other') && (
+            <input
+              className={`${styles.input} ${styles.inputMt}`}
+              type="text"
+              placeholder="Enter your school name"
+              value={school}
+              onChange={(e) => onSchoolChange(e.target.value)}
+              aria-invalid={!!fieldErrors.schoolName}
+            />
+          )}
         </div>
+
         <div className={styles.field}>
           <label className={styles.label}>
             Level/Year <span className={styles.req}>*</span>
           </label>
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Current year Level e.g 1st year"
+          <SearchableSelect
             value={level}
-            onChange={(e) => onLevelChange(e.target.value)}
-            aria-invalid={!!fieldErrors.levelYear}
+            onChange={onLevelChange}
+            options={LEVEL_OPTIONS}
+            placeholder="Select your level"
+            searchPlaceholder="Search levels..."
+            error={fieldErrors.levelYear}
           />
-          {fieldErrors.levelYear && <span className={styles.fieldError}>{fieldErrors.levelYear}</span>}
         </div>
+
         <div className={styles.field}>
           <label className={styles.label}>
             Matric Number <span className={styles.optional}>Optional</span>
@@ -115,6 +115,7 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
             onChange={(e) => onMatricChange(e.target.value)}
           />
         </div>
+
         <div className={styles.field}>
           <label className={styles.label}>
             Phone Number <span className={styles.req}>*</span>
@@ -131,6 +132,7 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
           </div>
           {fieldErrors.phoneNumber && <span className={styles.fieldError}>{fieldErrors.phoneNumber}</span>}
         </div>
+
       </div>
     </div>
   );

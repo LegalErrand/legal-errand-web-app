@@ -1,6 +1,5 @@
-import Navbar from '@/components/Navbar';
-import WaitlistForm from '@/components/WaitlistForm';
-import { FEATURES, STATS } from '@/lib/constants';
+import { Navbar, WaitlistForm } from "@/components";
+import { FEATURES, STATS } from "@/lib";
 import styles from './page.module.scss';
 
 export default function WaitlistPage() {
