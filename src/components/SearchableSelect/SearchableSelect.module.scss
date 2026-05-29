@@ -20,12 +20,23 @@
   transition: border-color 0.15s;
   text-align: left;
 
-  &:focus { outline: none; border-color: $primary; }
-  &:disabled { background: $gray-100; cursor: not-allowed; opacity: 0.7; }
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+  &:disabled {
+    background: $gray-100;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 }
 
-.triggerOpen { border-color: $primary; }
-.triggerError { border-color: #FB3748; }
+.triggerOpen {
+  border-color: $primary;
+}
+.triggerError {
+  border-color: #fb3748;
+}
 
 .triggerText {
   flex: 1;
@@ -90,8 +101,12 @@
   outline: none;
   box-sizing: border-box;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .list {
@@ -110,7 +125,9 @@
   cursor: pointer;
   transition: background 0.1s;
 
-  &:hover { background: $gray-50; }
+  &:hover {
+    background: $gray-50;
+  }
 }
 
 .optionActive {
@@ -130,6 +147,6 @@
   display: block;
   margin-top: 6px;
   font-size: 12px;
-  color: #FB3748;
+  color: #fb3748;
   font-weight: 500;
 }

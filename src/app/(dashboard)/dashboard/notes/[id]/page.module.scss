@@ -28,7 +28,9 @@
   color: $gray-600;
   text-decoration: none;
 
-  &:hover { color: $primary; }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .breadSep {
@@ -58,7 +60,10 @@
   cursor: pointer;
   transition: border-color 0.15s;
 
-  &:hover { border-color: $primary; color: $primary; }
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
 }
 
 .saveNoteBtn {
@@ -72,8 +77,13 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .bellBtn {
@@ -120,7 +130,9 @@
   color: $gray-600;
   text-decoration: none;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $dark;
+  }
 }
 
 .aiBtn {
@@ -135,7 +147,9 @@
   white-space: nowrap;
   transition: opacity 0.12s;
 
-  &:hover { opacity: 0.85; }
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 // ─── Three-column workspace ───────────────────────────────────────────────────
@@ -193,13 +207,17 @@
   transition: background 0.12s;
   width: 100%;
 
-  &:hover { background: $gray-50; }
+  &:hover {
+    background: $gray-50;
+  }
 }
 
 .templateItemActive {
   background: $orange-50;
 
-  .templateItemName { color: $primary; }
+  .templateItemName {
+    color: $primary;
+  }
 }
 
 .templateItemIcon {
@@ -261,7 +279,9 @@
   box-shadow: $shadow-md;
   transition: opacity 0.12s;
 
-  &:hover { opacity: 0.85; }
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 // ─── State messages ───────────────────────────────────────────────────────────

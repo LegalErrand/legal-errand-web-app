@@ -43,7 +43,9 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 
   &:hover {
     background: $primary;

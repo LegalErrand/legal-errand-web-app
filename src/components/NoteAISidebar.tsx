@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { NoteAnalysis } from "@/lib";
+import type { NoteAnalysis } from '@/lib';
 import styles from './NoteAISidebar.module.scss';
 
 interface AISuggestion {
@@ -40,21 +40,39 @@ function ScoreDonut({ score }: { score: number }) {
     <div className={styles.donutWrap}>
       <svg width="112" height="112" viewBox="0 0 112 112" aria-hidden="true">
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="#F3F4F6" strokeWidth="10" />
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="10"
-          strokeDasharray={circumference} strokeDashoffset={offset}
-          strokeLinecap="round" transform={`rotate(-90 ${cx} ${cy})`}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="10"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${cx} ${cy})`}
           className={styles.donutArc}
         />
       </svg>
       <div className={styles.donutLabel}>
-        <span className={`${styles.donutPct} ${score >= 80 ? styles.donutPctHigh : score >= 50 ? styles.donutPctMed : styles.donutPctLow}`}>{score > 0 ? `${score}%` : '—'}</span>
+        <span
+          className={`${styles.donutPct} ${score >= 80 ? styles.donutPctHigh : score >= 50 ? styles.donutPctMed : styles.donutPctLow}`}
+        >
+          {score > 0 ? `${score}%` : '—'}
+        </span>
       </div>
     </div>
   );
 }
 
 export default function NoteAISidebar({
-  qualityScore, qualityFeedback, onAnalyze, onSummarize, onExpand, onInsertContent, onScoreChange,
+  qualityScore,
+  qualityFeedback,
+  onAnalyze,
+  onSummarize,
+  onExpand,
+  onInsertContent,
+  onScoreChange,
 }: Props) {
   const [score, setScore] = useState<number>(qualityScore ?? 0);
   const [feedback, setFeedback] = useState<string>(qualityFeedback ?? '');
@@ -116,7 +134,11 @@ export default function NoteAISidebar({
 
   return (
     <aside className={styles.sidebar}>
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
 
       {/* Quality Analysis */}
       <div className={styles.panel}>
@@ -144,7 +166,8 @@ export default function NoteAISidebar({
           <div className={styles.suggestionCard}>
             <p className={styles.suggestionLabel}>AI SUGGESTION</p>
             <p className={styles.suggestionBody}>
-              Fill in at least one section of your note and run an analysis — AI will identify missing legal principles and suggest improvements.
+              Fill in at least one section of your note and run an analysis — AI will identify
+              missing legal principles and suggest improvements.
             </p>
           </div>
         ) : (
@@ -171,7 +194,9 @@ export default function NoteAISidebar({
           <div className={styles.summaryBox}>
             <p className={styles.summaryLabel}>SUMMARY</p>
             <p className={styles.summaryText}>{summary}</p>
-            <button className={styles.insertBtn} onClick={() => onInsertContent(summary)}>Insert into note</button>
+            <button className={styles.insertBtn} onClick={() => onInsertContent(summary)}>
+              Insert into note
+            </button>
           </div>
         )}
 
@@ -179,7 +204,9 @@ export default function NoteAISidebar({
           <div className={styles.summaryBox}>
             <p className={styles.summaryLabel}>EXPANDED CONTENT</p>
             <p className={styles.summaryText}>{expanded}</p>
-            <button className={styles.insertBtn} onClick={() => onInsertContent(expanded)}>Insert into note</button>
+            <button className={styles.insertBtn} onClick={() => onInsertContent(expanded)}>
+              Insert into note
+            </button>
           </div>
         )}
       </div>

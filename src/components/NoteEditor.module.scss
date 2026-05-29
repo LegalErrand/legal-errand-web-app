@@ -43,9 +43,14 @@
   font-weight: 700;
   color: $gray-800;
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
-  &:hover { background: $gray-100; color: $primary; }
+  &:hover {
+    background: $gray-100;
+    color: $primary;
+  }
 }
 
 // ─── Title input ──────────────────────────────────────────────────────────────
@@ -62,7 +67,9 @@
   background: transparent;
   width: 100%;
 
-  &::placeholder { color: $gray-200; }
+  &::placeholder {
+    color: $gray-200;
+  }
 }
 
 .meta {
@@ -95,5 +102,7 @@
   color: $dark;
   background: transparent;
 
-  &::placeholder { color: $gray-200; }
+  &::placeholder {
+    color: $gray-200;
+  }
 }

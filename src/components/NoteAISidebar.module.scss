@@ -70,9 +70,15 @@
   line-height: 1;
 }
 
-.donutPctHigh { color: $green-500; }
-.donutPctMed  { color: $primary; }
-.donutPctLow  { color: $gray-600; }
+.donutPctHigh {
+  color: $green-500;
+}
+.donutPctMed {
+  color: $primary;
+}
+.donutPctLow {
+  color: $gray-600;
+}
 
 .donutSub {
   font-size: 11px;
@@ -108,8 +114,13 @@
   cursor: pointer;
   transition: opacity 0.12s;
 
-  &:hover:not(:disabled) { opacity: 0.85; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 // ─── Suggestions ─────────────────────────────────────────────────────────────
@@ -130,9 +141,18 @@
   border: 1px solid $gray-200;
 }
 
-.suggestion_warning { border-color: #F59E0B; background: #FFFBEB; }
-.suggestion_info    { border-color: rgba($primary, 0.3); background: rgba($primary, 0.04); }
-.suggestion_success { border-color: rgba($green-500, 0.3); background: $green-100; }
+.suggestion_warning {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+.suggestion_info {
+  border-color: rgba($primary, 0.3);
+  background: rgba($primary, 0.04);
+}
+.suggestion_success {
+  border-color: rgba($green-500, 0.3);
+  background: $green-100;
+}
 
 .suggestionLabel {
   font-size: 10px;
@@ -162,7 +182,9 @@
   text-decoration: underline;
   flex-shrink: 0;
 
-  &:hover { opacity: 0.75; }
+  &:hover {
+    opacity: 0.75;
+  }
 }
 
 // ─── Summary ─────────────────────────────────────────────────────────────────
@@ -213,8 +235,13 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .summarizeBtn {
@@ -229,8 +256,14 @@
   cursor: pointer;
   transition: border-color 0.15s;
 
-  &:hover:not(:disabled) { border-color: $primary; color: $primary; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    border-color: $primary;
+    color: $primary;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 // The "Apply AI suggestions" button at bottom of insights
@@ -247,6 +280,11 @@
   margin-top: auto;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

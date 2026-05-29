@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { FileTextIcon } from "../icons";
-import styles from "./DocCard.module.scss";
+import Link from 'next/link';
+import { FileTextIcon } from '../icons';
+import styles from './DocCard.module.scss';
 
 interface DocCardProps {
   id: string;
@@ -20,11 +20,13 @@ export function DocCard({ id: _id, title, subject, description, href }: DocCardP
         </div>
       </div>
       <div className={styles.body}>
-        <Link href={href} className={styles.title}>{title}</Link>
-        {(description ?? subject) && (
-          <p className={styles.desc}>{description ?? subject}</p>
-        )}
-        <Link href={href} className={styles.readBtn}>Read</Link>
+        <Link href={href} className={styles.title}>
+          {title}
+        </Link>
+        {(description ?? subject) && <p className={styles.desc}>{description ?? subject}</p>}
+        <Link href={href} className={styles.readBtn}>
+          Read
+        </Link>
       </div>
     </div>
   );

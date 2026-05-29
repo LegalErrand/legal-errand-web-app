@@ -59,8 +59,12 @@
   outline: none;
   transition: border-color 0.15s;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .searchBtn {
@@ -76,8 +80,13 @@
   transition: background 0.15s;
   white-space: nowrap;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .jurisdictionInput {
@@ -91,8 +100,12 @@
   outline: none;
   max-width: 300px;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .searchErr {
@@ -106,7 +119,11 @@
   color: $gray-600;
   margin: 0;
 
-  em { font-style: normal; font-weight: 600; color: $dark; }
+  em {
+    font-style: normal;
+    font-weight: 600;
+    color: $dark;
+  }
 }
 
 // ─── Main split ───────────────────────────────────────────────────────────────
@@ -157,7 +174,9 @@
   flex: 1;
   line-height: 1.4;
 
-  &:hover { color: $primary; }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .matchScore {
@@ -260,7 +279,9 @@
   cursor: pointer;
   padding: 0;
 
-  &:hover { opacity: 0.7; }
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .filterGroup {
@@ -309,16 +330,24 @@
   font-weight: 500;
   border: none;
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
-  &:hover { background: $orange-50; color: $primary; }
+  &:hover {
+    background: $orange-50;
+    color: $primary;
+  }
 }
 
 .filterTagActive {
   background: $primary;
   color: $white;
 
-  &:hover { background: $primary-dark; color: $white; }
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+  }
 }
 
 // ─── History section ──────────────────────────────────────────────────────────
@@ -352,7 +381,9 @@
   align-items: center;
   border-bottom: 1px solid $gray-100;
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .sessionLink {
@@ -361,7 +392,9 @@
   text-decoration: none;
   transition: background 0.12s;
 
-  &:hover { background: $gray-50; }
+  &:hover {
+    background: $gray-50;
+  }
 }
 
 .sessionQuery {
@@ -386,7 +419,9 @@
   padding: $space-3;
   transition: color 0.12s;
 
-  &:hover { color: $accent-red; }
+  &:hover {
+    color: $accent-red;
+  }
 }
 
 .stateMsg {

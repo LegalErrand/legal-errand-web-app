@@ -1,9 +1,9 @@
-import { ButtonHTMLAttributes, ReactNode } from "react";
-import Link from "next/link";
-import styles from "./Button.module.scss";
+import { ButtonHTMLAttributes, ReactNode } from 'react';
+import Link from 'next/link';
+import styles from './Button.module.scss';
 
-type Variant = "primary" | "secondary" | "ghost" | "danger" | "soft";
-type Size = "sm" | "md" | "lg";
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'soft';
+type Size = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -22,24 +22,26 @@ interface ButtonLinkProps {
   className?: string;
 }
 
-function cls(variant: Variant, size: Size, fullWidth: boolean, loading: boolean, extra = "") {
+function cls(variant: Variant, size: Size, fullWidth: boolean, loading: boolean, extra = '') {
   return [
     styles.btn,
     styles[variant],
     styles[size],
-    fullWidth ? styles.fullWidth : "",
-    loading ? styles.loading : "",
+    fullWidth ? styles.fullWidth : '',
+    loading ? styles.loading : '',
     extra,
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 export function Button({
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   loading = false,
   fullWidth = false,
   disabled,
-  className = "",
+  className = '',
   children,
   ...rest
 }: ButtonProps) {
@@ -57,10 +59,10 @@ export function Button({
 
 export function ButtonLink({
   href,
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   fullWidth = false,
-  className = "",
+  className = '',
   children,
 }: ButtonLinkProps) {
   return (

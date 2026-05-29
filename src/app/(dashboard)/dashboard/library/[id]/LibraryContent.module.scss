@@ -47,7 +47,9 @@
   padding-bottom: $space-1;
   border-bottom: 2px solid rgba($primary, 0.15);
 
-  &:first-child { margin-top: 0; }
+  &:first-child {
+    margin-top: 0;
+  }
 }
 
 .casePara {

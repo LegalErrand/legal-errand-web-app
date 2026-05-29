@@ -104,7 +104,9 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 
   &:hover {
     background: $accent-red;
@@ -120,5 +122,9 @@
   margin: 0;
 }
 
-.success  { color: $primary; }
-.error    { color: $accent-red; }
+.success {
+  color: $primary;
+}
+.error {
+  color: $accent-red;
+}

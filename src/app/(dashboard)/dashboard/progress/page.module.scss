@@ -57,9 +57,15 @@
   font-weight: 500;
   color: $gray-600;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
 
-  &:hover { border-color: $primary; color: $primary; }
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
 }
 
 .tabActive {
@@ -68,7 +74,9 @@
   color: $white;
   font-weight: 600;
 
-  &:hover { color: $white; }
+  &:hover {
+    color: $white;
+  }
 }
 
 // ─── Subject mastery cards ────────────────────────────────────────────────────
@@ -78,7 +86,9 @@
   grid-template-columns: repeat(3, 1fr);
   gap: $space-4;
 
-  @media (max-width: 900px) { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .masteryCard {
@@ -141,8 +151,12 @@
   grid-template-columns: repeat(3, 1fr);
   gap: $space-4;
 
-  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 700px)  { grid-template-columns: 1fr; }
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .qCard {
@@ -155,7 +169,9 @@
   gap: $space-2;
   transition: box-shadow 0.15s;
 
-  &:hover { box-shadow: $shadow-sm; }
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
 }
 
 .qCardTop {
@@ -214,7 +230,10 @@
   color: $dark;
   cursor: pointer;
   margin-top: $space-1;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
   width: 100%;
   justify-content: center;
 
@@ -260,5 +279,5 @@
   position: absolute;
   font-size: 10px;
   font-weight: 700;
-  color: var(--donut-color, #D97706);
+  color: var(--donut-color, #d97706);
 }

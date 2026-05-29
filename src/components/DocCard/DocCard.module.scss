@@ -9,7 +9,9 @@
   flex-direction: column;
   transition: box-shadow 0.15s;
 
-  &:hover { box-shadow: $shadow-md; }
+  &:hover {
+    box-shadow: $shadow-md;
+  }
 }
 
 .thumb {
@@ -62,7 +64,9 @@
   overflow: hidden;
   line-height: 1.4;
 
-  &:hover { color: $primary; }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .desc {
@@ -91,5 +95,7 @@
   display: block;
   transition: background 0.15s;
 
-  &:hover { background: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+  }
 }

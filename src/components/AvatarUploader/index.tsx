@@ -6,7 +6,7 @@ import {
   type UploadProgress,
   type UploadTask,
 } from '@/services/upload.service';
-import { mapUploadError } from "@/lib";
+import { mapUploadError } from '@/lib';
 import styles from './AvatarUploader.module.scss';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -24,10 +24,10 @@ type Status = 'idle' | 'uploading' | 'success' | 'error';
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps) {
-  const [file, setFile]       = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [status, setStatus]   = useState<Status>('idle');
+  const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState('');
 
   const cancelRef = useRef<(() => void) | null>(null);
@@ -55,7 +55,9 @@ export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps
       file,
       token,
       (p: UploadProgress) => setProgress(p.percent),
-      (task: UploadTask) => { cancelRef.current = task.cancel; },
+      (task: UploadTask) => {
+        cancelRef.current = task.cancel;
+      }
     );
 
     cancelRef.current = null;
@@ -83,10 +85,7 @@ export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps
 
   return (
     <div className={styles.container}>
-
-      {preview && status !== 'success' && (
-        <img src={preview} alt="" className={styles.preview} />
-      )}
+      {preview && status !== 'success' && <img src={preview} alt="" className={styles.preview} />}
 
       <label className={styles.filePicker}>
         {file ? 'Change image' : 'Choose image'}
@@ -110,7 +109,13 @@ export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps
       {/* Progress bar + cancel */}
       {isUploading && (
         <div className={styles.progressArea}>
-          <div className={styles.progressTrack} role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+          <div
+            className={styles.progressTrack}
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
             <div className={styles.progressFill} style={{ ['--pct' as string]: `${progress}%` }} />
           </div>
           <span className={styles.progressLabel}>{progress}%</span>

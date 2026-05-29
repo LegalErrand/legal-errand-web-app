@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { getQuestions, getQuestionStats, getFetchErrorMessage, getAccessToken } from "@/lib";
-import type { Question, QuestionStats, SubjectMastery } from "@/lib";
+import { getQuestions, getQuestionStats, getFetchErrorMessage, getAccessToken } from '@/lib';
+import type { Question, QuestionStats, SubjectMastery } from '@/lib';
 import styles from './page.module.scss';
 
 const SUBJECT_TABS = ['All question banks', 'Contract law', 'Criminal law', 'Tort law'] as const;
-type SubjectTab = typeof SUBJECT_TABS[number];
+type SubjectTab = (typeof SUBJECT_TABS)[number];
 
 const SUBJECT_PARAM: Record<SubjectTab, string | undefined> = {
   'All question banks': undefined,
@@ -40,7 +40,10 @@ export default function ProgressPage() {
 
   useEffect(() => {
     const t = getAccessToken();
-    if (!t) { router.replace('/login'); return; }
+    if (!t) {
+      router.replace('/login');
+      return;
+    }
     setToken(t);
     void Promise.allSettled([
       loadItems(t, undefined),
@@ -66,7 +69,9 @@ export default function ProgressPage() {
       <header className={styles.topBar}>
         <div>
           <h1 className={styles.pageTitle}>Reasoning question bank</h1>
-          <p className={styles.pageSub}>Master the art of legal reasoning through curated hypotheticals.</p>
+          <p className={styles.pageSub}>
+            Master the art of legal reasoning through curated hypotheticals.
+          </p>
         </div>
       </header>
 
@@ -99,7 +104,11 @@ export default function ProgressPage() {
           </div>
         )}
 
-        {error && <p className={styles.errorMsg} role="alert">{error}</p>}
+        {error && (
+          <p className={styles.errorMsg} role="alert">
+            {error}
+          </p>
+        )}
 
         {/* Question bank grid */}
         {loading ? (
@@ -133,11 +142,22 @@ function MiniDonut({ score }: { score: number }) {
     <div className={styles.miniDonutWrap}>
       <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
         <circle cx="30" cy="30" r={r} fill="none" stroke="#F3F4F6" strokeWidth="6" />
-        <circle cx="30" cy="30" r={r} fill="none" stroke={color} strokeWidth="6"
-          strokeDasharray={circumference} strokeDashoffset={offset}
-          strokeLinecap="round" transform="rotate(-90 30 30)" />
+        <circle
+          cx="30"
+          cy="30"
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="6"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          transform="rotate(-90 30 30)"
+        />
       </svg>
-      <span className={styles.miniDonutLabel} style={{ ['--donut-color' as string]: color }}>{score}%</span>
+      <span className={styles.miniDonutLabel} style={{ ['--donut-color' as string]: color }}>
+        {score}%
+      </span>
     </div>
   );
 }
@@ -153,13 +173,17 @@ function QuestionCard({ item, onStart }: { item: Question; onStart: () => void }
         {minutes && <span className={styles.qTime}>{minutes}min</span>}
       </div>
       <h3 className={styles.qTitle}>{item.prompt ?? item.text ?? 'Practice Question'}</h3>
-      {item.difficulty && (
-        <p className={styles.qDesc}>Difficulty: {item.difficulty}</p>
-      )}
+      {item.difficulty && <p className={styles.qDesc}>Difficulty: {item.difficulty}</p>}
       <button className={styles.startBtn} onClick={onStart}>
         Start practice
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M5 12h14M13 6l6 6-6 6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
     </div>

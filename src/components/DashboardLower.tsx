@@ -12,7 +12,13 @@ interface Props {
   onViewHistory?: () => void;
 }
 
-export default function DashboardLower({ mastery, activity, earnedBadges, reasoningScore, onViewHistory }: Props) {
+export default function DashboardLower({
+  mastery,
+  activity,
+  earnedBadges,
+  reasoningScore,
+  onViewHistory,
+}: Props) {
   return (
     <>
       {/* Reasoning score + achievements strip */}
@@ -32,7 +38,15 @@ export default function DashboardLower({ mastery, activity, earnedBadges, reason
           )}
           {earnedBadges.slice(0, 4).map((b) => (
             <span key={b.id} className={styles.badge} title={b.name}>
-              {b.category === 'streak' ? '🔥' : b.category === 'quiz' ? '📝' : b.category === 'research' ? '🔍' : b.category === 'special' ? '⭐' : '🏅'}
+              {b.category === 'streak'
+                ? '🔥'
+                : b.category === 'quiz'
+                  ? '📝'
+                  : b.category === 'research'
+                    ? '🔍'
+                    : b.category === 'special'
+                      ? '⭐'
+                      : '🏅'}
             </span>
           ))}
           {earnedBadges.length > 4 && (
@@ -52,7 +66,10 @@ export default function DashboardLower({ mastery, activity, earnedBadges, reason
                 <div key={subject} className={styles.masteryRow}>
                   <span className={styles.masteryName}>{subject}</span>
                   <div className={styles.masteryTrack}>
-                    <div className={styles.masteryFill} style={{ ['--pct' as string]: `${Math.min(100, score)}%` }} />
+                    <div
+                      className={styles.masteryFill}
+                      style={{ ['--pct' as string]: `${Math.min(100, score)}%` }}
+                    />
                   </div>
                   <span className={styles.masteryPct}>{Math.min(100, score)}%</span>
                 </div>
@@ -71,7 +88,10 @@ export default function DashboardLower({ mastery, activity, earnedBadges, reason
             <ul className={styles.notesList}>
               {activity.slice(0, 5).map((item) => (
                 <li key={item.id} className={styles.noteItem}>
-                  <div className={`${styles.noteIcon} ${item.type === 'case_explainer' ? styles.noteIconCase : styles.noteIconDoc}`} aria-hidden="true">
+                  <div
+                    className={`${styles.noteIcon} ${item.type === 'case_explainer' ? styles.noteIconCase : styles.noteIconDoc}`}
+                    aria-hidden="true"
+                  >
                     {item.type === 'case_explainer' ? '⚖' : '📄'}
                   </div>
                   <div className={styles.noteBody}>
@@ -82,7 +102,13 @@ export default function DashboardLower({ mastery, activity, earnedBadges, reason
                     </p>
                   </div>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path
+                      d="M9 18l6-6-6-6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </li>
               ))}
@@ -91,8 +117,12 @@ export default function DashboardLower({ mastery, activity, earnedBadges, reason
             <p className={styles.emptyState}>No recent activity yet. Start learning!</p>
           )}
           <div className={styles.noteFooter}>
-            <Link href="/dashboard/notes" className={styles.historyBtn}>View all notes →</Link>
-            <button type="button" className={styles.viewHistoryBtn} onClick={onViewHistory}>View Activity History</button>
+            <Link href="/dashboard/notes" className={styles.historyBtn}>
+              View all notes →
+            </Link>
+            <button type="button" className={styles.viewHistoryBtn} onClick={onViewHistory}>
+              View Activity History
+            </button>
           </div>
         </section>
       </div>

@@ -46,7 +46,9 @@
   padding: 4px;
   line-height: 1;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $dark;
+  }
 }
 
 .error {
@@ -67,7 +69,9 @@
   color: $dark;
 }
 
-.req { color: $accent-red; }
+.req {
+  color: $accent-red;
+}
 
 .input {
   height: 44px;
@@ -80,8 +84,12 @@
   outline: none;
   transition: border-color 0.15s;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .fileWrap {
@@ -95,12 +103,21 @@
   font-size: 14px;
   transition: border-color 0.15s;
 
-  &:hover { border-color: $primary; }
+  &:hover {
+    border-color: $primary;
+  }
 }
 
-.fileName { color: $dark; font-weight: 600; }
-.filePlaceholder { color: $gray-400; }
-.fileInput { display: none; }
+.fileName {
+  color: $dark;
+  font-weight: 600;
+}
+.filePlaceholder {
+  color: $gray-400;
+}
+.fileInput {
+  display: none;
+}
 
 .progressWrap {
   display: flex;
@@ -149,8 +166,14 @@
   color: $gray-600;
   cursor: pointer;
 
-  &:hover:not(:disabled) { border-color: $dark; color: $dark; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    border-color: $dark;
+    color: $dark;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .submitBtn {
@@ -164,6 +187,11 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

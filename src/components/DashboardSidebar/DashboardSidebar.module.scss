@@ -42,9 +42,13 @@
   font-weight: 500;
   color: $gray-600;
   text-decoration: none;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
-  svg { flex-shrink: 0; }
+  svg {
+    flex-shrink: 0;
+  }
 
   &:hover {
     background: $gray-100;
@@ -104,4 +108,32 @@
   font-size: 11px;
   color: $gray-600;
   text-transform: capitalize;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: $gray-400;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  &:hover:not(:disabled) {
+    background: $gray-100;
+    color: $dark;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

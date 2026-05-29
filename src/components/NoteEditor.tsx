@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { Note } from "@/lib";
+import type { Note } from '@/lib';
 import styles from './NoteEditor.module.scss';
 
 interface Props {
@@ -52,36 +52,69 @@ export default function NoteEditor({ note, onSave, pendingInsert, onInsertApplie
     scheduleAutoSave(title, e.target.value);
   }
 
-  const handleFormat = useCallback((fmt: 'bold' | 'italic' | 'heading' | 'list') => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const sel = ta.value.slice(start, end);
-    let replacement = '';
-    if (fmt === 'bold')    replacement = `**${sel || 'bold text'}**`;
-    else if (fmt === 'italic')  replacement = `_${sel || 'italic text'}_`;
-    else if (fmt === 'heading') replacement = `\n## ${sel || 'Heading'}\n`;
-    else replacement = (sel || 'item').split('\n').map((l) => `• ${l}`).join('\n');
-    const next = ta.value.slice(0, start) + replacement + ta.value.slice(end);
-    setContent(next);
-    scheduleAutoSave(title, next);
-    requestAnimationFrame(() => {
-      ta.focus();
-      ta.setSelectionRange(start + replacement.length, start + replacement.length);
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title]);
+  const handleFormat = useCallback(
+    (fmt: 'bold' | 'italic' | 'heading' | 'list') => {
+      const ta = textareaRef.current;
+      if (!ta) return;
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const sel = ta.value.slice(start, end);
+      let replacement = '';
+      if (fmt === 'bold') replacement = `**${sel || 'bold text'}**`;
+      else if (fmt === 'italic') replacement = `_${sel || 'italic text'}_`;
+      else if (fmt === 'heading') replacement = `\n## ${sel || 'Heading'}\n`;
+      else
+        replacement = (sel || 'item')
+          .split('\n')
+          .map((l) => `• ${l}`)
+          .join('\n');
+      const next = ta.value.slice(0, start) + replacement + ta.value.slice(end);
+      setContent(next);
+      scheduleAutoSave(title, next);
+      requestAnimationFrame(() => {
+        ta.focus();
+        ta.setSelectionRange(start + replacement.length, start + replacement.length);
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [title]
+  );
 
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    []
+  );
 
   return (
     <div className={styles.editor}>
       <div className={styles.editorInner}>
         <div className={styles.toolbar}>
-          <button className={styles.toolBtn} type="button" title="Bold"   onClick={() => handleFormat('bold')}><strong>B</strong></button>
-          <button className={styles.toolBtn} type="button" title="Italic" onClick={() => handleFormat('italic')}><em>I</em></button>
-          <button className={styles.toolBtn} type="button" title="List"   onClick={() => handleFormat('list')}>≡</button>
+          <button
+            className={styles.toolBtn}
+            type="button"
+            title="Bold"
+            onClick={() => handleFormat('bold')}
+          >
+            <strong>B</strong>
+          </button>
+          <button
+            className={styles.toolBtn}
+            type="button"
+            title="Italic"
+            onClick={() => handleFormat('italic')}
+          >
+            <em>I</em>
+          </button>
+          <button
+            className={styles.toolBtn}
+            type="button"
+            title="List"
+            onClick={() => handleFormat('list')}
+          >
+            ≡
+          </button>
         </div>
         <input
           className={styles.titleInput}
@@ -92,7 +125,11 @@ export default function NoteEditor({ note, onSave, pendingInsert, onInsertApplie
         />
         <div className={styles.meta}>
           {note.subject && <span className={styles.metaTag}>{note.subject}</span>}
-          {note.tags?.map((tag) => <span key={tag} className={styles.metaTag}>#{tag}</span>)}
+          {note.tags?.map((tag) => (
+            <span key={tag} className={styles.metaTag}>
+              #{tag}
+            </span>
+          ))}
         </div>
         <textarea
           ref={textareaRef}

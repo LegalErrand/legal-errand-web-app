@@ -12,7 +12,11 @@
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.12s, color 0.12s, border-color 0.12s, opacity 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s,
+    border-color 0.12s,
+    opacity 0.12s;
   white-space: nowrap;
   text-decoration: none;
 
@@ -22,7 +26,9 @@
   }
 }
 
-.fullWidth { width: 100%; }
+.fullWidth {
+  width: 100%;
+}
 
 // ─── Sizes ────────────────────────────────────────────────────────────────────
 
@@ -47,7 +53,9 @@
   background: $primary;
   color: $white;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
 }
 
 .secondary {
@@ -75,14 +83,18 @@
   background: $accent-red;
   color: $white;
 
-  &:hover:not(:disabled) { opacity: 0.88; }
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
 }
 
 .soft {
   background: $orange-50;
   color: $primary;
 
-  &:hover:not(:disabled) { background: $gray-200; }
+  &:hover:not(:disabled) {
+    background: $gray-200;
+  }
 }
 
 // ─── Loading spinner ──────────────────────────────────────────────────────────
@@ -99,5 +111,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

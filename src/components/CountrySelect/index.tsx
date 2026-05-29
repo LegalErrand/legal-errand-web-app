@@ -22,9 +22,7 @@ export default function CountrySelect({ value, onChange, error }: CountrySelectP
 
     detectCountry().then(({ name }) => {
       if (!name) return;
-      const match = COUNTRIES.find(
-        (c) => c.name.toLowerCase() === name.toLowerCase()
-      );
+      const match = COUNTRIES.find((c) => c.name.toLowerCase() === name.toLowerCase());
       if (match) onChange(match.name);
     });
   }, [value, onChange]);

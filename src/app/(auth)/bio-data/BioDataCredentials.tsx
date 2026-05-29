@@ -26,9 +26,19 @@ const isKnownSchool = (v: string) => !v || SCHOOL_OPTIONS.includes(v);
 
 export default function BioDataCredentials(props: BioDataCredentialsProps) {
   const {
-    country, city, school, level, matric, phone,
+    country,
+    city,
+    school,
+    level,
+    matric,
+    phone,
     fieldErrors,
-    onCountryChange, onCityChange, onSchoolChange, onLevelChange, onMatricChange, onPhoneChange,
+    onCountryChange,
+    onCityChange,
+    onSchoolChange,
+    onLevelChange,
+    onMatricChange,
+    onPhoneChange,
   } = props;
 
   const schoolIsOther = school !== '' && !isKnownSchool(school);
@@ -42,7 +52,6 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>Other Credentials</h2>
       <div className={styles.credsGrid}>
-
         <div className={styles.field}>
           <label className={styles.label}>
             Country of Residence <span className={styles.req}>*</span>
@@ -130,9 +139,10 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
               aria-invalid={!!fieldErrors.phoneNumber}
             />
           </div>
-          {fieldErrors.phoneNumber && <span className={styles.fieldError}>{fieldErrors.phoneNumber}</span>}
+          {fieldErrors.phoneNumber && (
+            <span className={styles.fieldError}>{fieldErrors.phoneNumber}</span>
+          )}
         </div>
-
       </div>
     </div>
   );

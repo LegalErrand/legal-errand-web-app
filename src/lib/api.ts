@@ -45,8 +45,7 @@ import type {
   ReasoningScoreData,
 } from './types';
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3003/api/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3003/api/v1';
 
 /** User-facing message from thrown API/network errors. */
 export function getFetchErrorMessage(error: unknown): string {
@@ -74,10 +73,7 @@ export function getFetchErrorMessage(error: unknown): string {
 
 // ─── Core fetch wrapper ───────────────────────────────────────────────────────
 
-async function apiFetch<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const { headers: incomingHeaders, ...rest } = options;
 
   const mergedHeaders = new Headers();
@@ -104,9 +100,7 @@ async function apiFetch<T>(
 
 // ─── Waitlist ─────────────────────────────────────────────────────────────────
 
-export async function submitWaitlist(
-  data: WaitlistFormData
-): Promise<ApiResponse> {
+export async function submitWaitlist(data: WaitlistFormData): Promise<ApiResponse> {
   return apiFetch<ApiResponse>('/waitlist', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -116,10 +110,7 @@ export async function submitWaitlist(
 
 // ─── Generic GET with revalidation ───────────────────────────────────────────
 
-export async function fetchWithCache<T>(
-  path: string,
-  revalidate = 60
-): Promise<T> {
+export async function fetchWithCache<T>(path: string, revalidate = 60): Promise<T> {
   return apiFetch<T>(path, {
     next: { revalidate },
   } as RequestInit);
@@ -143,7 +134,9 @@ export async function register(data: RegisterRequest): Promise<ApiResponse> {
   });
 }
 
-export async function verifyEmail(data: VerifyEmailRequest): Promise<ApiResponse<VerifyEmailResponseData>> {
+export async function verifyEmail(
+  data: VerifyEmailRequest
+): Promise<ApiResponse<VerifyEmailResponseData>> {
   return apiFetch<ApiResponse<VerifyEmailResponseData>>('/auth/verify-email', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -167,7 +160,10 @@ export async function forgotPassword(email: string): Promise<ApiResponse> {
   });
 }
 
-export async function verifyOtp(email: string, otp: string): Promise<ApiResponse<VerifyOtpResponse>> {
+export async function verifyOtp(
+  email: string,
+  otp: string
+): Promise<ApiResponse<VerifyOtpResponse>> {
   return apiFetch<ApiResponse<VerifyOtpResponse>>('/auth/verify-otp', {
     method: 'POST',
     body: JSON.stringify({ email, otp }),
@@ -191,22 +187,28 @@ export async function checkHealth(): Promise<HealthResponse> {
 
 // ─── Library ──────────────────────────────────────────────────────────────────
 
-export async function getUploadUrl(data: PresignedUrlRequest, token: string): Promise<ApiResponse<PresignedUrlResponse>> {
+export async function getUploadUrl(
+  data: PresignedUrlRequest,
+  token: string
+): Promise<ApiResponse<PresignedUrlResponse>> {
   return apiFetch<ApiResponse<PresignedUrlResponse>>('/library/upload-url', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
     cache: 'no-store',
   });
 }
 
-export async function completeUpload(data: UploadCompleteRequest, token: string): Promise<ApiResponse> {
+export async function completeUpload(
+  data: UploadCompleteRequest,
+  token: string
+): Promise<ApiResponse> {
   return apiFetch<ApiResponse>('/library/upload/complete', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
     cache: 'no-store',
@@ -230,7 +232,10 @@ function serializeBioDataBody(data: UpdateBioDataRequest): string {
   });
 }
 
-export async function updateBioData(data: UpdateBioDataRequest, token: string): Promise<ApiResponse> {
+export async function updateBioData(
+  data: UpdateBioDataRequest,
+  token: string
+): Promise<ApiResponse> {
   return apiFetch<ApiResponse>('/user/bio-data', {
     method: 'PUT',
     headers: {
@@ -245,7 +250,7 @@ export async function updateAvatar(data: UpdateAvatarRequest, token: string): Pr
   return apiFetch<ApiResponse>('/user/avatar', {
     method: 'PUT',
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
     cache: 'no-store',
@@ -258,12 +263,18 @@ function authHeaders(token: string): HeadersInit {
   return { Authorization: `Bearer ${token}` };
 }
 
-async function authedGet<T>(path: string, token: string, qs?: Record<string, string | number | undefined>): Promise<T> {
-  const params = qs ? new URLSearchParams(
-    Object.entries(qs)
-      .filter(([, v]) => v !== undefined)
-      .map(([k, v]) => [k, String(v)])
-  ).toString() : '';
+async function authedGet<T>(
+  path: string,
+  token: string,
+  qs?: Record<string, string | number | undefined>
+): Promise<T> {
+  const params = qs
+    ? new URLSearchParams(
+        Object.entries(qs)
+          .filter(([, v]) => v !== undefined)
+          .map(([k, v]) => [k, String(v)])
+      ).toString()
+    : '';
   return apiFetch<T>(`${path}${params ? `?${params}` : ''}`, {
     headers: authHeaders(token),
     cache: 'no-store',
@@ -316,17 +327,27 @@ export function getDashboardActivity(
   token: string,
   params?: { type?: string; page?: number; limit?: number }
 ): Promise<ApiResponse<PaginatedResponse<ActivityItem>>> {
-  return authedGet('/dashboard/activity', token, params as Record<string, string | number | undefined>);
+  return authedGet(
+    '/dashboard/activity',
+    token,
+    params as Record<string, string | number | undefined>
+  );
 }
 
 // ─── Questions ────────────────────────────────────────────────────────────────
 
 export function getRandomQuestion(token: string, subject?: string): Promise<ApiResponse<Question>> {
-  return authedGet<ApiResponse<Question>>('/questions/random', token, subject ? { subject } : undefined);
+  return authedGet<ApiResponse<Question>>(
+    '/questions/random',
+    token,
+    subject ? { subject } : undefined
+  );
 }
 
 export function submitAnswer(
-  id: string, answer: string, token: string
+  id: string,
+  answer: string,
+  token: string
 ): Promise<ApiResponse<QuestionAttempt>> {
   return authedPost<ApiResponse<QuestionAttempt>>(`/questions/${id}/submit`, token, { answer });
 }
@@ -344,14 +365,24 @@ export function getMyDocuments(
   token: string,
   params?: { search?: string; page?: number; limit?: number }
 ): Promise<ApiResponse<LibraryDocument[]>> {
-  return authedGet('/library/my-documents', token, params as Record<string, string | number | undefined>);
+  return authedGet(
+    '/library/my-documents',
+    token,
+    params as Record<string, string | number | undefined>
+  );
 }
 
-export function getLibraryDocument(id: string, token: string): Promise<ApiResponse<LibraryDocument>> {
+export function getLibraryDocument(
+  id: string,
+  token: string
+): Promise<ApiResponse<LibraryDocument>> {
   return authedGet<ApiResponse<LibraryDocument>>(`/library/${id}`, token);
 }
 
-export function getSignedDownloadUrl(id: string, token: string): Promise<ApiResponse<SignedUrlData>> {
+export function getSignedDownloadUrl(
+  id: string,
+  token: string
+): Promise<ApiResponse<SignedUrlData>> {
   return authedGet<ApiResponse<SignedUrlData>>(`/library/${id}/access`, token);
 }
 
@@ -384,7 +415,11 @@ export function createNote(data: CreateNoteRequest, token: string): Promise<ApiR
   return authedPost<ApiResponse<Note>>('/notes', token, data);
 }
 
-export function updateNote(id: string, data: Partial<CreateNoteRequest>, token: string): Promise<ApiResponse<Note>> {
+export function updateNote(
+  id: string,
+  data: Partial<CreateNoteRequest>,
+  token: string
+): Promise<ApiResponse<Note>> {
   return authedPut<ApiResponse<Note>>(`/notes/${id}`, token, data);
 }
 
@@ -396,13 +431,19 @@ export function analyzeNote(id: string, token: string): Promise<ApiResponse<Note
   return authedPost<ApiResponse<NoteAnalysis>>(`/notes/${id}/analyze`, token);
 }
 
-export function summarizeNote(id: string, token: string): Promise<ApiResponse<{ summary: string }>> {
+export function summarizeNote(
+  id: string,
+  token: string
+): Promise<ApiResponse<{ summary: string }>> {
   return authedPost<ApiResponse<{ summary: string }>>(`/notes/${id}/summarize`, token);
 }
 
 // ─── Case Explainer ───────────────────────────────────────────────────────────
 
-export function explainCase(data: ExplainCaseRequest, token: string): Promise<ApiResponse<CaseExplanation>> {
+export function explainCase(
+  data: ExplainCaseRequest,
+  token: string
+): Promise<ApiResponse<CaseExplanation>> {
   return authedPost<ApiResponse<CaseExplanation>>('/ai/explain-case', token, data);
 }
 
@@ -410,10 +451,17 @@ export function getCaseExplainerHistory(
   token: string,
   params?: { page?: number; limit?: number }
 ): Promise<ApiResponse<PaginatedResponse<CaseHistoryItem>>> {
-  return authedGet('/ai/case-explainer/history', token, params as Record<string, number | undefined>);
+  return authedGet(
+    '/ai/case-explainer/history',
+    token,
+    params as Record<string, number | undefined>
+  );
 }
 
-export function getCaseExplanation(id: string, token: string): Promise<ApiResponse<CaseExplanation>> {
+export function getCaseExplanation(
+  id: string,
+  token: string
+): Promise<ApiResponse<CaseExplanation>> {
   return authedGet<ApiResponse<CaseExplanation>>(`/ai/case-explainer/${id}`, token);
 }
 
@@ -424,7 +472,8 @@ export function saveCaseToNotes(id: string, token: string): Promise<ApiResponse<
 // ─── Research ─────────────────────────────────────────────────────────────────
 
 export function searchResearch(
-  data: SearchResearchRequest, token: string
+  data: SearchResearchRequest,
+  token: string
 ): Promise<ApiResponse<SearchResearchResponse>> {
   return authedPost<ApiResponse<SearchResearchResponse>>('/research/search', token, data);
 }
@@ -436,7 +485,10 @@ export function getResearchSessions(
   return authedGet('/research/sessions', token, params as Record<string, number | undefined>);
 }
 
-export function getResearchSession(id: string, token: string): Promise<ApiResponse<ResearchSession>> {
+export function getResearchSession(
+  id: string,
+  token: string
+): Promise<ApiResponse<ResearchSession>> {
   return authedGet<ApiResponse<ResearchSession>>(`/research/sessions/${id}`, token);
 }
 
@@ -446,7 +498,10 @@ export function deleteResearchSession(id: string, token: string): Promise<ApiRes
 
 // ─── AI Chat ──────────────────────────────────────────────────────────────────
 
-export function sendAiChat(data: AiChatRequest, token: string): Promise<ApiResponse<AiChatResponse>> {
+export function sendAiChat(
+  data: AiChatRequest,
+  token: string
+): Promise<ApiResponse<AiChatResponse>> {
   return authedPost<ApiResponse<AiChatResponse>>('/ai/chat', token, data);
 }
 
@@ -464,21 +519,26 @@ export function deleteAiConversation(sessionId: string, token: string): Promise<
 // ─── AI Socratic ──────────────────────────────────────────────────────────────
 
 export function startSocraticSession(
-  data: SocraticStartRequest, token: string
+  data: SocraticStartRequest,
+  token: string
 ): Promise<ApiResponse<SocraticStartResponse>> {
   return authedPost<ApiResponse<SocraticStartResponse>>('/ai/socratic/start', token, data);
 }
 
 export function respondSocratic(
-  data: SocraticRespondRequest, token: string
+  data: SocraticRespondRequest,
+  token: string
 ): Promise<ApiResponse<{ message: string }>> {
   return authedPost<ApiResponse<{ message: string }>>('/ai/socratic/respond', token, data);
 }
 
 export function endSocraticSession(
-  sessionId: string, token: string
+  sessionId: string,
+  token: string
 ): Promise<ApiResponse<{ summary: string; score: number }>> {
-  return authedPost<ApiResponse<{ summary: string; score: number }>>('/ai/socratic/end', token, { sessionId });
+  return authedPost<ApiResponse<{ summary: string; score: number }>>('/ai/socratic/end', token, {
+    sessionId,
+  });
 }
 
 // ─── Questions (full CRUD + stats) ───────────────────────────────────────────
@@ -566,27 +626,34 @@ export function getBookmarks(
   token: string,
   params?: { search?: string; page?: number; limit?: number }
 ): Promise<ApiResponse<LibraryDocument[]>> {
-  return authedGet('/library/bookmarks', token, params as Record<string, string | number | undefined>);
+  return authedGet(
+    '/library/bookmarks',
+    token,
+    params as Record<string, string | number | undefined>
+  );
 }
 
 // ─── Research: memo & save-to-notes ──────────────────────────────────────────
 
 export function generateResearchMemo(
-  id: string, token: string
+  id: string,
+  token: string
 ): Promise<ApiResponse<{ memo: string }>> {
   return authedPost<ApiResponse<{ memo: string }>>(`/research/sessions/${id}/memo`, token);
 }
 
 export function saveResearchToNotes(
-  id: string, resultIndex: number, token: string
+  id: string,
+  resultIndex: number,
+  token: string
 ): Promise<ApiResponse<{ note: Note }>> {
-  return authedPost<ApiResponse<{ note: Note }>>(`/research/sessions/${id}/save-to-notes`, token, { resultIndex });
+  return authedPost<ApiResponse<{ note: Note }>>(`/research/sessions/${id}/save-to-notes`, token, {
+    resultIndex,
+  });
 }
 
 // ─── Notes: expand ───────────────────────────────────────────────────────────
 
-export function expandNote(
-  id: string, token: string
-): Promise<ApiResponse<{ expanded: string }>> {
+export function expandNote(id: string, token: string): Promise<ApiResponse<{ expanded: string }>> {
   return authedPost<ApiResponse<{ expanded: string }>>(`/notes/${id}/expand`, token);
 }

@@ -4,7 +4,7 @@ import { useRef, useState, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { verifyOtp, resendVerificationOtp, getFetchErrorMessage } from "@/lib";
+import { verifyOtp, resendVerificationOtp, getFetchErrorMessage } from '@/lib';
 import styles from './page.module.scss';
 
 function ResetPasswordContent() {
@@ -45,12 +45,18 @@ function ResetPasswordContent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const otp = digits.join('');
-    if (otp.length < 6) { setFormError('Please enter all 6 digits.'); return; }
+    if (otp.length < 6) {
+      setFormError('Please enter all 6 digits.');
+      return;
+    }
     setLoading(true);
     setFormError('');
     try {
       const res = await verifyOtp(email, otp);
-      if (!res.data?.resetToken) { setFormError(res.message ?? 'Invalid OTP. Please try again.'); return; }
+      if (!res.data?.resetToken) {
+        setFormError(res.message ?? 'Invalid OTP. Please try again.');
+        return;
+      }
       router.push(`/update-password?token=${encodeURIComponent(res.data.resetToken)}`);
     } catch (err) {
       setFormError(getFetchErrorMessage(err));
@@ -80,7 +86,13 @@ function ResetPasswordContent() {
         <div className={styles.panelLogo}>
           <Image src="/logo.svg" alt="LegalErrand" width={152} height={34} priority />
         </div>
-        <Image src="/images/forgot-password-image.png" alt="Student studying" fill className={styles.panelImg} priority />
+        <Image
+          src="/images/forgot-password-image.png"
+          alt="Student studying"
+          fill
+          className={styles.panelImg}
+          priority
+        />
       </div>
 
       <div className={styles.content}>
@@ -89,20 +101,26 @@ function ResetPasswordContent() {
           <div className={styles.otpSection}>
             <h2 className={styles.otpTitle}>6 Digit OTP code</h2>
             <p className={styles.sub}>
-              We have sent a 6-digit otp code to your Email, we are using this to verify
-              it&apos;s you, before credentials can be reset.
+              We have sent a 6-digit otp code to your Email, we are using this to verify it&apos;s
+              you, before credentials can be reset.
             </p>
           </div>
 
           <form className={styles.formCard} onSubmit={handleSubmit} noValidate>
-            {formError && <p className={styles.formError} role="alert">{formError}</p>}
+            {formError && (
+              <p className={styles.formError} role="alert">
+                {formError}
+              </p>
+            )}
             {resendMsg && <p className={styles.successMsg}>{resendMsg}</p>}
 
             <div className={styles.otpRow} onPaste={handlePaste}>
               {digits.map((d, i) => (
                 <input
                   key={i}
-                  ref={(el) => { inputRefs.current[i] = el; }}
+                  ref={(el) => {
+                    inputRefs.current[i] = el;
+                  }}
                   className={styles.otpBox}
                   type="text"
                   inputMode="numeric"
@@ -115,7 +133,11 @@ function ResetPasswordContent() {
               ))}
             </div>
 
-            <button type="submit" className={styles.submitBtn} disabled={loading || digits.join('').length < 6}>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={loading || digits.join('').length < 6}
+            >
               {loading ? 'Verifying…' : 'Verify Code'}
             </button>
           </form>
@@ -129,7 +151,9 @@ function ResetPasswordContent() {
 
           <p className={styles.footerLine}>
             Back to{' '}
-            <Link href="/login" className={styles.footerLink}>Sign In</Link>
+            <Link href="/login" className={styles.footerLink}>
+              Sign In
+            </Link>
           </p>
         </div>
       </div>

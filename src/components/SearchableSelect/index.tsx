@@ -1,6 +1,6 @@
-"use client";
-import { useState, useRef, useEffect } from "react";
-import styles from "./SearchableSelect.module.scss";
+'use client';
+import { useState, useRef, useEffect } from 'react';
+import styles from './SearchableSelect.module.scss';
 
 interface Props {
   value: string;
@@ -13,13 +13,16 @@ interface Props {
 }
 
 export function SearchableSelect({
-  value, onChange, options,
-  placeholder = "Select an option",
-  searchPlaceholder = "Search...",
-  error, disabled = false,
+  value,
+  onChange,
+  options,
+  placeholder = 'Select an option',
+  searchPlaceholder = 'Search...',
+  error,
+  disabled = false,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -32,15 +35,18 @@ export function SearchableSelect({
     function close(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
-        setQuery("");
+        setQuery('');
       }
     }
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
   }, [open]);
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Escape") { setOpen(false); setQuery(""); }
+    if (e.key === 'Escape') {
+      setOpen(false);
+      setQuery('');
+    }
   }
 
   const filtered = query.trim()
@@ -50,7 +56,7 @@ export function SearchableSelect({
   function select(option: string) {
     onChange(option);
     setOpen(false);
-    setQuery("");
+    setQuery('');
   }
 
   const triggerTextClass = value
@@ -59,9 +65,11 @@ export function SearchableSelect({
 
   const triggerClass = [
     styles.trigger,
-    open ? styles.triggerOpen : "",
-    error ? styles.triggerError : "",
-  ].filter(Boolean).join(" ");
+    open ? styles.triggerOpen : '',
+    error ? styles.triggerError : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div ref={containerRef} className={styles.wrap} onKeyDown={handleKeyDown}>
@@ -74,7 +82,10 @@ export function SearchableSelect({
         aria-expanded={open}
       >
         <span className={triggerTextClass}>{value || placeholder}</span>
-        <span className={`${styles.chevron}${open ? ` ${styles.chevronUp}` : ""}`} aria-hidden="true" />
+        <span
+          className={`${styles.chevron}${open ? ` ${styles.chevronUp}` : ''}`}
+          aria-hidden="true"
+        />
       </button>
 
       {open && (
@@ -99,7 +110,7 @@ export function SearchableSelect({
                   key={option}
                   role="option"
                   aria-selected={option === value}
-                  className={`${styles.option}${option === value ? ` ${styles.optionActive}` : ""}`}
+                  className={`${styles.option}${option === value ? ` ${styles.optionActive}` : ''}`}
                   onMouseDown={() => select(option)}
                 >
                   {option}
@@ -110,7 +121,11 @@ export function SearchableSelect({
         </div>
       )}
 
-      {error && <span className={styles.error} role="alert">{error}</span>}
+      {error && (
+        <span className={styles.error} role="alert">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

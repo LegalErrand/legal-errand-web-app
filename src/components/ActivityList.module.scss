@@ -24,8 +24,12 @@
   cursor: pointer;
   transition: background 0.1s;
 
-  &:last-child { border-bottom: none; }
-  &:hover { background: $gray-50; }
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: $gray-50;
+  }
 }
 
 .activityIcon {

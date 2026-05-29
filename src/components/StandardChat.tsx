@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { getFetchErrorMessage } from "@/lib";
-import type { AiChatRequest, AiChatResponse, ApiResponse } from "@/lib";
+import { getFetchErrorMessage } from '@/lib';
+import type { AiChatRequest, AiChatResponse, ApiResponse } from '@/lib';
 import styles from './StandardChat.module.scss';
 
 interface ChatMessage {
@@ -18,7 +18,13 @@ interface Props {
   sendAiChat: (data: AiChatRequest, token: string) => Promise<ApiResponse<AiChatResponse>>;
 }
 
-export default function StandardChat({ token, sessionId, initialMessage, onSessionStart, sendAiChat }: Props) {
+export default function StandardChat({
+  token,
+  sessionId,
+  initialMessage,
+  onSessionStart,
+  sendAiChat,
+}: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -40,22 +46,25 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
     if (!text) return;
     setMessages([{ role: 'user', text }]);
     setSending(true);
-    void sendAiChat({ message: text, sessionId: currentSessionId }, token).then((res) => {
-      if (res.data) {
-        if (!currentSessionId) {
-          setCurrentSessionId(res.data.sessionId);
-          onSessionStart(res.data.sessionId);
+    void sendAiChat({ message: text, sessionId: currentSessionId }, token)
+      .then((res) => {
+        if (res.data) {
+          if (!currentSessionId) {
+            setCurrentSessionId(res.data.sessionId);
+            onSessionStart(res.data.sessionId);
+          }
+          setMessages((prev) => [...prev, { role: 'assistant', text: res.data!.reply }]);
+        } else {
+          setError(res.message ?? 'No response received');
         }
-        setMessages((prev) => [...prev, { role: 'assistant', text: res.data!.reply }]);
-      } else {
-        setError(res.message ?? 'No response received');
-      }
-    }).catch((err: unknown) => {
-      setError(getFetchErrorMessage(err));
-    }).finally(() => {
-      setSending(false);
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+      })
+      .catch((err: unknown) => {
+        setError(getFetchErrorMessage(err));
+      })
+      .finally(() => {
+        setSending(false);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);
 
   useEffect(() => {
@@ -99,19 +108,28 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
           </div>
         )}
         {messages.map((m, i) => (
-          <div key={i} className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant}`}>
+          <div
+            key={i}
+            className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant}`}
+          >
             <p className={styles.bubbleText}>{m.text}</p>
           </div>
         ))}
         {sending && (
           <div className={`${styles.bubble} ${styles.bubbleAssistant}`}>
-            <p className={styles.bubbleText} aria-live="polite">Thinking…</p>
+            <p className={styles.bubbleText} aria-live="polite">
+              Thinking…
+            </p>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {error && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
 
       <form className={styles.inputRow} onSubmit={handleSend}>
         <div className={styles.inputWrap}>
@@ -125,12 +143,29 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
           />
           <button type="button" className={styles.attachBtn} aria-label="Attach file">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
-          <button type="submit" className={styles.sendBtn} disabled={sending || !input.trim()} aria-label="Send">
+          <button
+            type="submit"
+            className={styles.sendBtn}
+            disabled={sending || !input.trim()}
+            aria-label="Send"
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M5 12h14M13 6l6 6-6 6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>

@@ -32,7 +32,9 @@
   text-decoration: none;
   font-weight: 500;
 
-  &:hover { color: $primary; }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .breadSep {
@@ -55,8 +57,13 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .errorMsg {
@@ -123,7 +130,9 @@
   padding: $space-3 0 0;
 }
 
-.questionLabel { display: none; }
+.questionLabel {
+  display: none;
+}
 
 .questionText {
   font-size: 14px;
@@ -159,7 +168,9 @@
   text-decoration: none;
   transition: background 0.12s;
 
-  &:hover { background: $gray-200; }
+  &:hover {
+    background: $gray-200;
+  }
 }
 
 .nextBtn {
@@ -176,7 +187,9 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover { background: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+  }
 }
 
 // ─── Workspace panel ──────────────────────────────────────────────────────────
@@ -229,9 +242,15 @@
   font-size: 13px;
   color: $gray-800;
   cursor: pointer;
-  transition: border-color 0.12s, background 0.12s;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
 
-  &:hover { border-color: $primary; color: $primary; background: rgba($primary, 0.05); }
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: rgba($primary, 0.05);
+  }
 }
 
 .workspace {
@@ -246,7 +265,9 @@
   line-height: 1.7;
   background: transparent;
 
-  &::placeholder { color: $gray-400; }
+  &::placeholder {
+    color: $gray-400;
+  }
 }
 
 // ─── Bottom bar ───────────────────────────────────────────────────────────────
@@ -275,8 +296,14 @@
   text-decoration: none;
   transition: border-color 0.15s;
 
-  &:hover:not(:disabled) { border-color: $primary; color: $primary; }
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    border-color: $primary;
+    color: $primary;
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
 .saveProgressBtn {
@@ -288,10 +315,18 @@
   font-weight: 600;
   color: $gray-600;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 
-  &:hover:not(:disabled) { border-color: $primary; color: $primary; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    border-color: $primary;
+    color: $primary;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 // ─── States ───────────────────────────────────────────────────────────────────
@@ -360,7 +395,9 @@
   text-decoration: none;
   transition: background 0.15s;
 
-  &:hover { background: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+  }
 }
 
 // ─── Score breakdown ──────────────────────────────────────────────────────────
@@ -386,9 +423,21 @@
   font-weight: 700;
 }
 
-.scoreValHigh   { color: $green-500; }
-.scoreValMedium { color: $primary; }
-.scoreValLow    { color: $accent-red; }
+.scoreValHigh {
+  color: $green-500;
+}
+.scoreValMedium {
+  color: $primary;
+}
+.scoreValLow {
+  color: $accent-red;
+}
 
-.submittedIconPass { background: $green-100; color: $green-500; }
-.submittedIconFail { background: rgba($accent-red, 0.1); color: $accent-red; }
+.submittedIconPass {
+  background: $green-100;
+  color: $green-500;
+}
+.submittedIconFail {
+  background: rgba($accent-red, 0.1);
+  color: $accent-red;
+}

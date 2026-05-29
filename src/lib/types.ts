@@ -107,7 +107,7 @@ export interface PresignedUrlRequest {
 }
 
 export interface PresignedUrlResponse {
-  uploadUrl: string;   // presigned PUT URL for direct S3 upload
+  uploadUrl: string; // presigned PUT URL for direct S3 upload
   s3Key: string;
   s3Url: string;
   expiresIn: number;
@@ -123,7 +123,7 @@ export interface UploadCompleteRequest {
 
 export interface LibraryDocument {
   _id: string;
-  id?: string;         // Mongoose virtual — not always present; use _id
+  id?: string; // Mongoose virtual — not always present; use _id
   title: string;
   subject?: string;
   type?: string;

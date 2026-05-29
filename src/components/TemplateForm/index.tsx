@@ -28,7 +28,9 @@ export default function TemplateForm({ note, onSave, pendingInsert, onInsertAppl
   const commonProps = {
     title: note.title,
     content: note.content,
-    onSave: (t: string, c: string) => { void onSave(t, c); },
+    onSave: (t: string, c: string) => {
+      void onSave(t, c);
+    },
     pendingInsert,
     onInsertApplied,
   };
@@ -37,5 +39,12 @@ export default function TemplateForm({ note, onSave, pendingInsert, onInsertAppl
   if (type === 'statute') return <StatuteForm {...commonProps} />;
   if (type === 'research') return <ResearchMemoForm {...commonProps} />;
   if (type === 'lecture') return <LectureNotesForm {...commonProps} />;
-  return <NoteEditor note={note} onSave={onSave} pendingInsert={pendingInsert} onInsertApplied={onInsertApplied} />;
+  return (
+    <NoteEditor
+      note={note}
+      onSave={onSave}
+      pendingInsert={pendingInsert}
+      onInsertApplied={onInsertApplied}
+    />
+  );
 }

@@ -54,7 +54,10 @@
   white-space: nowrap;
   transition: border-color 0.15s;
 
-  &:hover { border-color: $primary; color: $primary; }
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
 }
 
 .galleryContent {
@@ -82,7 +85,9 @@
   grid-template-columns: 220px 1fr;
   gap: $space-4;
 
-  @media (max-width: 800px) { grid-template-columns: 1fr; }
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .blankCard {
@@ -99,8 +104,13 @@
   text-align: left;
   transition: opacity 0.15s;
 
-  &:hover:not(:disabled) { opacity: 0.9; }
-  &:disabled { opacity: 0.7; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
 .blankIcon {
@@ -138,7 +148,9 @@
   cursor: pointer;
   transition: opacity 0.12s;
 
-  &:hover { opacity: 0.85; }
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 // ─── Featured IRAC card ───────────────────────────────────────────────────────
@@ -151,11 +163,13 @@
   grid-template-columns: 200px 1fr;
   background: $white;
 
-  @media (max-width: 700px) { grid-template-columns: 1fr; }
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .featuredImg {
-  background: linear-gradient(135deg, #1E293B 0%, #374151 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
   background-image: url('/images/onboarding-image.png');
   background-size: cover;
   background-position: center;
@@ -212,8 +226,13 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 // ─── Professional templates grid ──────────────────────────────────────────────
@@ -223,8 +242,12 @@
   grid-template-columns: repeat(3, 1fr);
   gap: $space-3;
 
-  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .proCard {
@@ -237,10 +260,18 @@
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 
-  &:hover:not(:disabled) { border-color: $primary; box-shadow: $shadow-sm; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    border-color: $primary;
+    box-shadow: $shadow-sm;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .proIcon {
@@ -313,7 +344,10 @@
   height: 44px;
 }
 
-.searchIcon { color: $gray-400; flex-shrink: 0; }
+.searchIcon {
+  color: $gray-400;
+  flex-shrink: 0;
+}
 
 .searchInput {
   flex: 1;
@@ -324,7 +358,9 @@
   color: $dark;
   outline: none;
 
-  &::placeholder { color: $gray-400; }
+  &::placeholder {
+    color: $gray-400;
+  }
 }
 
 .newNoteBtn {
@@ -339,7 +375,9 @@
   white-space: nowrap;
   transition: background 0.15s;
 
-  &:hover { background: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+  }
 }
 
 .savedContent {
@@ -374,9 +412,14 @@
   font-weight: 500;
   color: $gray-600;
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
-  &:hover { background: $orange-50; color: $primary; }
+  &:hover {
+    background: $orange-50;
+    color: $primary;
+  }
 }
 
 .subjectTabActive {
@@ -384,7 +427,10 @@
   color: $white;
   font-weight: 600;
 
-  &:hover { background: $primary-dark; color: $white; }
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+  }
 }
 
 .paginationRow {
@@ -406,7 +452,9 @@
   color: $gray-600;
   transition: background 0.12s;
 
-  &:hover { background: $gray-100; }
+  &:hover {
+    background: $gray-100;
+  }
 }
 
 // ─── Note cards grid ─────────────────────────────────────────────────────────
@@ -416,8 +464,12 @@
   grid-template-columns: repeat(3, 1fr);
   gap: $space-3;
 
-  @media (max-width: 1000px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .noteCard {
@@ -431,7 +483,9 @@
   flex-direction: column;
   gap: 6px;
 
-  &:hover { box-shadow: $shadow-sm; }
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
 }
 
 .noteCardTopRow {
@@ -530,9 +584,14 @@
   padding: 4px;
   border-radius: 4px;
   line-height: 1;
-  transition: color 0.12s, background 0.12s;
+  transition:
+    color 0.12s,
+    background 0.12s;
 
-  &:hover { color: $accent-red; background: rgba($accent-red, 0.08); }
+  &:hover {
+    color: $accent-red;
+    background: rgba($accent-red, 0.08);
+  }
 }
 
 .emptyBox {

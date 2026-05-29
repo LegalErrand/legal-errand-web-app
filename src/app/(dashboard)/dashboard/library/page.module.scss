@@ -35,7 +35,9 @@
   color: $dark;
   outline: none;
 
-  &::placeholder { color: $gray-400; }
+  &::placeholder {
+    color: $gray-400;
+  }
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
@@ -57,10 +59,14 @@
   font-weight: 500;
   color: $gray-600;
   cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
+  transition:
+    color 0.12s,
+    border-color 0.12s;
   margin-bottom: -1px;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $dark;
+  }
 }
 
 .tabActive {
@@ -104,7 +110,9 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover { background: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+  }
 }
 
 // ─── Grid ─────────────────────────────────────────────────────────────────────

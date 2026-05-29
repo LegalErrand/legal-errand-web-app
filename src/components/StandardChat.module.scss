@@ -99,7 +99,9 @@
   height: 52px;
   transition: border-color 0.15s;
 
-  &:focus-within { border-color: $primary; }
+  &:focus-within {
+    border-color: $primary;
+  }
 }
 
 .msgInput {
@@ -112,8 +114,12 @@
   color: $dark;
   outline: none;
 
-  &::placeholder { color: $gray-400; }
-  &:disabled { opacity: 0.6; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:disabled {
+    opacity: 0.6;
+  }
 }
 
 .attachBtn {
@@ -130,7 +136,9 @@
   flex-shrink: 0;
   transition: background 0.12s;
 
-  &:hover { background: rgba($primary, 0.15); }
+  &:hover {
+    background: rgba($primary, 0.15);
+  }
 }
 
 .sendBtn {
@@ -147,6 +155,11 @@
   flex-shrink: 0;
   transition: background 0.12s;
 
-  &:hover:not(:disabled) { background: rgba($primary, 0.15); }
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: rgba($primary, 0.15);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }

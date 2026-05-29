@@ -42,7 +42,9 @@
   transition: color 0.15s;
   margin-bottom: -1px;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $dark;
+  }
 }
 
 .tabBtn {
@@ -59,8 +61,13 @@
   transition: color 0.15s;
   margin-bottom: -1px;
 
-  &:hover:not(:disabled) { color: $dark; }
-  &:disabled { opacity: 0.4; cursor: default; }
+  &:hover:not(:disabled) {
+    color: $dark;
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
 }
 
 .tabActive {
@@ -86,8 +93,13 @@
   cursor: pointer;
   transition: opacity 0.12s;
 
-  &:hover:not(:disabled) { opacity: 0.85; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .savedBadge {
@@ -146,11 +158,17 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.spinning { animation: spin 1.4s linear infinite; }
+.spinning {
+  animation: spin 1.4s linear infinite;
+}
 
 .analysisTitle {
   font-family: $font-heading;
@@ -225,11 +243,21 @@
   background: $gray-100;
 }
 
-.step_complete    { background: rgba($green-500, 0.06); }
-.step_in_progress { background: rgba($primary, 0.06); }
-.step_pending     { background: $gray-100; }
+.step_complete {
+  background: rgba($green-500, 0.06);
+}
+.step_in_progress {
+  background: rgba($primary, 0.06);
+}
+.step_pending {
+  background: $gray-100;
+}
 
-.stepIcon { display: flex; align-items: center; flex-shrink: 0; }
+.stepIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
 
 .stepLabel {
   flex: 1;
@@ -243,9 +271,15 @@
   font-weight: 600;
 }
 
-.step_complete    .stepStatus { color: $green-500; }
-.step_in_progress .stepStatus { color: $primary; }
-.step_pending     .stepStatus { color: $gray-400; }
+.step_complete .stepStatus {
+  color: $green-500;
+}
+.step_in_progress .stepStatus {
+  color: $primary;
+}
+.step_pending .stepStatus {
+  color: $gray-400;
+}
 
 // ─── Action buttons ───────────────────────────────────────────────────────────
 
@@ -271,8 +305,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .processingDot {
@@ -294,7 +333,9 @@
   text-decoration: none;
   transition: background 0.15s;
 
-  &:hover { background: rgba($accent-red, 0.15); }
+  &:hover {
+    background: rgba($accent-red, 0.15);
+  }
 }
 
 .viewBreakdownBtn {
@@ -308,7 +349,9 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover { background: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+  }
 }
 
 // ─── Breakdown split layout ───────────────────────────────────────────────────
@@ -415,7 +458,9 @@
   text-align: left;
   transition: background 0.12s;
 
-  &:hover { background: $gray-50; }
+  &:hover {
+    background: $gray-50;
+  }
 }
 
 .sideActionPrimary {
@@ -424,7 +469,10 @@
   border-color: $primary;
   font-weight: 600;
 
-  &:hover { background: $primary-dark; border-color: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+    border-color: $primary-dark;
+  }
 }
 
 .relatedCasesHeading {

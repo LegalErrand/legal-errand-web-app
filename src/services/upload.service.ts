@@ -21,12 +21,11 @@
  *   if (result.success) navigate(`/library/${result.s3Key}`);
  */
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3003/api/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3003/api/v1';
 
 // ─── Size limits ──────────────────────────────────────────────────────────────
 
-const MAX_AVATAR_BYTES   =  5 * 1024 * 1024; //  5 MB
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024; //  5 MB
 const MAX_DOCUMENT_BYTES = 50 * 1024 * 1024; // 50 MB
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -133,7 +132,7 @@ class UploadError extends Error {
   constructor(
     message: string,
     public readonly stage: ErrorStage,
-    public readonly statusCode?: number,
+    public readonly statusCode?: number
   ) {
     super(message);
     this.name = 'UploadError';
@@ -142,15 +141,12 @@ class UploadError extends Error {
 
 // ─── File validation ──────────────────────────────────────────────────────────
 
-const AVATAR_TYPES   = ['image/jpeg', 'image/png', 'image/webp'] as const;
+const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 const DOCUMENT_TYPES = ['application/pdf'] as const;
 
 function validateAvatar(file: File): void {
   if (!(AVATAR_TYPES as readonly string[]).includes(file.type)) {
-    throw new UploadError(
-      'Invalid file type. Avatars must be JPEG, PNG, or WebP.',
-      'validation',
-    );
+    throw new UploadError('Invalid file type. Avatars must be JPEG, PNG, or WebP.', 'validation');
   }
   if (file.size > MAX_AVATAR_BYTES) {
     throw new UploadError('Avatar must be 5 MB or smaller.', 'validation');
@@ -172,7 +168,7 @@ async function authFetch<T>(
   path: string,
   token: string,
   options: RequestInit,
-  stage: ErrorStage,
+  stage: ErrorStage
 ): Promise<T> {
   let res: Response;
   try {
@@ -215,7 +211,7 @@ function parseAvatarDisplayUrl(json: AvatarUrlApiResponse): string | undefined {
 export async function getUploadUrl(
   file: File,
   folder: UploadFolder,
-  token: string,
+  token: string
 ): Promise<SignedUploadData> {
   const response = await authFetch<SignUploadApiResponse>(
     '/library/upload-url',
@@ -225,7 +221,7 @@ export async function getUploadUrl(
       body: JSON.stringify({ fileName: file.name, mimeType: file.type, folder }),
       cache: 'no-store',
     },
-    'sign',
+    'sign'
   );
 
   const flat: SignUploadRawPayload | undefined =
@@ -243,7 +239,7 @@ export async function getUploadUrl(
   if (response.success === false || !flat) {
     throw new UploadError(
       response.error ?? response.message ?? 'Could not obtain upload URL.',
-      'sign',
+      'sign'
     );
   }
 
@@ -263,7 +259,7 @@ export async function getUploadUrl(
 export function uploadToS3WithProgress(
   uploadUrl: string,
   file: File,
-  onProgress?: (progress: UploadProgress) => void,
+  onProgress?: (progress: UploadProgress) => void
 ): UploadTask {
   // xhr is nulled out after completion so cancel() becomes a safe no-op.
   let xhr: XMLHttpRequest | null = new XMLHttpRequest();
@@ -335,7 +331,7 @@ export async function uploadAvatarWithProgress(
   file: File,
   token: string,
   onProgress?: (progress: UploadProgress) => void,
-  onTask?: (task: UploadTask) => void,
+  onTask?: (task: UploadTask) => void
 ): Promise<UploadResult> {
   try {
     validateAvatar(file);
@@ -354,14 +350,14 @@ export async function uploadAvatarWithProgress(
         body: JSON.stringify({ avatar: s3Key, s3Key }),
         cache: 'no-store',
       },
-      'finalize',
+      'finalize'
     );
 
     const avatarJson = await authFetch<AvatarUrlApiResponse>(
       '/user/avatar-url',
       token,
       { method: 'GET', cache: 'no-store' },
-      'finalize',
+      'finalize'
     );
     const displayUrl = parseAvatarDisplayUrl(avatarJson);
 
@@ -391,7 +387,7 @@ export async function uploadAvatarWithProgress(
  * ```
  */
 export async function uploadDocumentWithProgress(
-  params: UploadDocumentParams,
+  params: UploadDocumentParams
 ): Promise<UploadResult> {
   const { file, title, subject, token, onProgress, onTask } = params;
 
@@ -418,7 +414,7 @@ export async function uploadDocumentWithProgress(
         }),
         cache: 'no-store',
       },
-      'finalize',
+      'finalize'
     );
 
     return { success: true, message: 'Document uploaded successfully.', s3Key, s3Url };

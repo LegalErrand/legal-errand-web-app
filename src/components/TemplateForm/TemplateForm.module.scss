@@ -40,7 +40,9 @@
   outline: none;
   transition: border-color 0.15s;
 
-  &:focus { border-color: $primary; }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .citationInput {
@@ -59,7 +61,9 @@
   font-family: $font-heading;
   background: transparent;
 
-  &::placeholder { color: $gray-400; }
+  &::placeholder {
+    color: $gray-400;
+  }
 }
 
 .section {
@@ -110,7 +114,10 @@
   box-sizing: border-box;
   transition: border-color 0.15s;
 
-  &:focus { outline: none; border-color: $primary; }
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
 }
 
 .sectionTextareaLg {
@@ -135,7 +142,9 @@
   outline: none;
   transition: border-color 0.15s;
 
-  &:focus { border-color: $primary; }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 .removeBtn {
@@ -153,7 +162,9 @@
   transition: color 0.12s;
   flex-shrink: 0;
 
-  &:hover { color: #EF4444; }
+  &:hover {
+    color: #ef4444;
+  }
 }
 
 .addBtn {
@@ -167,7 +178,12 @@
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: border-color 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
 
-  &:hover { border-color: $primary; color: $primary; }
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
 }

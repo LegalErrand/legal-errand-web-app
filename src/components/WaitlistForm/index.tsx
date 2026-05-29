@@ -1,8 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { LEVELS, NIGERIAN_UNIVERSITIES, SPOTS_LEFT, validateWaitlistForm, submitWaitlist } from "@/lib";
-import type { WaitlistFormData, WaitlistFormErrors } from "@/lib";
+import {
+  LEVELS,
+  NIGERIAN_UNIVERSITIES,
+  SPOTS_LEFT,
+  validateWaitlistForm,
+  submitWaitlist,
+} from '@/lib';
+import type { WaitlistFormData, WaitlistFormErrors } from '@/lib';
 import { SearchableSelect } from '../SearchableSelect';
 import FormField from '../FormField';
 import CountrySelect from '../CountrySelect';
@@ -63,15 +69,24 @@ export default function WaitlistForm() {
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <FormField
-            label="First Name" id="firstName" name="firstName"
-            placeholder="E.g Adebayo" value={form.firstName}
-            onChange={handleChange} error={errors.firstName}
+            label="First Name"
+            id="firstName"
+            name="firstName"
+            placeholder="E.g Adebayo"
+            value={form.firstName}
+            onChange={handleChange}
+            error={errors.firstName}
             autoComplete="given-name"
           />
           <FormField
-            label="Email" id="email" name="email" type="email"
-            placeholder="example@gmail.com" value={form.email}
-            onChange={handleChange} error={errors.email}
+            label="Email"
+            id="email"
+            name="email"
+            type="email"
+            placeholder="example@gmail.com"
+            value={form.email}
+            onChange={handleChange}
+            error={errors.email}
             autoComplete="email"
           />
           <div className={styles.field}>
@@ -86,9 +101,14 @@ export default function WaitlistForm() {
             />
           </div>
           <FormField
-            label="Phone Number" id="phone" name="phone" type="tel"
-            placeholder="+234 801 2345 678" value={form.phone}
-            onChange={handleChange} error={errors.phone}
+            label="Phone Number"
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="+234 801 2345 678"
+            value={form.phone}
+            onChange={handleChange}
+            error={errors.phone}
             autoComplete="tel"
           />
 
@@ -111,7 +131,9 @@ export default function WaitlistForm() {
           />
 
           {apiError && (
-            <p className={styles.apiError} role="alert">{apiError}</p>
+            <p className={styles.apiError} role="alert">
+              {apiError}
+            </p>
           )}
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>

@@ -40,7 +40,12 @@ export default function LibraryAIPanel({ docTitle, docSubject }: Props) {
     <aside className={styles.aiPanel}>
       <div className={styles.aiPanelHeader}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7l3-7z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+          <path
+            d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7l3-7z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
         </svg>
         <span className={styles.aiPanelTitle}>Legal AI</span>
       </div>
@@ -48,8 +53,8 @@ export default function LibraryAIPanel({ docTitle, docSubject }: Props) {
       <div className={styles.aiSection}>
         <p className={styles.aiSectionLabel}>AI SUMMARY</p>
         <p className={styles.aiSummaryText}>
-          {docTitle} covers key provisions in {docSubject ?? 'Nigerian Law'}.
-          Ask the AI below for a detailed summary or analysis.
+          {docTitle} covers key provisions in {docSubject ?? 'Nigerian Law'}. Ask the AI below for a
+          detailed summary or analysis.
         </p>
       </div>
 
@@ -57,10 +62,13 @@ export default function LibraryAIPanel({ docTitle, docSubject }: Props) {
         <p className={styles.aiSectionLabel}>QUICK QUIZ</p>
         <p className={styles.quizQuestion}>{quizQuestion}</p>
         <div className={styles.quizOptions}>
-          {(['A', 'B'] as const).map(opt => (
-            <button key={opt} type="button"
+          {(['A', 'B'] as const).map((opt) => (
+            <button
+              key={opt}
+              type="button"
               className={`${styles.quizOption} ${quizAnswer === opt ? styles.quizOptionSelected : ''}`}
-              onClick={() => setQuizAnswer(opt)}>
+              onClick={() => setQuizAnswer(opt)}
+            >
               <span className={styles.quizLetter}>{opt}</span>
               <span>{opt === 'A' ? optionA : optionB}</span>
             </button>
@@ -68,7 +76,9 @@ export default function LibraryAIPanel({ docTitle, docSubject }: Props) {
         </div>
         {quizAnswer && (
           <p className={styles.quizFeedback}>
-            {quizAnswer === 'A' ? 'Correct! Well done.' : 'Not quite — try reviewing the document summary.'}
+            {quizAnswer === 'A'
+              ? 'Correct! Well done.'
+              : 'Not quite — try reviewing the document summary.'}
           </p>
         )}
       </div>
@@ -81,10 +91,13 @@ export default function LibraryAIPanel({ docTitle, docSubject }: Props) {
       )}
 
       <form className={styles.aiChatForm} onSubmit={handleAsk}>
-        <textarea className={styles.aiChatInput} value={question}
-          onChange={e => setQuestion(e.target.value)}
+        <textarea
+          className={styles.aiChatInput}
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
           placeholder="Ask Legal AI a question about this document..."
-          rows={3} />
+          rows={3}
+        />
         <button type="submit" className={styles.aiSendBtn} disabled={loading || !question.trim()}>
           {loading ? 'Asking…' : 'Ask AI'}
         </button>

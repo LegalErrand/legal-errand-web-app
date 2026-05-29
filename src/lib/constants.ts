@@ -85,7 +85,7 @@ export const NIGERIAN_UNIVERSITIES = [
   'Sokoto State University (SSU)',
   'Tai Solarin University of Education (TASUED), Ijebu-Ode',
   'Taraba State University (TSU), Jalingo',
-  'Umaru Musa Yar\'Adua University (UMYU), Katsina',
+  "Umaru Musa Yar'Adua University (UMYU), Katsina",
   'University of Africa (UAT), Toru-Orua',
   'Western Delta University (WDU), Oghara',
   'Yobe State University (YSU), Damaturu',
@@ -144,7 +144,7 @@ export const NIGERIAN_UNIVERSITIES = [
   'Paul University, Awka',
   'Philomath University, Kuje, Abuja',
   'Precious Cornerstone University, Ibadan',
-  'Redeemer\'s University, Ede',
+  "Redeemer's University, Ede",
   'Renaissance University, Enugu',
   'Rhema University, Obeama-Asa',
   'Salem University, Lokoja',
@@ -190,8 +190,7 @@ export const STATS = [
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://legalerrand.com';
 
-export const WHATSAPP_SHARE_TEXT =
-  `Hey! I just joined the waitlist for LegalErrand Academy — the AI study platform built for law students. Get your free founding member spot before it's gone: ${siteUrl}`;
+export const WHATSAPP_SHARE_TEXT = `Hey! I just joined the waitlist for LegalErrand Academy — the AI study platform built for law students. Get your free founding member spot before it's gone: ${siteUrl}`;
 
 // ─── Countries (ISO 3166-1) ───────────────────────────────────────────────────
 

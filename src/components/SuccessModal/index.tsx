@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Image from 'next/image';
-import { WHATSAPP_SHARE_TEXT } from "@/lib";
+import { WHATSAPP_SHARE_TEXT } from '@/lib';
 import styles from './SuccessModal.module.scss';
 
 interface SuccessModalProps {
@@ -13,7 +13,9 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
   // Lock body scroll while modal is open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, []);
 
   // Close on Escape key
@@ -38,7 +40,9 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
   return (
     <div
       className={styles.overlay}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
       role="dialog"
       aria-modal="true"
       aria-label="You're on the waitlist"
@@ -55,8 +59,7 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
         <p className={styles.eyebrow}>You&apos;re in! — Welcome Onboard</p>
 
         <h2 className={styles.heading}>
-          Welcome to{' '}
-          <span className={styles.brand}>LegalErrand Academy.</span>
+          Welcome to <span className={styles.brand}>LegalErrand Academy.</span>
         </h2>
 
         <hr className={styles.divider} />
@@ -67,8 +70,8 @@ export default function SuccessModal({ onClose }: SuccessModalProps) {
         </p>
 
         <p className={styles.body}>
-          We&apos;ll send you weekly updates. Every feature we ship, every milestone
-          we hit — you&apos;ll watch LegalErrand Academy come to life.
+          We&apos;ll send you weekly updates. Every feature we ship, every milestone we hit —
+          you&apos;ll watch LegalErrand Academy come to life.
         </p>
 
         <div className={styles.shareSection}>

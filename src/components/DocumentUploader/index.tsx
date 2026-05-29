@@ -7,7 +7,7 @@ import {
   type UploadResult,
   type UploadTask,
 } from '@/services/upload.service';
-import { mapUploadError } from "@/lib";
+import { mapUploadError } from '@/lib';
 import styles from './DocumentUploader.module.scss';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -25,13 +25,13 @@ type Status = 'idle' | 'uploading' | 'success' | 'error';
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function DocumentUploader({ token, onSuccess }: DocumentUploaderProps) {
-  const [file, setFile]       = useState<File | null>(null);
-  const [title, setTitle]     = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [progress, setProgress] = useState(0);
-  const [status, setStatus]   = useState<Status>('idle');
+  const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState('');
-  const [result, setResult]   = useState<UploadResult | null>(null);
+  const [result, setResult] = useState<UploadResult | null>(null);
 
   const cancelRef = useRef<(() => void) | null>(null);
 
@@ -62,7 +62,9 @@ export default function DocumentUploader({ token, onSuccess }: DocumentUploaderP
       subject: subject.trim() || undefined,
       token,
       onProgress: (p: UploadProgress) => setProgress(p.percent),
-      onTask: (task: UploadTask) => { cancelRef.current = task.cancel; },
+      onTask: (task: UploadTask) => {
+        cancelRef.current = task.cancel;
+      },
     });
 
     cancelRef.current = null;
@@ -93,11 +95,10 @@ export default function DocumentUploader({ token, onSuccess }: DocumentUploaderP
   }
 
   const isUploading = status === 'uploading';
-  const isSuccess   = status === 'success';
+  const isSuccess = status === 'success';
 
   return (
     <div className={styles.container}>
-
       {/* File picker */}
       {!isSuccess && (
         <label className={styles.filePicker}>
@@ -138,11 +139,7 @@ export default function DocumentUploader({ token, onSuccess }: DocumentUploaderP
 
       {/* Upload button */}
       {file && !isUploading && !isSuccess && (
-        <button
-          className={styles.uploadBtn}
-          onClick={handleUpload}
-          disabled={!title.trim()}
-        >
+        <button className={styles.uploadBtn} onClick={handleUpload} disabled={!title.trim()}>
           Upload Document
         </button>
       )}

@@ -2,8 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { sendAiChat, getAiConversations, deleteAiConversation, startSocraticSession, respondSocratic, endSocraticSession, getCurrentUser, getFetchErrorMessage, getAccessToken } from "@/lib";
-import type { AiConversation, AuthUserSummary } from "@/lib";
+import {
+  sendAiChat,
+  getAiConversations,
+  deleteAiConversation,
+  startSocraticSession,
+  respondSocratic,
+  endSocraticSession,
+  getCurrentUser,
+  getFetchErrorMessage,
+  getAccessToken,
+} from '@/lib';
+import type { AiConversation, AuthUserSummary } from '@/lib';
 import StandardChat from '@/components/StandardChat';
 import SocraticChat from '@/components/SocraticChat';
 import styles from './page.module.scss';
@@ -22,10 +32,17 @@ export default function ReasoningPage() {
 
   useEffect(() => {
     const t = getAccessToken();
-    if (!t) { router.replace('/login'); return; }
+    if (!t) {
+      router.replace('/login');
+      return;
+    }
     setToken(t);
     void loadConversations(t);
-    void getCurrentUser(t).then(res => { if (res.data) setUser(res.data); }).catch(() => undefined);
+    void getCurrentUser(t)
+      .then((res) => {
+        if (res.data) setUser(res.data);
+      })
+      .catch(() => undefined);
     const q = new URLSearchParams(window.location.search).get('q') ?? '';
     if (q) setInitialQuery(q);
   }, [router]);
@@ -35,8 +52,11 @@ export default function ReasoningPage() {
     try {
       const res = await getAiConversations(t, { limit: 30 });
       setConversations(res.data?.data ?? []);
-    } catch { /* silent */ }
-    finally { setConvsLoading(false); }
+    } catch {
+      /* silent */
+    } finally {
+      setConvsLoading(false);
+    }
   }
 
   async function handleDeleteConv(sessionId: string) {
@@ -45,7 +65,9 @@ export default function ReasoningPage() {
       await deleteAiConversation(sessionId, token);
       setConversations((prev) => prev.filter((c) => c.sessionId !== sessionId));
       if (activeSessionId === sessionId) setActiveSessionId(undefined);
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
   }
 
   if (!token) return null;
@@ -56,7 +78,16 @@ export default function ReasoningPage() {
       <div className={styles.sidebar}>
         <div className={styles.logoWrap}>
           <svg width="120" height="28" viewBox="0 0 140 32" fill="none" aria-label="LegalErrand">
-            <text x="0" y="24" fontFamily="sans-serif" fontWeight="700" fontSize="18" fill="#D97706">LegalErrand</text>
+            <text
+              x="0"
+              y="24"
+              fontFamily="sans-serif"
+              fontWeight="700"
+              fontSize="18"
+              fill="#D97706"
+            >
+              LegalErrand
+            </text>
           </svg>
         </div>
 
@@ -64,7 +95,12 @@ export default function ReasoningPage() {
 
         <button className={styles.newConvBtn} onClick={() => setActiveSessionId(undefined)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path
+              d="M12 5v14M5 12h14"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
           New conversation
         </button>
@@ -78,12 +114,24 @@ export default function ReasoningPage() {
             <p className={styles.convEmpty}>No conversations yet.</p>
           ) : (
             conversations.map((c) => (
-              <div key={c.sessionId} className={`${styles.convItem} ${activeSessionId === c.sessionId ? styles.convItemActive : ''}`}>
+              <div
+                key={c.sessionId}
+                className={`${styles.convItem} ${activeSessionId === c.sessionId ? styles.convItemActive : ''}`}
+              >
                 <button className={styles.convBtn} onClick={() => setActiveSessionId(c.sessionId)}>
                   <span className={styles.convTitle}>{c.title ?? 'Chat'}</span>
-                  <span className={styles.convMeta}>{new Date(c.createdAt).toLocaleDateString()}</span>
+                  <span className={styles.convMeta}>
+                    {new Date(c.createdAt).toLocaleDateString()}
+                  </span>
                 </button>
-                <button className={styles.delConvBtn} onClick={() => handleDeleteConv(c.sessionId)} aria-label="Delete conversation" title="Delete">✕</button>
+                <button
+                  className={styles.delConvBtn}
+                  onClick={() => handleDeleteConv(c.sessionId)}
+                  aria-label="Delete conversation"
+                  title="Delete"
+                >
+                  ✕
+                </button>
               </div>
             ))
           )}
@@ -93,7 +141,9 @@ export default function ReasoningPage() {
           <div className={styles.userRow}>
             <div className={styles.userAvatar} aria-label="User profile" />
             <div className={styles.userInfo}>
-              <span className={styles.userName}>{[user.firstName, user.lastName].filter(Boolean).join(' ') || 'Student'}</span>
+              <span className={styles.userName}>
+                {[user.firstName, user.lastName].filter(Boolean).join(' ') || 'Student'}
+              </span>
               <span className={styles.userRole}>Student</span>
             </div>
           </div>
@@ -110,7 +160,12 @@ export default function ReasoningPage() {
               onClick={() => setMode('standard')}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                <path
+                  d="M13 2L3 14h9l-1 8 10-12h-9l1-8Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
               </svg>
               Standard
             </button>
@@ -119,7 +174,12 @@ export default function ReasoningPage() {
               onClick={() => setMode('socratic')}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 2a7 7 0 0 1 7 7c0 2.7-1.52 5.05-3.75 6.28L15 21H9l.75-5.72A7 7 0 0 1 5 9a7 7 0 0 1 7-7Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                <path
+                  d="M12 2a7 7 0 0 1 7 7c0 2.7-1.52 5.05-3.75 6.28L15 21H9l.75-5.72A7 7 0 0 1 5 9a7 7 0 0 1 7-7Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
               </svg>
               Socratic
             </button>
@@ -128,7 +188,13 @@ export default function ReasoningPage() {
           <div className={styles.topBarActions}>
             <button className={styles.bellBtn} aria-label="Notifications">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <button className={styles.avatarBtn} aria-label="User menu" />
@@ -140,7 +206,10 @@ export default function ReasoningPage() {
             token={token}
             sessionId={activeSessionId}
             initialMessage={initialQuery}
-            onSessionStart={(sid) => { setActiveSessionId(sid); void loadConversations(token); }}
+            onSessionStart={(sid) => {
+              setActiveSessionId(sid);
+              void loadConversations(token);
+            }}
             sendAiChat={sendAiChat}
           />
         ) : (

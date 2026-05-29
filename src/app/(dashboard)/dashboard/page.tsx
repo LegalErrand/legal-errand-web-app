@@ -4,8 +4,15 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getDashboard, getDashboardGoals, getRandomQuestion, getAchievements, getReasoningScore, getAccessToken } from "@/lib";
-import type { DashboardData, Goal, Question, Achievement } from "@/lib";
+import {
+  getDashboard,
+  getDashboardGoals,
+  getRandomQuestion,
+  getAchievements,
+  getReasoningScore,
+  getAccessToken,
+} from '@/lib';
+import type { DashboardData, Goal, Question, Achievement } from '@/lib';
 import DashboardLower from '@/components/DashboardLower';
 import ActivityHistoryModal from '@/components/ActivityHistoryModal';
 import styles from './page.module.scss';
@@ -24,7 +31,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const token = getAccessToken();
-    if (!token) { router.replace('/login'); return; }
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
 
     void (async () => {
       try {
@@ -67,17 +77,41 @@ export default function DashboardPage() {
   return (
     <div className={styles.page}>
       <header className={styles.topBar}>
-        <form className={styles.searchWrap} onSubmit={(e) => {
-          e.preventDefault();
-          const q = searchQuery.trim();
-          router.push(q ? `/dashboard/reasoning?q=${encodeURIComponent(q)}` : '/dashboard/reasoning');
-        }}>
-          <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <form
+          className={styles.searchWrap}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const q = searchQuery.trim();
+            router.push(
+              q ? `/dashboard/reasoning?q=${encodeURIComponent(q)}` : '/dashboard/reasoning'
+            );
+          }}
+        >
+          <svg
+            className={styles.searchIcon}
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
             <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
           </svg>
-          <input ref={searchRef} className={styles.searchInput} type="text" placeholder="Ask LegalErrand AI a Legal Question"
-            aria-label="Ask a legal question" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <input
+            ref={searchRef}
+            className={styles.searchInput}
+            type="text"
+            placeholder="Ask LegalErrand AI a Legal Question"
+            aria-label="Ask a legal question"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </form>
         <button className={styles.notifBtn} aria-label="Notifications">
           <Image src="/icons/notifications.svg" alt="" width={22} height={22} />
@@ -95,7 +129,9 @@ export default function DashboardPage() {
               <Image src="/icons/fire.svg" alt="Streak" width={28} height={28} />
               <div className={styles.streakText}>
                 <span className={styles.streakLabel}>Study Streak</span>
-                <span className={styles.streakDays}>{streak} {streak === 1 ? 'Day' : 'Days'}</span>
+                <span className={styles.streakDays}>
+                  {streak} {streak === 1 ? 'Day' : 'Days'}
+                </span>
               </div>
             </div>
           )}
@@ -114,13 +150,22 @@ export default function DashboardPage() {
             {question ? (
               <>
                 <h2 className={styles.challengeTitle}>{question.subject} Question</h2>
-                <p className={styles.challengeSub}>{question.prompt ?? question.text ?? question.scenario ?? 'Test your legal knowledge with today\'s challenge.'}</p>
-                <Link href="/dashboard/reasoning" className={styles.quizBtn}>Start Challenge</Link>
+                <p className={styles.challengeSub}>
+                  {question.prompt ??
+                    question.text ??
+                    question.scenario ??
+                    "Test your legal knowledge with today's challenge."}
+                </p>
+                <Link href="/dashboard/reasoning" className={styles.quizBtn}>
+                  Start Challenge
+                </Link>
               </>
             ) : (
               <>
                 <h2 className={styles.challengeTitle}>Daily Challenge</h2>
-                <p className={styles.challengeSub}>No challenge available right now. Check back soon.</p>
+                <p className={styles.challengeSub}>
+                  No challenge available right now. Check back soon.
+                </p>
               </>
             )}
           </div>
@@ -135,7 +180,12 @@ export default function DashboardPage() {
               {nextGoal.description && <p className={styles.nextDesc}>{nextGoal.description}</p>}
               <div className={styles.nextProgress}>
                 <div className={styles.nextProgressTrack}>
-                  <div className={styles.nextProgressFill} style={{ ['--pct' as string]: `${Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%` }} />
+                  <div
+                    className={styles.nextProgressFill}
+                    style={{
+                      ['--pct' as string]: `${Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%`,
+                    }}
+                  />
                 </div>
                 <span className={styles.nextProgressPct}>
                   {Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%

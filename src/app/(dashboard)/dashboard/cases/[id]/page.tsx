@@ -3,20 +3,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { getCaseExplanation, saveCaseToNotes, getFetchErrorMessage, getAccessToken } from "@/lib";
-import type { CaseExplanation } from "@/lib";
+import { getCaseExplanation, saveCaseToNotes, getFetchErrorMessage, getAccessToken } from '@/lib';
+import type { CaseExplanation } from '@/lib';
 import styles from './page.module.scss';
 
 const POLL_INTERVAL = 3500; // ms
 
 // Analysis steps derived from status
 const ANALYSIS_STEPS = [
-  { key: 'ocr',      label: 'OCR Extraction' },
-  { key: 'facts',    label: 'Facts Identification' },
+  { key: 'ocr', label: 'OCR Extraction' },
+  { key: 'facts', label: 'Facts Identification' },
   { key: 'analysis', label: 'Legal principle analysis' },
 ] as const;
 
-function getStepStatus(stepIdx: number, overallPct: number): 'complete' | 'in_progress' | 'pending' {
+function getStepStatus(
+  stepIdx: number,
+  overallPct: number
+): 'complete' | 'in_progress' | 'pending' {
   const threshold = ((stepIdx + 1) / ANALYSIS_STEPS.length) * 100;
   if (overallPct >= threshold) return 'complete';
   if (overallPct >= threshold - 100 / ANALYSIS_STEPS.length) return 'in_progress';
@@ -40,7 +43,10 @@ export default function CaseDetailPage() {
 
   useEffect(() => {
     const token = getAccessToken();
-    if (!token) { router.replace('/login'); return; }
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
     if (!id) return;
 
     async function fetchCase() {
@@ -65,14 +71,17 @@ export default function CaseDetailPage() {
     }
 
     function clearPoll() {
-      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
     }
 
     void fetchCase();
     pollRef.current = setInterval(() => void fetchCase(), POLL_INTERVAL);
 
     return () => clearPoll();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, router]);
 
   async function handleSaveToNotes() {
@@ -89,9 +98,24 @@ export default function CaseDetailPage() {
     }
   }
 
-  if (loading) return <div className={styles.page}><p className={styles.state}>Loading case…</p></div>;
-  if (error && !caseData) return <div className={styles.page}><p className={styles.stateError}>{error}</p></div>;
-  if (!caseData) return <div className={styles.page}><p className={styles.state}>Case not found.</p></div>;
+  if (loading)
+    return (
+      <div className={styles.page}>
+        <p className={styles.state}>Loading case…</p>
+      </div>
+    );
+  if (error && !caseData)
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateError}>{error}</p>
+      </div>
+    );
+  if (!caseData)
+    return (
+      <div className={styles.page}>
+        <p className={styles.state}>Case not found.</p>
+      </div>
+    );
 
   const processing = isProcessing(caseData);
   // Use API-supplied progress when available; 0 while pending, 100 when done
@@ -101,7 +125,9 @@ export default function CaseDetailPage() {
     <div className={styles.page}>
       <header className={styles.topBar}>
         <nav className={styles.tabs} aria-label="Case view">
-          <Link href="/dashboard/cases" className={styles.tabLink}>Cases</Link>
+          <Link href="/dashboard/cases" className={styles.tabLink}>
+            Cases
+          </Link>
           <button
             className={`${styles.tabBtn} ${tab === 'analysis' ? styles.tabActive : ''}`}
             onClick={() => setTab('analysis')}
@@ -110,7 +136,9 @@ export default function CaseDetailPage() {
           </button>
           <button
             className={`${styles.tabBtn} ${!processing && tab === 'breakdown' ? styles.tabActive : ''}`}
-            onClick={() => { if (!processing) setTab('breakdown'); }}
+            onClick={() => {
+              if (!processing) setTab('breakdown');
+            }}
             disabled={processing}
           >
             Breakdown
@@ -133,7 +161,12 @@ export default function CaseDetailPage() {
             <div className={styles.analysisHeader}>
               <div className={`${styles.spinIcon} ${processing ? styles.spinning : ''}`}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" strokeWidth="1.6" strokeDasharray="40 20" />
+                  <path
+                    d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeDasharray="40 20"
+                  />
                 </svg>
               </div>
               <div>
@@ -163,25 +196,53 @@ export default function CaseDetailPage() {
                   <div key={step.key} className={`${styles.step} ${styles[`step_${status}`]}`}>
                     <span className={styles.stepIcon}>
                       {status === 'complete' ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden="true"
+                        >
                           <circle cx="12" cy="12" r="10" fill="#16A34A" />
-                          <path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path
+                            d="M8 12l3 3 5-5"
+                            stroke="white"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
                       ) : status === 'in_progress' ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden="true"
+                        >
                           <rect x="3" y="10" width="4" height="4" rx="1" fill="#D97706" />
                           <rect x="10" y="7" width="4" height="10" rx="1" fill="#D97706" />
                           <rect x="17" y="4" width="4" height="16" rx="1" fill="#D97706" />
                         </svg>
                       ) : (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden="true"
+                        >
                           <circle cx="12" cy="12" r="8" stroke="#D1D5DB" strokeWidth="2" />
                         </svg>
                       )}
                     </span>
                     <span className={styles.stepLabel}>{step.label}</span>
                     <span className={styles.stepStatus}>
-                      {status === 'complete' ? 'Complete' : status === 'in_progress' ? 'In progress' : 'Pending'}
+                      {status === 'complete'
+                        ? 'Complete'
+                        : status === 'in_progress'
+                          ? 'In progress'
+                          : 'Pending'}
                     </span>
                   </div>
                 );
@@ -195,7 +256,9 @@ export default function CaseDetailPage() {
                     <span className={styles.processingDot} />
                     Processing.......
                   </button>
-                  <Link href="/dashboard/cases" className={styles.cancelBtn}>cancel Analysis</Link>
+                  <Link href="/dashboard/cases" className={styles.cancelBtn}>
+                    cancel Analysis
+                  </Link>
                 </>
               ) : (
                 <button className={styles.viewBreakdownBtn} onClick={() => setTab('breakdown')}>
@@ -226,7 +289,9 @@ export default function CaseDetailPage() {
                 <h2 className={styles.cardTitle}>Practice Questions</h2>
                 <ol className={styles.questionList}>
                   {caseData.practiceQuestions.map((q, i) => (
-                    <li key={i} className={styles.questionItem}>{q}</li>
+                    <li key={i} className={styles.questionItem}>
+                      {q}
+                    </li>
                   ))}
                 </ol>
               </div>
@@ -235,7 +300,11 @@ export default function CaseDetailPage() {
 
           <div className={styles.breakdownSide}>
             {!saved && (
-              <button className={`${styles.sideAction} ${styles.sideActionPrimary}`} onClick={handleSaveToNotes} disabled={saving}>
+              <button
+                className={`${styles.sideAction} ${styles.sideActionPrimary}`}
+                onClick={handleSaveToNotes}
+                disabled={saving}
+              >
                 {saving ? 'Saving…' : 'Save to Notes'}
               </button>
             )}
@@ -251,7 +320,9 @@ export default function CaseDetailPage() {
                     <li key={rc.citation} className={styles.relatedItem}>
                       <div className={styles.relatedCitationRow}>
                         <span className={styles.relatedCitation}>{rc.citation}</span>
-                        {rc.relation && <span className={styles.relatedRelation}>{rc.relation}</span>}
+                        {rc.relation && (
+                          <span className={styles.relatedRelation}>{rc.relation}</span>
+                        )}
                       </div>
                       {rc.description && <p className={styles.relatedDesc}>{rc.description}</p>}
                     </li>

@@ -31,8 +31,13 @@
   transition: background 0.15s;
   white-space: nowrap;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .backBtn {
@@ -41,7 +46,9 @@
   color: $gray-600;
   text-decoration: none;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $dark;
+  }
 }
 
 .content {
@@ -73,7 +80,11 @@
   color: $gray-600;
   margin: 0;
 
-  em { font-style: normal; font-weight: 600; color: $dark; }
+  em {
+    font-style: normal;
+    font-weight: 600;
+    color: $dark;
+  }
 }
 
 .sessionDate {
@@ -143,14 +154,16 @@
   text-decoration: none;
   flex: 1;
 
-  &:hover { color: $primary; }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .matchScore {
   font-size: 11px;
   font-weight: 700;
-  color: #16A34A;
-  background: rgba(#16A34A, 0.08);
+  color: #16a34a;
+  background: rgba(#16a34a, 0.08);
   padding: 3px 8px;
   border-radius: 100px;
   white-space: nowrap;
@@ -197,13 +210,19 @@
   white-space: nowrap;
   transition: all 0.15s;
 
-  &:hover:not(:disabled) { border-color: $primary; color: $primary; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    border-color: $primary;
+    color: $primary;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .saveNoteBtnDone {
-  border-color: #16A34A;
-  color: #16A34A;
+  border-color: #16a34a;
+  color: #16a34a;
 }
 
 .tag {

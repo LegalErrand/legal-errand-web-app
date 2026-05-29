@@ -25,11 +25,18 @@
   font-weight: 500;
   color: $gray-600;
   cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
+  transition:
+    color 0.12s,
+    border-color 0.12s;
   margin-bottom: -1px;
 
-  &:hover:not(:disabled) { color: $dark; }
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    color: $dark;
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
 .tabActive {
@@ -89,8 +96,12 @@
   transition: border-color 0.15s;
   line-height: 1.6;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 // ─── Bottom row ───────────────────────────────────────────────────────────────
@@ -115,7 +126,9 @@
   border: none;
   padding: 0;
 
-  &:hover { opacity: 0.8; }
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .startBtn {
@@ -129,8 +142,13 @@
   cursor: pointer;
   transition: background 0.15s;
 
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .formError {
@@ -156,9 +174,13 @@
   font-weight: 600;
   color: $gray-600;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 
-  &:hover { border-color: $primary; }
+  &:hover {
+    border-color: $primary;
+  }
 }
 
 .modeTabActive {
@@ -166,7 +188,10 @@
   border-color: $primary;
   color: $white;
 
-  &:hover { background: $primary-dark; border-color: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+    border-color: $primary-dark;
+  }
 }
 
 .input {
@@ -182,8 +207,12 @@
   outline: none;
   transition: border-color 0.15s;
 
-  &::placeholder { color: $gray-400; }
-  &:focus { border-color: $primary; }
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
 }
 
 // ─── History section ──────────────────────────────────────────────────────────
@@ -222,10 +251,18 @@
   text-decoration: none;
   transition: background 0.12s;
 
-  &:last-child { border-bottom: none; }
-  &:hover { background: $gray-100; }
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: $gray-100;
+  }
 
-  svg { flex-shrink: 0; color: $gray-400; margin-left: auto; }
+  svg {
+    flex-shrink: 0;
+    color: $gray-400;
+    margin-left: auto;
+  }
 }
 
 .caseIcon {
@@ -240,7 +277,10 @@
   flex-shrink: 0;
 }
 
-.caseBody { flex: 1; min-width: 0; }
+.caseBody {
+  flex: 1;
+  min-width: 0;
+}
 
 .caseTitle {
   font-size: 13px;
@@ -269,10 +309,22 @@
   color: $gray-600;
 }
 
-.status_complete { background: rgba($green-500, 0.1); color: $green-500; }
-.status_pending  { background: rgba($primary, 0.1); color: $primary; }
-.status_processing { background: rgba($accent-blue, 0.1); color: $accent-blue; }
-.status_error    { background: rgba($accent-red, 0.1); color: $accent-red; }
+.status_complete {
+  background: rgba($green-500, 0.1);
+  color: $green-500;
+}
+.status_pending {
+  background: rgba($primary, 0.1);
+  color: $primary;
+}
+.status_processing {
+  background: rgba($accent-blue, 0.1);
+  color: $accent-blue;
+}
+.status_error {
+  background: rgba($accent-red, 0.1);
+  color: $accent-red;
+}
 
 .stateMsg {
   font-size: 13px;

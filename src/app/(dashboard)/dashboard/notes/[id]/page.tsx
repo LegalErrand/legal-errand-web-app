@@ -3,8 +3,16 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { getNote, updateNote, analyzeNote, summarizeNote, expandNote, getFetchErrorMessage, getAccessToken } from "@/lib";
-import type { Note } from "@/lib";
+import {
+  getNote,
+  updateNote,
+  analyzeNote,
+  summarizeNote,
+  expandNote,
+  getFetchErrorMessage,
+  getAccessToken,
+} from '@/lib';
+import type { Note } from '@/lib';
 import TemplateForm from '@/components/TemplateForm';
 import NoteAISidebar from '@/components/NoteAISidebar';
 import styles from './page.module.scss';
@@ -23,7 +31,10 @@ export default function NoteWorkspacePage() {
 
   useEffect(() => {
     const t = getAccessToken();
-    if (!t) { router.replace('/login'); return; }
+    if (!t) {
+      router.replace('/login');
+      return;
+    }
     setToken(t);
     if (!id) return;
     void (async () => {
@@ -38,19 +49,22 @@ export default function NoteWorkspacePage() {
     })();
   }, [router, id]);
 
-  const handleSave = useCallback(async (title: string, content: string) => {
-    if (!token || !id) return;
-    setSaving(true);
-    setSaveErr('');
-    try {
-      const res = await updateNote(id, { title, content }, token);
-      if (res.data) setNote(res.data);
-    } catch (err) {
-      setSaveErr(getFetchErrorMessage(err));
-    } finally {
-      setSaving(false);
-    }
-  }, [token, id]);
+  const handleSave = useCallback(
+    async (title: string, content: string) => {
+      if (!token || !id) return;
+      setSaving(true);
+      setSaveErr('');
+      try {
+        const res = await updateNote(id, { title, content }, token);
+        if (res.data) setNote(res.data);
+      } catch (err) {
+        setSaveErr(getFetchErrorMessage(err));
+      } finally {
+        setSaving(false);
+      }
+    },
+    [token, id]
+  );
 
   const handleAnalyze = useCallback(async () => {
     if (!token || !id) return null;
@@ -72,11 +86,21 @@ export default function NoteWorkspacePage() {
 
   // Persist score/feedback changes from sidebar back to note state
   const handleScoreChange = useCallback((score: number, feedback: string) => {
-    setNote((prev) => prev ? { ...prev, qualityScore: score, qualityFeedback: feedback } : prev);
+    setNote((prev) => (prev ? { ...prev, qualityScore: score, qualityFeedback: feedback } : prev));
   }, []);
 
-  if (loading) return <div className={styles.page}><p className={styles.state}>Loading note…</p></div>;
-  if (!note) return <div className={styles.page}><p className={styles.state}>Note not found.</p></div>;
+  if (loading)
+    return (
+      <div className={styles.page}>
+        <p className={styles.state}>Loading note…</p>
+      </div>
+    );
+  if (!note)
+    return (
+      <div className={styles.page}>
+        <p className={styles.state}>Note not found.</p>
+      </div>
+    );
 
   // Derive template name from note title for breadcrumb
   const templateName = note.title || 'Note';
@@ -102,7 +126,13 @@ export default function NoteWorkspacePage() {
           </button>
           <button className={styles.bellBtn} aria-label="Notifications">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
           <button className={styles.avatarBtn} aria-label="User menu" />
@@ -123,7 +153,12 @@ export default function NoteWorkspacePage() {
             <button key={tpl.slug} className={styles.templateItem}>
               <div className={styles.templateItemIcon}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                  <path
+                    d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
                   <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.8" />
                 </svg>
               </div>

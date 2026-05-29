@@ -61,7 +61,9 @@
   flex-shrink: 0;
   transition: background 0.12s;
 
-  &:hover { background: $gray-200; }
+  &:hover {
+    background: $gray-200;
+  }
 }
 
 .statsRow {
@@ -153,7 +155,9 @@
   color: $dark;
   outline: none;
 
-  &::placeholder { color: $gray-400; }
+  &::placeholder {
+    color: $gray-400;
+  }
 }
 
 .filterTabs {
@@ -174,7 +178,11 @@
   font-family: inherit;
   transition: all 0.12s;
 
-  &:hover { background: $orange-50; color: $primary; border-color: $primary; }
+  &:hover {
+    background: $orange-50;
+    color: $primary;
+    border-color: $primary;
+  }
 }
 
 .filterTabActive {
@@ -182,5 +190,9 @@
   color: $white;
   border-color: $primary;
 
-  &:hover { background: $primary-dark; color: $white; border-color: $primary-dark; }
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+    border-color: $primary-dark;
+  }
 }

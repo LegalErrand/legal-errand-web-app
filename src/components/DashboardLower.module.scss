@@ -157,9 +157,15 @@
   border-bottom: 1px solid $gray-100;
   cursor: pointer;
 
-  &:last-child { border-bottom: none; }
+  &:last-child {
+    border-bottom: none;
+  }
 
-  svg { flex-shrink: 0; color: $gray-400; margin-left: auto; }
+  svg {
+    flex-shrink: 0;
+    color: $gray-400;
+    margin-left: auto;
+  }
 }
 
 .noteIcon {
@@ -173,8 +179,12 @@
   flex-shrink: 0;
 }
 
-.noteIconCase { background: rgba($primary, 0.1); }
-.noteIconDoc  { background: rgba($accent-blue, 0.1); }
+.noteIconCase {
+  background: rgba($primary, 0.1);
+}
+.noteIconDoc {
+  background: rgba($accent-blue, 0.1);
+}
 
 .noteBody {
   flex: 1;
@@ -215,7 +225,9 @@
   padding: 0;
   text-decoration: none;
 
-  &:hover { text-decoration: underline; }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .viewHistoryBtn {
@@ -228,9 +240,14 @@
   cursor: pointer;
   padding: 5px $space-2;
   font-family: inherit;
-  transition: border-color 0.12s, color 0.12s;
+  transition:
+    border-color 0.12s,
+    color 0.12s;
 
-  &:hover { border-color: $primary; color: $primary; }
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
 }
 
 .emptyState {

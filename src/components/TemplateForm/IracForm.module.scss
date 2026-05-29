@@ -20,9 +20,13 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-family: inherit;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 
-  &:hover { color: $dark; }
+  &:hover {
+    color: $dark;
+  }
 }
 
 .iracTabActive {
@@ -49,7 +53,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
-  &:hover { background: $orange-50; color: $primary; }
+  &:hover {
+    background: $orange-50;
+    color: $primary;
+  }
 }

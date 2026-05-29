@@ -3,8 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { getLibraryDocument, getSignedDownloadUrl, getFetchErrorMessage, getAccessToken } from "@/lib";
-import type { LibraryDocument } from "@/lib";
+import {
+  getLibraryDocument,
+  getSignedDownloadUrl,
+  getFetchErrorMessage,
+  getAccessToken,
+} from '@/lib';
+import type { LibraryDocument } from '@/lib';
 import LibraryAIPanel from '@/components/LibraryAIPanel';
 import pStyles from './page.module.scss';
 import cStyles from './LibraryContent.module.scss';
@@ -13,7 +18,10 @@ const styles = { ...pStyles, ...cStyles };
 const SECTION_RE = /^([A-Z][A-Z\s/&]+)$/;
 
 function extractHeadings(text: string): string[] {
-  return text.split('\n').map(l => l.trim()).filter(l => SECTION_RE.test(l));
+  return text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => SECTION_RE.test(l));
 }
 
 function CaseTextReader({ text }: { text: string }) {
@@ -27,9 +35,16 @@ function CaseTextReader({ text }: { text: string }) {
   }
   return (
     <div className={styles.caseReader}>
-      {nodes.map((n, i) => n.type === 'heading'
-        ? <h2 key={i} className={styles.caseSection}>{n.text}</h2>
-        : <p key={i} className={styles.casePara}>{n.text}</p>
+      {nodes.map((n, i) =>
+        n.type === 'heading' ? (
+          <h2 key={i} className={styles.caseSection}>
+            {n.text}
+          </h2>
+        ) : (
+          <p key={i} className={styles.casePara}>
+            {n.text}
+          </p>
+        )
       )}
     </div>
   );
@@ -47,7 +62,10 @@ export default function LibraryDocumentPage() {
 
   useEffect(() => {
     const token = getAccessToken();
-    if (!token) { router.replace('/login'); return; }
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
     if (!id) return;
 
     void (async () => {
@@ -64,8 +82,9 @@ export default function LibraryDocumentPage() {
         if (urlRes.status === 'fulfilled' && urlRes.value.data?.signedUrl) {
           setPdfUrl(urlRes.value.data.signedUrl);
         } else if (urlRes.status === 'rejected') {
-          const msg = (urlRes.reason as { response?: { data?: { message?: string } } })
-            ?.response?.data?.message ?? getFetchErrorMessage(urlRes.reason);
+          const msg =
+            (urlRes.reason as { response?: { data?: { message?: string } } })?.response?.data
+              ?.message ?? getFetchErrorMessage(urlRes.reason);
           setUrlError(msg);
         }
       } finally {
@@ -74,9 +93,24 @@ export default function LibraryDocumentPage() {
     })();
   }, [router, id]);
 
-  if (loading) return <div className={styles.page}><p className={styles.state}>Loading…</p></div>;
-  if (error) return <div className={styles.page}><p className={styles.stateError}>{error}</p></div>;
-  if (!doc) return <div className={styles.page}><p className={styles.state}>Document not found.</p></div>;
+  if (loading)
+    return (
+      <div className={styles.page}>
+        <p className={styles.state}>Loading…</p>
+      </div>
+    );
+  if (error)
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateError}>{error}</p>
+      </div>
+    );
+  if (!doc)
+    return (
+      <div className={styles.page}>
+        <p className={styles.state}>Document not found.</p>
+      </div>
+    );
 
   const caseText = doc.metadata?.description ?? null;
   const headings = caseText ? extractHeadings(caseText) : [];
@@ -84,14 +118,20 @@ export default function LibraryDocumentPage() {
   return (
     <div className={styles.page}>
       <header className={styles.topBar}>
-        <Link href="/dashboard/library" className={styles.backBtn}>← Library</Link>
+        <Link href="/dashboard/library" className={styles.backBtn}>
+          ← Library
+        </Link>
         <div className={styles.docMeta}>
           <h1 className={styles.docTitle}>{doc.title}</h1>
           <div className={styles.docMetaRow}>
             {doc.subject && <span className={styles.docSubject}>{doc.subject}</span>}
-            {doc.metadata?.court && <span className={styles.docMetaChip}>{doc.metadata.court}</span>}
+            {doc.metadata?.court && (
+              <span className={styles.docMetaChip}>{doc.metadata.court}</span>
+            )}
             {doc.metadata?.year && <span className={styles.docMetaChip}>{doc.metadata.year}</span>}
-            {doc.metadata?.citation && <span className={styles.docMetaChip}>{doc.metadata.citation}</span>}
+            {doc.metadata?.citation && (
+              <span className={styles.docMetaChip}>{doc.metadata.citation}</span>
+            )}
           </div>
         </div>
         {pdfUrl && (
@@ -104,11 +144,18 @@ export default function LibraryDocumentPage() {
       <div className={styles.viewerLayout}>
         <aside className={styles.chaptersPanel}>
           <p className={styles.chaptersPanelTitle}>Contents</p>
-          {headings.length > 0 ? headings.map((h, i) => (
-            <button key={i} type="button"
-              className={`${styles.chapterItem} ${activeHeading === h ? styles.chapterItemActive : ''}`}
-              onClick={() => setActiveHeading(h)}>{h}</button>
-          )) : (
+          {headings.length > 0 ? (
+            headings.map((h, i) => (
+              <button
+                key={i}
+                type="button"
+                className={`${styles.chapterItem} ${activeHeading === h ? styles.chapterItemActive : ''}`}
+                onClick={() => setActiveHeading(h)}
+              >
+                {h}
+              </button>
+            ))
+          ) : (
             <p className={styles.chaptersEmpty}>No sections found.</p>
           )}
         </aside>
@@ -116,18 +163,34 @@ export default function LibraryDocumentPage() {
         <div className={styles.centerPanel}>
           {pdfUrl ? (
             <>
-              <iframe className={styles.pdfViewer} src={pdfUrl} title={doc.title} aria-label={`PDF viewer for ${doc.title}`} />
+              <iframe
+                className={styles.pdfViewer}
+                src={pdfUrl}
+                title={doc.title}
+                aria-label={`PDF viewer for ${doc.title}`}
+              />
               <div className={styles.pdfFallback}>
                 <p>If the PDF doesn&apos;t appear,</p>
-                <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className={styles.downloadBtn}>Open PDF in new tab</a>
+                <a
+                  href={pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.downloadBtn}
+                >
+                  Open PDF in new tab
+                </a>
               </div>
             </>
           ) : urlError ? (
-            <div className={styles.noPreview}><p className={styles.stateError}>{urlError}</p></div>
+            <div className={styles.noPreview}>
+              <p className={styles.stateError}>{urlError}</p>
+            </div>
           ) : caseText ? (
             <CaseTextReader text={caseText} />
           ) : (
-            <div className={styles.noPreview}><p>No preview available for this document.</p></div>
+            <div className={styles.noPreview}>
+              <p>No preview available for this document.</p>
+            </div>
           )}
         </div>
 

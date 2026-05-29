@@ -4,7 +4,14 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { register, getFetchErrorMessage, setPendingVerificationEmail, setSessionEmail, setSessionProfile, validateSignupFields } from "@/lib";
+import {
+  register,
+  getFetchErrorMessage,
+  setPendingVerificationEmail,
+  setSessionEmail,
+  setSessionProfile,
+  validateSignupFields,
+} from '@/lib';
 import styles from './page.module.scss';
 
 type AccountType = 'undergraduate' | 'law-school';
@@ -79,7 +86,6 @@ export default function SignupPage() {
         <div className={styles.formWrap}>
           <h1 className={styles.heading}>Create Account</h1>
 
-
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
             {formError && (
               <p className={styles.formError} role="alert">
@@ -89,26 +95,30 @@ export default function SignupPage() {
             {/* Name row */}
             <div className={styles.row}>
               <div className={styles.field}>
-                <label className={styles.label} htmlFor="firstName">Firstname</label>
+                <label className={styles.label} htmlFor="firstName">
+                  Firstname
+                </label>
                 <input
                   id="firstName"
                   className={`${styles.input} ${errors.firstName ? styles.inputErr : ''}`}
                   type="text"
                   placeholder="E.g Adekaye"
                   value={firstName}
-                  onChange={e => setFirstName(e.target.value)}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
                 {errors.firstName && <span className={styles.errMsg}>{errors.firstName}</span>}
               </div>
               <div className={styles.field}>
-                <label className={styles.label} htmlFor="lastName">Lastname</label>
+                <label className={styles.label} htmlFor="lastName">
+                  Lastname
+                </label>
                 <input
                   id="lastName"
                   className={`${styles.input} ${errors.lastName ? styles.inputErr : ''}`}
                   type="text"
                   placeholder="Ajala"
                   value={lastName}
-                  onChange={e => setLastName(e.target.value)}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
                 {errors.lastName && <span className={styles.errMsg}>{errors.lastName}</span>}
               </div>
@@ -116,22 +126,28 @@ export default function SignupPage() {
 
             {/* Email */}
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="email">School Email Address</label>
+              <label className={styles.label} htmlFor="email">
+                School Email Address
+              </label>
               <input
                 id="email"
                 className={`${styles.input} ${errors.email ? styles.inputErr : ''}`}
                 type="email"
                 placeholder="E.g shola@universityname.edu.ng"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <span className={styles.hint}>Your student email would be used to verify your account</span>
+              <span className={styles.hint}>
+                Your student email would be used to verify your account
+              </span>
               {errors.email && <span className={styles.errMsg}>{errors.email}</span>}
             </div>
 
             {/* Password */}
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="password">Password</label>
+              <label className={styles.label} htmlFor="password">
+                Password
+              </label>
               <div className={styles.pwdWrap}>
                 <input
                   id="password"
@@ -139,9 +155,13 @@ export default function SignupPage() {
                   type={showPwd ? 'text' : 'password'}
                   placeholder="Set a Password of your Choice"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="button" className={styles.showBtn} onClick={() => setShowPwd(p => !p)}>
+                <button
+                  type="button"
+                  className={styles.showBtn}
+                  onClick={() => setShowPwd((p) => !p)}
+                >
                   {showPwd ? 'Hide' : 'Show'}
                 </button>
               </div>
@@ -180,7 +200,9 @@ export default function SignupPage() {
 
           <p className={styles.loginLine}>
             I already have an Account{' '}
-            <Link href="/login" className={styles.loginLink}>Sign In</Link>
+            <Link href="/login" className={styles.loginLink}>
+              Sign In
+            </Link>
           </p>
         </div>
       </div>

@@ -26,7 +26,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 
   &:hover {
     background: $gray-200;
@@ -78,7 +80,9 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s, opacity 0.15s;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
 
   &:hover:not(:disabled) {
     background: $primary-dark;
@@ -135,7 +139,9 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 
   &:hover {
     background: $accent-red;
@@ -151,8 +157,12 @@
   margin: 0;
 }
 
-.success  { color: $primary; }
-.error    { color: $accent-red; }
+.success {
+  color: $primary;
+}
+.error {
+  color: $accent-red;
+}
 
 // ─── Success actions ──────────────────────────────────────────────────────────
 
