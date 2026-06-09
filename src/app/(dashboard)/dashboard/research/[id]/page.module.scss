@@ -4,211 +4,259 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: $white;
 }
 
-.topBar {
+// ─── Breadcrumb ───────────────────────────────────────────────────────────────
+
+.breadcrumb {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: $space-2;
   padding: $space-3 $space-5;
-  background: $white;
   border-bottom: 1px solid $gray-200;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
 
-.memoBtn {
-  height: 36px;
-  padding: 0 $space-3;
-  background: $primary;
-  color: $white;
-  border: none;
-  border-radius: $radius;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
-
-  &:hover:not(:disabled) {
-    background: $primary-dark;
-  }
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  @media (max-width: 600px) {
+    padding: $space-3;
   }
 }
 
-.backBtn {
-  font-size: 13px;
-  font-weight: 600;
-  color: $gray-600;
-  text-decoration: none;
-
-  &:hover {
-    color: $dark;
-  }
-}
-
-.content {
-  flex: 1;
-  padding: $space-5;
-  max-width: 900px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-}
-
-.sessionHead {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.queryTitle {
-  font-family: $font-heading;
-  font-size: 20px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0;
-}
-
-.refined {
+.breadcrumbLink {
   font-size: 13px;
   color: $gray-600;
-  margin: 0;
-
-  em {
-    font-style: normal;
-    font-weight: 600;
-    color: $dark;
-  }
-}
-
-.sessionDate {
-  font-size: 12px;
-  color: $gray-400;
-  margin: 0;
-}
-
-.memoCard {
-  background: $white;
-  border-radius: 12px;
-  padding: $space-4 $space-5;
-  box-shadow: $shadow-sm;
-}
-
-.cardTitle {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: $primary;
-  margin: 0 0 $space-2;
-}
-
-.memoBody {
-  font-size: 14px;
-  color: $dark;
-  line-height: 1.7;
-  margin: 0;
-}
-
-.resultsHeading {
-  font-family: $font-heading;
-  font-size: 15px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0;
-}
-
-.resultsList {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
-}
-
-.resultCard {
-  background: $white;
-  border-radius: 12px;
-  padding: $space-4;
-  box-shadow: $shadow-sm;
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-}
-
-.resultHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: $space-2;
-}
-
-.resultTitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: $dark;
   text-decoration: none;
-  flex: 1;
 
   &:hover {
     color: $primary;
   }
 }
 
-.matchScore {
-  font-size: 11px;
+.breadcrumbSep {
+  font-size: 13px;
+  color: $gray-400;
+}
+
+.breadcrumbCurrent {
+  font-size: 13px;
+  color: $dark;
+  font-weight: 500;
+}
+
+// ─── Body layout ──────────────────────────────────────────────────────────────
+
+.body {
+  flex: 1;
+  display: flex;
+  gap: $space-5;
+  padding: $space-5;
+  align-items: flex-start;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    padding: $space-4 $space-3;
+  }
+}
+
+// ─── Main content ─────────────────────────────────────────────────────────────
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+// ─── Result tabs ──────────────────────────────────────────────────────────────
+
+.resultTabs {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.resultTab {
+  text-align: left;
+  padding: $space-2 $space-3;
+  font-size: 12px;
+  color: $gray-600;
+  background: $white;
+  border: none;
+  border-bottom: 1px solid $gray-200;
+  cursor: pointer;
+  transition:
+    background 0.1s,
+    color 0.1s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $gray-50;
+    color: $dark;
+  }
+}
+
+.resultTabActive {
+  background: $orange-50;
+  color: $primary;
+  font-weight: 600;
+}
+
+// ─── Case content ─────────────────────────────────────────────────────────────
+
+.caseContent {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.caseTitle {
+  font-family: $font-heading;
+  font-size: 20px;
   font-weight: 700;
-  color: #16a34a;
-  background: rgba(#16a34a, 0.08);
-  padding: 3px 8px;
+  color: $dark;
+  margin: 0;
+  line-height: 1.35;
+
+  @media (max-width: 600px) {
+    font-size: 17px;
+  }
+}
+
+.courtBadge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 14px;
+  background: rgba($primary, 0.12);
+  color: $primary;
   border-radius: 100px;
-  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .citation {
-  font-size: 12px;
+  font-size: 13px;
   color: $gray-600;
   font-style: italic;
   margin: 0;
 }
 
-.excerpt {
-  font-size: 13px;
-  color: $gray-600;
-  margin: 0;
-  line-height: 1.5;
+.excerptBlock {
+  border-left: 3px solid $primary;
+  padding-left: $space-3;
 }
 
-.resultFooter {
+.excerptHighlight {
+  font-size: 14px;
+  color: $primary;
+  line-height: 1.7;
+  margin: 0;
+  font-style: italic;
+}
+
+.memoSection {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  margin-top: $space-2;
+}
+
+.memoLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.memoText {
+  font-size: 14px;
+  color: $gray-800;
+  line-height: 1.75;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.relevanceRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $space-2;
-  flex-wrap: wrap;
 }
 
-.tags {
+.relevanceLabel {
+  font-size: 13px;
+  color: $gray-600;
+}
+
+.relevanceScore {
+  font-size: 13px;
+  font-weight: 700;
+  color: $green-500;
+}
+
+.matchBarWrap {
+  height: 4px;
+  background: $gray-200;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.matchBar {
+  height: 100%;
+  width: var(--bar-pct, 0%);
+  background: $green-500;
+  border-radius: 2px;
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: $space-1;
+  flex-direction: column;
+  gap: $space-3;
+
+  @media (max-width: 900px) {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
 }
 
-.saveNoteBtn {
-  height: 30px;
-  padding: 0 $space-3;
-  background: transparent;
+.sidebarHeading {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $gray-600;
+  margin: 0;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+}
+
+.actionBtn {
+  width: 100%;
+  height: 40px;
+  background: $white;
   border: 1px solid $gray-200;
   border-radius: $radius;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: $gray-600;
+  color: $dark;
   cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s;
   white-space: nowrap;
-  transition: all 0.15s;
 
   &:hover:not(:disabled) {
     border-color: $primary;
@@ -218,31 +266,61 @@
     opacity: 0.6;
     cursor: not-allowed;
   }
+
+  @media (max-width: 900px) {
+    width: auto;
+    padding: 0 $space-4;
+  }
 }
 
-.saveNoteBtnDone {
-  border-color: #16a34a;
-  color: #16a34a;
+.actionBtnSecondary {
+  color: $gray-600;
 }
 
-.tag {
+.courtImgWrap {
+  margin-top: $space-2;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.courtImgPlaceholder {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(135deg, #e8d5b0 0%, #c9a87c 100%);
+  border-radius: $radius-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: $space-2 $space-3;
+  box-sizing: border-box;
+}
+
+.courtImgLabel {
   font-size: 11px;
-  font-weight: 600;
-  color: $gray-600;
-  background: $gray-100;
-  padding: 3px 8px;
-  border-radius: 100px;
+  font-weight: 700;
+  color: $white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-.state {
+.courtImgSub {
+  font-size: 10px;
+  color: rgba($white, 0.85);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+// ─── State messages ───────────────────────────────────────────────────────────
+
+.stateMsg {
   font-size: 14px;
-  color: $gray-600;
-  padding: $space-4 0;
+  color: $gray-400;
+  padding: $space-5;
 }
 
 .stateError {
   font-size: 14px;
   color: $accent-red;
-  padding: $space-7;
-  text-align: center;
+  padding: $space-5;
 }

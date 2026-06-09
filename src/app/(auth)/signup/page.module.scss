@@ -90,6 +90,18 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: $space-3;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.content {
+  @media (max-width: 900px) {
+    padding: $space-5 $space-3;
+    align-items: flex-start;
+    padding-top: $space-6;
+  }
 }
 
 // ─── Fields ───────────────────────────────────────────────────────────────────
@@ -135,11 +147,6 @@
 .errMsg {
   font-size: 12px;
   color: $accent-red;
-}
-
-.hint {
-  font-size: 12px;
-  color: $primary;
 }
 
 // ─── Password ─────────────────────────────────────────────────────────────────
