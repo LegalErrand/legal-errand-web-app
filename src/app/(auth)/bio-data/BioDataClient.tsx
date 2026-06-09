@@ -28,8 +28,6 @@ export default function BioDataClient() {
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [school, setSchool] = useState('');
-  const [level, setLevel] = useState('');
-  const [matric, setMatric] = useState('');
   const [phone, setPhone] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [editing, setEditing] = useState(true);
@@ -68,7 +66,6 @@ export default function BioDataClient() {
       country,
       city,
       schoolName: school,
-      levelYear: level,
       phoneDigits: phone,
     });
     setFieldErrors(errs);
@@ -94,8 +91,6 @@ export default function BioDataClient() {
           country,
           city,
           schoolName: school.trim(),
-          levelYear: level.trim(),
-          matricNumber: matric.trim() || undefined,
           phoneNumber,
         },
         t
@@ -156,15 +151,11 @@ export default function BioDataClient() {
             country={country}
             city={city}
             school={school}
-            level={level}
-            matric={matric}
             phone={phone}
             fieldErrors={fieldErrors}
             onCountryChange={setCountry}
             onCityChange={setCity}
             onSchoolChange={setSchool}
-            onLevelChange={setLevel}
-            onMatricChange={setMatric}
             onPhoneChange={setPhone}
           />
 

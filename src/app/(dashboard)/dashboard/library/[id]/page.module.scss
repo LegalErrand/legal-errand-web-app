@@ -3,18 +3,23 @@
 .page {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
-  height: 100%;
+  // Use viewport height directly so body never scrolls on this page.
+  // The dashboard sidebar is position:fixed/sticky, so 100dvh is safe here.
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
 }
 
 .topBar {
   display: flex;
   align-items: center;
   gap: $space-3;
-  padding: $space-3 $space-5;
+  padding: $space-2 $space-4;
   background: $white;
   border-bottom: 1px solid $gray-200;
   flex-shrink: 0;
+  min-height: 56px;
+  overflow: hidden;
 }
 
 .backBtn {
@@ -72,8 +77,9 @@
   display: flex;
   align-items: center;
   gap: $space-2;
-  flex-wrap: wrap;
-  margin-top: 3px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  margin-top: 2px;
 }
 
 .docMetaChip {
@@ -164,8 +170,8 @@
 .centerPanel {
   flex: 1;
   min-height: 0;
-  background: #f0f0f0;
+  background: $white;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
 }

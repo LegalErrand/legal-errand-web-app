@@ -47,8 +47,8 @@
 .body {
   flex: 1;
   display: flex;
-  gap: $space-5;
-  padding: $space-5;
+  gap: $space-4;
+  padding: $space-4 $space-5 $space-5;
   align-items: flex-start;
 
   @media (max-width: 900px) {
@@ -67,44 +67,39 @@
   gap: $space-4;
 }
 
-// ─── Result tabs ──────────────────────────────────────────────────────────────
+// ─── Result navigation ────────────────────────────────────────────────────────
 
-.resultTabs {
+.resultNav {
   display: flex;
-  flex-direction: column;
-  gap: $space-1;
-  border: 1px solid $gray-200;
-  border-radius: $radius-lg;
-  overflow: hidden;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-2;
 }
 
-.resultTab {
-  text-align: left;
-  padding: $space-2 $space-3;
-  font-size: 12px;
-  color: $gray-600;
-  background: $white;
-  border: none;
-  border-bottom: 1px solid $gray-200;
+.resultNavBtn {
+  background: rgba(62, 64, 62, 0.08);
+  border: 1px solid $card-border;
+  border-radius: $radius;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: $dark;
   cursor: pointer;
-  transition:
-    background 0.1s,
-    color 0.1s;
+  font-family: inherit;
+  transition: background 0.12s;
 
-  &:last-child {
-    border-bottom: none;
+  &:hover:not(:disabled) {
+    background: $gray-200;
   }
-
-  &:hover {
-    background: $gray-50;
-    color: $dark;
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
   }
 }
 
-.resultTabActive {
-  background: $orange-50;
-  color: $primary;
-  font-weight: 600;
+.resultNavLabel {
+  font-size: 13px;
+  color: $gray-600;
 }
 
 // ─── Case content ─────────────────────────────────────────────────────────────
@@ -112,29 +107,118 @@
 .caseContent {
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  gap: $space-4;
+  background: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: $radius-xl;
+  padding: $space-5;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.subjectBadge {
+  display: inline-flex;
+  padding: 4px 12px;
+  background: $gray-100;
+  color: $gray-600;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $gray-400;
+  margin: 0 0 $space-2;
+}
+
+.relevanceContext {
+  border-top: 1px solid $card-border;
+  padding-top: $space-3;
+}
+
+.relevanceText {
+  font-size: 14px;
+  color: $snippet-blue;
+  line-height: 1.75;
+  margin: 0;
+}
+
+.analysisBlock {
+  border-top: 1px solid $card-border;
+  padding-top: $space-3;
+}
+
+.analysisSections {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.analysisSection {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.analysisSectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $primary;
+  margin: 0;
+}
+
+.analysisSectionText {
+  font-size: 14px;
+  color: $dark;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.readCaseLink {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary;
+  text-decoration: none;
+  padding: $space-2 0;
+  border-top: 1px solid $card-border;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .caseTitle {
   font-family: $font-heading;
-  font-size: 20px;
-  font-weight: 700;
-  color: $dark;
+  font-size: 24px;
+  font-weight: 600;
+  color: #303030;
   margin: 0;
   line-height: 1.35;
 
   @media (max-width: 600px) {
-    font-size: 17px;
+    font-size: 18px;
   }
 }
 
 .courtBadge {
   display: inline-flex;
   align-self: flex-start;
-  padding: 4px 14px;
-  background: rgba($primary, 0.12);
-  color: $primary;
-  border-radius: 100px;
+  padding: 8px 14px;
+  background: $court-green-bg;
+  color: $court-green;
+  border-radius: $radius;
   font-size: 12px;
   font-weight: 600;
 }
@@ -146,17 +230,20 @@
   margin: 0;
 }
 
-.excerptBlock {
-  border-left: 3px solid $primary;
-  padding-left: $space-3;
+.docBody {
+  border-top: 1px solid $card-border;
+  padding-top: $space-3;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .excerptHighlight {
   font-size: 14px;
-  color: $primary;
-  line-height: 1.7;
+  font-weight: 400;
+  color: $dark;
+  line-height: 1.8;
   margin: 0;
-  font-style: italic;
+  white-space: pre-wrap;
 }
 
 .memoSection {
@@ -215,7 +302,7 @@
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 .sidebar {
-  width: 200px;
+  width: 240px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -223,30 +310,32 @@
 
   @media (max-width: 900px) {
     width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-start;
   }
 }
 
+.sidebarCard {
+  background: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: $radius-xl;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
 .sidebarHeading {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: 13px;
+  font-weight: 600;
   color: $gray-600;
   margin: 0;
-
-  @media (max-width: 900px) {
-    width: 100%;
-  }
+  text-transform: lowercase;
 }
 
 .actionBtn {
   width: 100%;
   height: 40px;
   background: $white;
-  border: 1px solid $gray-200;
+  border: 1px solid $card-border;
   border-radius: $radius;
   font-size: 13px;
   font-weight: 600;
@@ -257,19 +346,16 @@
     color 0.15s,
     background 0.15s;
   white-space: nowrap;
+  background: rgba(62, 64, 62, 0.1);
 
   &:hover:not(:disabled) {
     border-color: $primary;
     color: $primary;
+    background: $orange-50;
   }
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-  }
-
-  @media (max-width: 900px) {
-    width: auto;
-    padding: 0 $space-4;
   }
 }
 
@@ -278,7 +364,7 @@
 }
 
 .courtImgWrap {
-  margin-top: $space-2;
+  margin-top: $space-1;
 
   @media (max-width: 900px) {
     display: none;
@@ -287,28 +373,42 @@
 
 .courtImgPlaceholder {
   width: 100%;
-  height: 120px;
-  background: linear-gradient(135deg, #e8d5b0 0%, #c9a87c 100%);
+  height: 140px;
+  background: linear-gradient(160deg, #5a4a3a 0%, #2a2727 100%);
   border-radius: $radius-lg;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
-  padding: $space-2 $space-3;
+  padding: $space-3;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 39, 39, 0.44);
+    border-radius: inherit;
+  }
 }
 
 .courtImgLabel {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: $white;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 1;
+  line-height: 1.3;
 }
 
 .courtImgSub {
   font-size: 10px;
-  color: rgba($white, 0.85);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  color: rgba($white, 0.75);
+  position: relative;
+  z-index: 1;
 }
 
 // ─── State messages ───────────────────────────────────────────────────────────
@@ -319,8 +419,41 @@
   padding: $space-5;
 }
 
+.analysisLoadingRow {
+  margin-bottom: $space-2;
+}
+
+.btnLoading {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+}
+
 .stateError {
   font-size: 14px;
   color: $accent-red;
   padding: $space-5;
+}
+
+// ─── Typewriter cursor ────────────────────────────────────────────────────────
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: currentColor;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: blink 0.8s ease infinite;
 }

@@ -1,7 +1,8 @@
 'use client';
-
 import { useState } from 'react';
 import type { NoteAnalysis } from '@/lib';
+import { useTypewriter } from '@/lib';
+import { Spinner } from '@/components';
 import styles from './NoteAISidebar.module.scss';
 
 interface AISuggestion {
@@ -65,6 +66,17 @@ function ScoreDonut({ score }: { score: number }) {
   );
 }
 
+/** Animated text block — types out text on mount/change */
+function TypewriterBlock({ text, className }: { text: string; className?: string }) {
+  const { displayed, done } = useTypewriter(text, 8, 12);
+  return (
+    <p className={className}>
+      {displayed}
+      {!done && <span className={styles.cursor} aria-hidden="true" />}
+    </p>
+  );
+}
+
 export default function NoteAISidebar({
   qualityScore,
   qualityFeedback,
@@ -107,6 +119,7 @@ export default function NoteAISidebar({
   async function handleSummarize() {
     setSummarizing(true);
     setError('');
+    setSummary('');
     try {
       const res = await onSummarize();
       if (res) setSummary(res);
@@ -120,6 +133,7 @@ export default function NoteAISidebar({
   async function handleExpand() {
     setExpanding(true);
     setError('');
+    setExpanded('');
     try {
       const res = await onExpand();
       if (res) setExpanded(res);
@@ -151,10 +165,16 @@ export default function NoteAISidebar({
             Run an analysis to receive AI quality scoring and improvement suggestions.
           </p>
         ) : (
-          feedback && <p className={styles.feedbackText}>{feedback}</p>
+          feedback && <TypewriterBlock text={feedback} className={styles.feedbackText} />
         )}
         <button className={styles.analyzeBtn} onClick={handleAnalyze} disabled={analyzing}>
-          {analyzing ? 'Analysing…' : 'Analyse Note'}
+          {analyzing ? (
+            <span className={styles.btnLoading}>
+              <Spinner size={14} /> Analysing…
+            </span>
+          ) : (
+            'Analyse Note'
+          )}
         </button>
       </div>
 
@@ -183,17 +203,29 @@ export default function NoteAISidebar({
 
         <div className={styles.insightActions}>
           <button className={styles.summarizeBtn} onClick={handleSummarize} disabled={summarizing}>
-            {summarizing ? 'Summarising…' : 'Summarise Note'}
+            {summarizing ? (
+              <span className={styles.btnLoading}>
+                <Spinner size={13} /> Summarising…
+              </span>
+            ) : (
+              'Summarise Note'
+            )}
           </button>
           <button className={styles.summarizeBtn} onClick={handleExpand} disabled={expanding}>
-            {expanding ? 'Expanding…' : 'Expand Note'}
+            {expanding ? (
+              <span className={styles.btnLoading}>
+                <Spinner size={13} /> Expanding…
+              </span>
+            ) : (
+              'Expand Note'
+            )}
           </button>
         </div>
 
         {summary && (
           <div className={styles.summaryBox}>
             <p className={styles.summaryLabel}>SUMMARY</p>
-            <p className={styles.summaryText}>{summary}</p>
+            <TypewriterBlock text={summary} className={styles.summaryText} />
             <button className={styles.insertBtn} onClick={() => onInsertContent(summary)}>
               Insert into note
             </button>
@@ -203,7 +235,7 @@ export default function NoteAISidebar({
         {expanded && (
           <div className={styles.summaryBox}>
             <p className={styles.summaryLabel}>EXPANDED CONTENT</p>
-            <p className={styles.summaryText}>{expanded}</p>
+            <TypewriterBlock text={expanded} className={styles.summaryText} />
             <button className={styles.insertBtn} onClick={() => onInsertContent(expanded)}>
               Insert into note
             </button>

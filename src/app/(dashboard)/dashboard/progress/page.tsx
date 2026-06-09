@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getQuestions, getQuestionStats, getFetchErrorMessage, getAccessToken } from '@/lib';
 import type { Question, QuestionStats, SubjectMastery } from '@/lib';
+import { ShimmerCard } from '@/components';
 import styles from './page.module.scss';
 
 const SUBJECT_TABS = ['All question banks', 'Contract law', 'Criminal law', 'Tort law'] as const;
@@ -112,7 +113,11 @@ export default function ProgressPage() {
 
         {/* Question bank grid */}
         {loading ? (
-          <p className={styles.stateMsg}>Loading questions…</p>
+          <div className={styles.questionGrid}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ShimmerCard key={i} lines={2} />
+            ))}
+          </div>
         ) : items.length === 0 ? (
           <div className={styles.emptyState}>
             <p>No questions available for this subject yet. Check back soon.</p>

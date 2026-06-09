@@ -1,10 +1,11 @@
-import { Navbar, WaitlistForm } from '@/components';
+import { LandingRedirect, Navbar, WaitlistForm } from '@/components';
 import { FEATURES, STATS } from '@/lib';
 import styles from './page.module.scss';
 
 export default function WaitlistPage() {
   return (
     <div className={styles.page}>
+      <LandingRedirect />
       <Navbar />
 
       <section className={styles.hero}>

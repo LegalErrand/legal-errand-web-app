@@ -25,6 +25,13 @@ export interface ApiResponse<T = void> {
   data?: T;
   message?: string;
   error?: string;
+  meta?: {
+    total?: number;
+    totalPages?: number;
+    page?: number;
+    limit?: number;
+    [key: string]: unknown;
+  };
 }
 
 export interface PaginatedResponse<T> {
@@ -187,13 +194,12 @@ export interface SubjectMastery {
 }
 
 export interface ActivityItem {
-  id: string;
-  type: 'quiz' | 'case_explainer' | 'ai_session' | 'document' | string;
+  _id: string;
+  /** 'quiz' | 'case' | 'ai_session' | 'socratic' | 'document' */
+  type: string;
   title: string;
-  score?: number;
-  subject?: string;
+  subtitle: string;
   createdAt: string;
-  meta?: string;
 }
 
 export interface Goal {
@@ -211,7 +217,7 @@ export interface DashboardData {
   streak?: number;
   lastStudyDate?: string;
   subjectMastery?: SubjectMastery[];
-  recentActivity?: ActivityItem[];
+  recentActivity?: unknown[];
   activeGoals?: Goal[];
   reasoningScore?: { latest: number };
   stats?: Record<string, number>;
@@ -348,9 +354,10 @@ export interface ResearchSession {
 }
 
 export interface SearchResearchRequest {
-  query: string;
+  query?: string;
   jurisdiction?: string;
   courtLevel?: string;
+  subject?: string;
 }
 
 export interface SearchResearchResponse {

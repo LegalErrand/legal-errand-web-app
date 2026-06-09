@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getQuestion, submitAnswer, getFetchErrorMessage, getAccessToken } from '@/lib';
 import type { Question, QuestionAttempt } from '@/lib';
+import { Spinner } from '@/components';
 import styles from './page.module.scss';
 
 export default function QuizPage() {
@@ -93,7 +94,9 @@ export default function QuizPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <p className={styles.stateMsg}>Loading question…</p>
+        <div className={styles.stateMsg}>
+          <Spinner size={22} label="Loading question…" />
+        </div>
       </div>
     );
   }
@@ -159,7 +162,13 @@ export default function QuizPage() {
           onClick={handleSubmit}
           disabled={submitting || !answer.trim()}
         >
-          {submitting ? 'Submitting…' : 'Submit for AI Grading'}
+          {submitting ? (
+            <span className={styles.btnLoading}>
+              <Spinner size={15} light /> Submitting…
+            </span>
+          ) : (
+            'Submit for AI Grading'
+          )}
         </button>
       </div>
 

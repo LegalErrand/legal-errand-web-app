@@ -331,3 +331,9 @@
   color: $gray-400;
   margin: 0;
 }
+
+.btnLoading {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+}
