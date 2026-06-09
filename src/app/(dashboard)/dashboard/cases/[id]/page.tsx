@@ -3,8 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { getCaseExplanation, saveCaseToNotes, getFetchErrorMessage, getAccessToken } from '@/lib';
+import {
+  getCaseExplanation,
+  saveCaseToNotes,
+  getFetchErrorMessage,
+  getAccessToken,
+  useTypewriter,
+} from '@/lib';
 import type { CaseExplanation } from '@/lib';
+import { Spinner } from '@/components';
 import styles from './page.module.scss';
 
 const POLL_INTERVAL = 3500; // ms
@@ -24,6 +31,20 @@ function getStepStatus(
   if (overallPct >= threshold) return 'complete';
   if (overallPct >= threshold - 100 / ANALYSIS_STEPS.length) return 'in_progress';
   return 'pending';
+}
+
+/** Section with typewriter animation on first render */
+function Section({ title, body }: { title: string; body: string }) {
+  const { displayed, done } = useTypewriter(body, 8, 10);
+  return (
+    <div className={styles.card}>
+      <h2 className={styles.cardTitle}>{title}</h2>
+      <p className={styles.cardBody}>
+        {displayed}
+        {!done && <span className={styles.cursor} aria-hidden="true" />}
+      </p>
+    </div>
+  );
 }
 
 export default function CaseDetailPage() {
@@ -101,7 +122,9 @@ export default function CaseDetailPage() {
   if (loading)
     return (
       <div className={styles.page}>
-        <p className={styles.state}>Loading case…</p>
+        <div className={styles.state}>
+          <Spinner size={22} label="Loading case…" />
+        </div>
       </div>
     );
   if (error && !caseData)
@@ -118,7 +141,6 @@ export default function CaseDetailPage() {
     );
 
   const processing = isProcessing(caseData);
-  // Use API-supplied progress when available; 0 while pending, 100 when done
   const pct = processing ? (caseData.progress ?? 0) : 100;
 
   return (
@@ -147,7 +169,13 @@ export default function CaseDetailPage() {
         <div className={styles.headerActions}>
           {!processing && !saved && (
             <button className={styles.saveBtn} onClick={handleSaveToNotes} disabled={saving}>
-              {saving ? 'Saving…' : 'Save to Notes'}
+              {saving ? (
+                <span className={styles.btnLoading}>
+                  <Spinner size={14} /> Saving…
+                </span>
+              ) : (
+                'Save to Notes'
+              )}
             </button>
           )}
           {saved && <span className={styles.savedBadge}>✓ Saved to Notes</span>}
@@ -270,7 +298,7 @@ export default function CaseDetailPage() {
         </div>
       )}
 
-      {/* Breakdown view */}
+      {/* Breakdown view — each Section types out its body */}
       {tab === 'breakdown' && !processing && (
         <div className={styles.breakdownLayout}>
           <div className={styles.breakdownMain}>
@@ -305,7 +333,13 @@ export default function CaseDetailPage() {
                 onClick={handleSaveToNotes}
                 disabled={saving}
               >
-                {saving ? 'Saving…' : 'Save to Notes'}
+                {saving ? (
+                  <span className={styles.btnLoading}>
+                    <Spinner size={14} /> Saving…
+                  </span>
+                ) : (
+                  'Save to Notes'
+                )}
               </button>
             )}
             {saved && <span className={styles.savedBadge}>✓ Saved</span>}
@@ -317,14 +351,23 @@ export default function CaseDetailPage() {
                 <p className={styles.relatedCasesHeading}>Related cases</p>
                 <ul className={styles.relatedList}>
                   {caseData.relatedCases.map((rc) => (
-                    <li key={rc.citation} className={styles.relatedItem}>
-                      <div className={styles.relatedCitationRow}>
-                        <span className={styles.relatedCitation}>{rc.citation}</span>
-                        {rc.relation && (
-                          <span className={styles.relatedRelation}>{rc.relation}</span>
-                        )}
-                      </div>
-                      {rc.description && <p className={styles.relatedDesc}>{rc.description}</p>}
+                    <li
+                      key={typeof rc === 'string' ? rc : rc.citation}
+                      className={styles.relatedItem}
+                    >
+                      {typeof rc === 'string' ? (
+                        <span className={styles.relatedCitation}>{rc}</span>
+                      ) : (
+                        <>
+                          <div className={styles.relatedCitationRow}>
+                            <span className={styles.relatedCitation}>{rc.citation}</span>
+                            {rc.relation && (
+                              <span className={styles.relatedRelation}>{rc.relation}</span>
+                            )}
+                          </div>
+                          {rc.description && <p className={styles.relatedDesc}>{rc.description}</p>}
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -333,15 +376,6 @@ export default function CaseDetailPage() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function Section({ title, body }: { title: string; body: string }) {
-  return (
-    <div className={styles.card}>
-      <h2 className={styles.cardTitle}>{title}</h2>
-      <p className={styles.cardBody}>{body}</p>
     </div>
   );
 }

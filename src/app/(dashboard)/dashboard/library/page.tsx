@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   getLibraryDocuments,
   getMyDocuments,
@@ -14,27 +14,55 @@ import {
   getAccessToken,
 } from '@/lib';
 import type { LibraryDocument } from '@/lib';
-import { SearchIcon, DocCard } from '@/components';
+import { SearchIcon, DocCard, ShimmerCard } from '@/components';
 import LibraryUploadModal from '@/components/LibraryUploadModal';
 import styles from './page.module.scss';
 
 type Tab = 'my' | 'free' | 'bookmarks';
+const PAGE_SIZE = 12;
 
 export default function LibraryPage() {
+  return (
+    <Suspense>
+      <LibraryPageInner />
+    </Suspense>
+  );
+}
+
+function LibraryPageInner() {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>('my');
+  const searchParams = useSearchParams();
+
+  // Tab and page persisted in URL
+  const tab = (searchParams.get('tab') as Tab) ?? 'my';
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10));
+
   const [docs, setDocs] = useState<LibraryDocument[]>([]);
+  const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showUpload, setShowUpload] = useState(false);
   const [token, setToken] = useState('');
 
-  const load = useCallback(async (t: string, activeTab: Tab, q: string) => {
+  function setTab(t: Tab) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', t);
+    params.set('page', '1');
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }
+
+  function setPage(p: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(p));
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }
+
+  const load = useCallback(async (t: string, activeTab: Tab, q: string, pg: number) => {
     setLoading(true);
     setError('');
     try {
-      const params = q ? { search: q, limit: 20 } : { limit: 20 };
+      const params = { limit: PAGE_SIZE, page: pg, ...(q ? { search: q } : {}) };
       const res =
         activeTab === 'my'
           ? await getMyDocuments(t, params)
@@ -42,6 +70,7 @@ export default function LibraryPage() {
             ? await getBookmarks(t, params)
             : await getLibraryDocuments(t, params);
       setDocs(res.data ?? []);
+      setTotal((res.meta?.total as number) ?? res.data?.length ?? 0);
     } catch (err) {
       setError(getFetchErrorMessage(err));
     } finally {
@@ -56,8 +85,8 @@ export default function LibraryPage() {
       return;
     }
     setToken(t);
-    void load(t, tab, search);
-  }, [router, load, tab, search]);
+    void load(t, tab, search, page);
+  }, [router, load, tab, search, page]);
 
   async function handleBookmark(id: string) {
     if (!token) return;
@@ -81,9 +110,10 @@ export default function LibraryPage() {
     }
   }
 
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
   return (
     <div className={styles.page}>
-      {/* Search bar at top */}
       <div className={styles.searchBar}>
         <SearchIcon size={16} className={styles.searchIcon} />
         <input
@@ -94,30 +124,19 @@ export default function LibraryPage() {
         />
       </div>
 
-      {/* Tabs below search */}
       <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${tab === 'my' ? styles.tabActive : ''}`}
-          onClick={() => setTab('my')}
-        >
-          My Document
-        </button>
-        <button
-          className={`${styles.tab} ${tab === 'free' ? styles.tabActive : ''}`}
-          onClick={() => setTab('free')}
-        >
-          Free Library
-        </button>
-        <button
-          className={`${styles.tab} ${tab === 'bookmarks' ? styles.tabActive : ''}`}
-          onClick={() => setTab('bookmarks')}
-        >
-          Marketplace
-        </button>
+        {(['my', 'free', 'bookmarks'] as Tab[]).map((t) => (
+          <button
+            key={t}
+            className={`${styles.tab} ${tab === t ? styles.tabActive : ''}`}
+            onClick={() => setTab(t)}
+          >
+            {t === 'my' ? 'My Document' : t === 'free' ? 'Free Library' : 'Marketplace'}
+          </button>
+        ))}
       </div>
 
       <div className={styles.content}>
-        {/* Section heading + upload button */}
         <div className={styles.sectionRow}>
           <h1 className={styles.sectionTitle}>
             {tab === 'my' ? 'My Document' : tab === 'free' ? 'Free Library' : 'Marketplace'}
@@ -134,7 +153,11 @@ export default function LibraryPage() {
         )}
 
         {loading ? (
-          <p className={styles.emptyState}>Loading…</p>
+          <div className={styles.grid}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ShimmerCard key={i} lines={2} />
+            ))}
+          </div>
         ) : docs.length === 0 ? (
           <div className={styles.emptyBox}>
             <p>
@@ -146,18 +169,44 @@ export default function LibraryPage() {
             </p>
           </div>
         ) : (
-          <div className={styles.grid}>
-            {docs.map((doc) => (
-              <DocCard
-                key={doc._id}
-                id={doc._id}
-                title={doc.title}
-                subject={doc.subject}
-                description={doc.description}
-                href={`/dashboard/library/${doc._id}`}
-              />
-            ))}
-          </div>
+          <>
+            <div className={styles.grid}>
+              {docs.map((doc) => (
+                <DocCard
+                  key={doc._id}
+                  id={doc._id}
+                  title={doc.title}
+                  subject={doc.subject}
+                  description={doc.description}
+                  href={`/dashboard/library/${doc._id}`}
+                />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className={styles.pagination}>
+                <button
+                  className={styles.pageBtn}
+                  onClick={() => setPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  type="button"
+                >
+                  ← Prev
+                </button>
+                <span className={styles.pageInfo}>
+                  {page} / {totalPages}
+                </span>
+                <button
+                  className={styles.pageBtn}
+                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                  type="button"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -169,7 +218,7 @@ export default function LibraryPage() {
           onClose={() => setShowUpload(false)}
           onSuccess={() => {
             setShowUpload(false);
-            void load(token, tab, search);
+            void load(token, tab, search, 1);
           }}
         />
       )}

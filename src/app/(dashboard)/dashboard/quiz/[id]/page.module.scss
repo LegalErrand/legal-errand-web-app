@@ -340,6 +340,12 @@
   color: $gray-600;
 }
 
+.btnLoading {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+}
+
 .submittedBox {
   flex: 1;
   display: flex;

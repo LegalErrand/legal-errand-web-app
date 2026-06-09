@@ -201,7 +201,6 @@ export default function DashboardPage() {
 
         <DashboardLower
           mastery={mastery}
-          activity={activity}
           earnedBadges={earnedBadges}
           reasoningScore={reasoningScore}
           onViewHistory={() => setShowHistory(true)}

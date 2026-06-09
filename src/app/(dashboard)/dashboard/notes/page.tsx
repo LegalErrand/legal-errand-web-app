@@ -12,6 +12,7 @@ import {
   getAccessToken,
 } from '@/lib';
 import type { Note, NoteTemplate } from '@/lib';
+import { Spinner, ShimmerNoteCard } from '@/components';
 import styles from './page.module.scss';
 
 // ─── Static template definitions ──────────────────────────────────────────────
@@ -94,7 +95,9 @@ export default function NotesPage() {
       if (q) params.search = q;
       if (subject && subject !== 'All Notes') params.subject = subject;
       const res = await getNotes(t, params as Parameters<typeof getNotes>[1]);
-      setNotes(res.data?.data ?? []);
+      // API returns notes array directly in res.data (not a paginated wrapper)
+      const notesData = Array.isArray(res.data) ? res.data : (res.data?.data ?? []);
+      setNotes(notesData as Note[]);
     } catch (err) {
       setError(getFetchErrorMessage(err));
     } finally {
@@ -109,10 +112,12 @@ export default function NotesPage() {
       return;
     }
     setToken(t);
+    // Load notes on mount so count is visible on the "Saved Notes" button
+    void loadNotes(t, '', 'All Notes');
     void getNoteTemplates(t)
       .then((r) => setApiTemplates(r.data ?? []))
       .catch(() => {});
-  }, [router]);
+  }, [router, loadNotes]);
 
   useEffect(() => {
     if (!token || view !== 'saved') return;
@@ -174,6 +179,7 @@ export default function NotesPage() {
           </div>
           <button className={styles.savedNotesBtn} onClick={handleViewSaved}>
             Saved Notes
+            {notes.length > 0 && <span className={styles.savedCount}>{notes.length}</span>}
           </button>
         </header>
 
@@ -230,7 +236,13 @@ export default function NotesPage() {
                     onClick={() => handleCreateFromSlug('irac')}
                     disabled={creating}
                   >
-                    Use Template
+                    {creating ? (
+                      <span className={styles.btnLoading}>
+                        <Spinner size={14} light /> Creating…
+                      </span>
+                    ) : (
+                      'Use Template'
+                    )}
                   </button>
                 </div>
               </div>
@@ -355,7 +367,11 @@ export default function NotesPage() {
         )}
 
         {loading ? (
-          <p className={styles.stateMsg}>Loading…</p>
+          <div className={styles.noteGrid}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ShimmerNoteCard key={i} />
+            ))}
+          </div>
         ) : notes.length === 0 ? (
           <div className={styles.emptyBox}>
             <p>
@@ -386,35 +402,38 @@ export default function NotesPage() {
 // ─── Note card ────────────────────────────────────────────────────────────────
 
 function NoteCard({ note, onDelete }: { note: Note; onDelete: (id: string) => void }) {
-  const score = note.qualityScore ?? 0;
+  const score = note.qualityScore;
+  const hasScore = typeof score === 'number' && score > 0;
   const circumference = 2 * Math.PI * 18;
-  const offset = circumference - (score / 100) * circumference;
+  const offset = hasScore ? circumference - (score / 100) * circumference : circumference;
 
   return (
     <div className={styles.noteCard}>
       <div className={styles.noteCardTopRow}>
         {note.subject && <span className={styles.noteSubjectBadge}>{note.subject}</span>}
-        <div className={styles.scoreWrap}>
-          <div className={styles.scoreCircle} title={`${score}% AI score`}>
-            <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
-              <circle cx="22" cy="22" r="18" fill="none" stroke="#F3F4F6" strokeWidth="4" />
-              <circle
-                cx="22"
-                cy="22"
-                r="18"
-                fill="none"
-                stroke="#D97706"
-                strokeWidth="4"
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
-                transform="rotate(-90 22 22)"
-              />
-            </svg>
-            <span className={styles.scoreText}>{score}%</span>
+        {hasScore && (
+          <div className={styles.scoreWrap}>
+            <div className={styles.scoreCircle} title={`${score}% AI score`}>
+              <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+                <circle cx="22" cy="22" r="18" fill="none" stroke="#F3F4F6" strokeWidth="4" />
+                <circle
+                  cx="22"
+                  cy="22"
+                  r="18"
+                  fill="none"
+                  stroke="#D97706"
+                  strokeWidth="4"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={offset}
+                  strokeLinecap="round"
+                  transform="rotate(-90 22 22)"
+                />
+              </svg>
+              <span className={styles.scoreText}>{score}%</span>
+            </div>
+            <span className={styles.scoreLabel}>AI score</span>
           </div>
-          <span className={styles.scoreLabel}>AI score</span>
-        </div>
+        )}
       </div>
       <Link href={`/dashboard/notes/${note.id}`} className={styles.noteLink}>
         <h3 className={styles.noteTitle}>{note.title}</h3>

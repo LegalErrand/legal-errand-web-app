@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { explainCase, getCaseExplainerHistory, getFetchErrorMessage, getAccessToken } from '@/lib';
 import type { CaseHistoryItem, ExplainCaseRequest } from '@/lib';
+import { Spinner, Shimmer } from '@/components';
 import styles from './page.module.scss';
 
 export default function CasesPage() {
@@ -118,7 +119,13 @@ export default function CasesPage() {
               Select from Library
             </button>
             <button type="submit" className={styles.startBtn} disabled={submitting}>
-              {submitting ? 'Analysing…' : 'Start Analysis'}
+              {submitting ? (
+                <span className={styles.btnLoading}>
+                  <Spinner size={15} light /> Analysing…
+                </span>
+              ) : (
+                'Start Analysis'
+              )}
             </button>
           </div>
         </form>
@@ -126,7 +133,20 @@ export default function CasesPage() {
         <section className={styles.historySection}>
           <h2 className={styles.sectionTitle}>Recent Cases</h2>
           {historyLoading ? (
-            <p className={styles.stateMsg}>Loading history…</p>
+            <ul className={styles.historyList}>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <li key={i} className={styles.historyItem}>
+                  <div className={styles.caseIcon} aria-hidden="true">
+                    <Shimmer width={20} height={20} radius={4} />
+                  </div>
+                  <div className={styles.caseBody}>
+                    <Shimmer height={13} width="55%" radius={5} />
+                    <div style={{ height: 6 }} />
+                    <Shimmer height={11} width="35%" radius={4} />
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : history.length === 0 ? (
             <p className={styles.stateMsg}>No cases explained yet. Try one above!</p>
           ) : (

@@ -326,7 +326,7 @@ export function getDashboardGoals(token: string): Promise<ApiResponse<Goal[]>> {
 export function getDashboardActivity(
   token: string,
   params?: { type?: string; page?: number; limit?: number }
-): Promise<ApiResponse<PaginatedResponse<ActivityItem>>> {
+): Promise<ApiResponse<ActivityItem[]>> {
   return authedGet(
     '/dashboard/activity',
     token,
@@ -505,6 +505,54 @@ export function sendAiChat(
   return authedPost<ApiResponse<AiChatResponse>>('/ai/chat', token, data);
 }
 
+/** Stream AI chat via SSE. Yields `chunk` strings until `done: true`. */
+export async function* streamAiChat(
+  data: AiChatRequest,
+  token: string
+): AsyncGenerator<{ chunk?: string; done?: boolean; sessionId?: string; error?: string }> {
+  const url = `${BASE_URL}/ai/chat/stream`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+    cache: 'no-store',
+  });
+
+  if (!response.ok || !response.body) {
+    yield { error: `HTTP ${response.status}` };
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() ?? '';
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        try {
+          yield JSON.parse(line.slice(6)) as {
+            chunk?: string;
+            done?: boolean;
+            sessionId?: string;
+            error?: string;
+          };
+        } catch {
+          /* skip malformed line */
+        }
+      }
+    }
+  }
+}
+
 export function getAiConversations(
   token: string,
   params?: { page?: number; limit?: number }
@@ -528,8 +576,12 @@ export function startSocraticSession(
 export function respondSocratic(
   data: SocraticRespondRequest,
   token: string
-): Promise<ApiResponse<{ message: string }>> {
-  return authedPost<ApiResponse<{ message: string }>>('/ai/socratic/respond', token, data);
+): Promise<ApiResponse<{ aiResponse: string; hintsUsed: number }>> {
+  return authedPost<ApiResponse<{ aiResponse: string; hintsUsed: number }>>(
+    '/ai/socratic/respond',
+    token,
+    data
+  );
 }
 
 export function endSocraticSession(

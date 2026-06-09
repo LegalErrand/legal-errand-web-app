@@ -56,7 +56,11 @@ export default function BioDataProfileCard(props: BioDataProfileCardProps) {
               />
             )}
           </div>
-          <AvatarUploader token={token} onSuccess={onAvatarSuccess} />
+          <AvatarUploader
+            token={token}
+            onSuccess={onAvatarSuccess}
+            onPreview={(url) => url && onAvatarSuccess(url)}
+          />
           <p className={styles.avatarHint}>JPEG, PNG, or WebP, up to 5 MB</p>
         </div>
 

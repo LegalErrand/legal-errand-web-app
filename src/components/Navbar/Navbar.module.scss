@@ -32,6 +32,34 @@
   }
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.loginBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px $space-4;
+  background: transparent;
+  color: $dark;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+
+  &:hover {
+    background: $gray-50;
+    border-color: $gray-400;
+  }
+}
+
 .ctaBtn {
   display: inline-flex;
   align-items: center;

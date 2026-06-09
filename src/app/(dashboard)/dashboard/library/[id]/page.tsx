@@ -10,12 +10,37 @@ import {
   getAccessToken,
 } from '@/lib';
 import type { LibraryDocument } from '@/lib';
+import { Spinner } from '@/components';
 import LibraryAIPanel from '@/components/LibraryAIPanel';
 import pStyles from './page.module.scss';
 import cStyles from './LibraryContent.module.scss';
 const styles = { ...pStyles, ...cStyles };
 
-const SECTION_RE = /^([A-Z][A-Z\s/&]+)$/;
+// Matches all-caps headings optionally ending with colon, e.g. HELD:, PARTIES, RATIO DECIDENDI
+const SECTION_RE = /^[A-Z][A-Z\s/&(),-]{2,}:?$/;
+
+// Nav artifacts injected by NigeriaLII's accessibility links
+const SKIP_PHRASES = [
+  'skip to document content',
+  'skip to main content',
+  'skip navigation',
+  'skip to content',
+];
+
+function isSkipLine(line: string): boolean {
+  const low = line.trim().toLowerCase();
+  // Filter lines that are entirely (or essentially) a skip-nav phrase
+  return SKIP_PHRASES.some(
+    (p) => low === p || low === p + '.' || low.replace(/[^a-z ]/g, '') === p
+  );
+}
+
+function cleanText(raw: string): string {
+  return raw
+    .split('\n')
+    .filter((l) => !isSkipLine(l))
+    .join('\n');
+}
 
 function extractHeadings(text: string): string[] {
   return text
@@ -25,7 +50,7 @@ function extractHeadings(text: string): string[] {
 }
 
 function CaseTextReader({ text }: { text: string }) {
-  const lines = text.split('\n');
+  const lines = cleanText(text).split('\n');
   const nodes: { type: 'heading' | 'para'; text: string }[] = [];
   for (const raw of lines) {
     const line = raw.trim();
@@ -54,10 +79,10 @@ export default function LibraryDocumentPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [doc, setDoc] = useState<LibraryDocument | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [docText, setDocText] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [urlError, setUrlError] = useState('');
   const [activeHeading, setActiveHeading] = useState('');
 
   useEffect(() => {
@@ -80,12 +105,15 @@ export default function LibraryDocumentPage() {
           setError(getFetchErrorMessage(docRes.reason));
         }
         if (urlRes.status === 'fulfilled' && urlRes.value.data?.signedUrl) {
-          setPdfUrl(urlRes.value.data.signedUrl);
-        } else if (urlRes.status === 'rejected') {
-          const msg =
-            (urlRes.reason as { response?: { data?: { message?: string } } })?.response?.data
-              ?.message ?? getFetchErrorMessage(urlRes.reason);
-          setUrlError(msg);
+          const url = urlRes.value.data.signedUrl;
+          setSignedUrl(url);
+          // Fetch the text content so we can render it styled (not in a raw iframe)
+          try {
+            const textRes = await fetch(url);
+            if (textRes.ok) setDocText(await textRes.text());
+          } catch {
+            /* fall through — will show download link only */
+          }
         }
       } finally {
         setLoading(false);
@@ -96,7 +124,9 @@ export default function LibraryDocumentPage() {
   if (loading)
     return (
       <div className={styles.page}>
-        <p className={styles.state}>Loading…</p>
+        <div className={styles.state}>
+          <Spinner size={22} label="Loading document…" />
+        </div>
       </div>
     );
   if (error)
@@ -112,7 +142,7 @@ export default function LibraryDocumentPage() {
       </div>
     );
 
-  const caseText = doc.metadata?.description ?? null;
+  const caseText = docText ?? doc.metadata?.description ?? null;
   const headings = caseText ? extractHeadings(caseText) : [];
 
   return (
@@ -134,9 +164,14 @@ export default function LibraryDocumentPage() {
             )}
           </div>
         </div>
-        {pdfUrl && (
-          <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className={styles.downloadBtn}>
-            Download PDF
+        {signedUrl && (
+          <a
+            href={signedUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.downloadBtn}
+          >
+            Download
           </a>
         )}
       </header>
@@ -161,40 +196,30 @@ export default function LibraryDocumentPage() {
         </aside>
 
         <div className={styles.centerPanel}>
-          {pdfUrl ? (
-            <>
-              <iframe
-                className={styles.pdfViewer}
-                src={pdfUrl}
-                title={doc.title}
-                aria-label={`PDF viewer for ${doc.title}`}
-              />
-              <div className={styles.pdfFallback}>
-                <p>If the PDF doesn&apos;t appear,</p>
-                <a
-                  href={pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.downloadBtn}
-                >
-                  Open PDF in new tab
-                </a>
-              </div>
-            </>
-          ) : urlError ? (
-            <div className={styles.noPreview}>
-              <p className={styles.stateError}>{urlError}</p>
-            </div>
-          ) : caseText ? (
+          {caseText ? (
             <CaseTextReader text={caseText} />
           ) : (
             <div className={styles.noPreview}>
               <p>No preview available for this document.</p>
+              {signedUrl && (
+                <a
+                  href={signedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.downloadBtn}
+                >
+                  Open in new tab
+                </a>
+              )}
             </div>
           )}
         </div>
 
-        <LibraryAIPanel docTitle={doc.title} docSubject={doc.subject} />
+        <LibraryAIPanel
+          docTitle={doc.title}
+          docSubject={doc.subject}
+          docDescription={doc.metadata?.description}
+        />
       </div>
     </div>
   );

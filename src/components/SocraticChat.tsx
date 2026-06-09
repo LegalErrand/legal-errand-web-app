@@ -1,13 +1,14 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { getFetchErrorMessage } from '@/lib';
+import { getFetchErrorMessage, useTypewriter } from '@/lib';
 import type {
   SocraticStartRequest,
   SocraticStartResponse,
   SocraticRespondRequest,
   ApiResponse,
 } from '@/lib';
+import { Spinner } from '@/components';
 import styles from './SocraticChat.module.scss';
 
 interface SocMsg {
@@ -24,11 +25,25 @@ interface Props {
   respondSocratic: (
     data: SocraticRespondRequest,
     token: string
-  ) => Promise<ApiResponse<{ message: string }>>;
+  ) => Promise<ApiResponse<{ aiResponse: string; hintsUsed: number }>>;
   endSocraticSession: (
     sessionId: string,
     token: string
   ) => Promise<ApiResponse<{ summary: string; score: number }>>;
+}
+
+/** Renders the last AI message with typewriter effect; all others show instantly. */
+function AiBubble({ text, isLatest }: { text: string; isLatest: boolean }) {
+  const { displayed } = useTypewriter(isLatest ? text : '', 8, 12);
+  const shown = isLatest ? displayed : text;
+  return (
+    <p className={styles.bubbleText}>
+      {shown}
+      {isLatest && displayed.length < text.length && (
+        <span className={styles.cursor} aria-hidden="true" />
+      )}
+    </p>
+  );
 }
 
 export default function SocraticChat({
@@ -42,11 +57,16 @@ export default function SocraticChat({
   const [subject, setSubject] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [messages, setMessages] = useState<SocMsg[]>([]);
+  const [latestAiIdx, setLatestAiIdx] = useState(-1);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [endSummary, setEndSummary] = useState<{ summary: string; score: number } | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  function scrollBottom() {
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+  }
 
   async function handleStart(e: React.FormEvent) {
     e.preventDefault();
@@ -60,8 +80,12 @@ export default function SocraticChat({
       );
       if (res.data) {
         setSessionId(res.data.sessionId);
-        setMessages([{ role: 'ai', text: res.data.question }]);
+        // backend returns `question` (fixed in controller)
+        const aiText = res.data.question;
+        setMessages([{ role: 'ai', text: aiText }]);
+        setLatestAiIdx(0);
         setPhase('active');
+        scrollBottom();
       } else {
         setError(res.message ?? 'Could not start session');
       }
@@ -76,15 +100,21 @@ export default function SocraticChat({
     e.preventDefault();
     const text = input.trim();
     if (!text || busy) return;
-    setMessages((prev) => [...prev, { role: 'user', text }]);
+    const updatedMsgs: SocMsg[] = [...messages, { role: 'user', text }];
+    setMessages(updatedMsgs);
     setInput('');
     setBusy(true);
     setError('');
+    scrollBottom();
     try {
       const res = await respondSocratic({ sessionId, message: text }, token);
       if (res.data) {
-        setMessages((prev) => [...prev, { role: 'ai', text: res.data!.message }]);
-        setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+        // backend field is `aiResponse`
+        const aiText = res.data.aiResponse;
+        const newMsgs: SocMsg[] = [...updatedMsgs, { role: 'ai', text: aiText }];
+        setMessages(newMsgs);
+        setLatestAiIdx(newMsgs.length - 1);
+        scrollBottom();
       } else {
         setError(res.message ?? 'No response');
       }
@@ -133,7 +163,13 @@ export default function SocraticChat({
           />
           {error && <p className={styles.error}>{error}</p>}
           <button type="submit" className={styles.startBtn} disabled={busy || !topic.trim()}>
-            {busy ? 'Starting…' : 'Start Session'}
+            {busy ? (
+              <span className={styles.btnLoading}>
+                <Spinner size={15} light /> Starting…
+              </span>
+            ) : (
+              'Start Session'
+            )}
           </button>
         </form>
       </div>
@@ -153,6 +189,7 @@ export default function SocraticChat({
             setMessages([]);
             setEndSummary(null);
             setTopic('');
+            setLatestAiIdx(-1);
           }}
         >
           Start New Session
@@ -169,14 +206,20 @@ export default function SocraticChat({
             key={i}
             className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAI}`}
           >
-            <p className={styles.bubbleText}>{m.text}</p>
+            {m.role === 'ai' ? (
+              <AiBubble text={m.text} isLatest={i === latestAiIdx} />
+            ) : (
+              <p className={styles.bubbleText}>{m.text}</p>
+            )}
           </div>
         ))}
         {busy && (
           <div className={`${styles.bubble} ${styles.bubbleAI}`}>
-            <p className={styles.bubbleText} aria-live="polite">
-              Thinking…
-            </p>
+            <span className={styles.typingDots} aria-live="polite">
+              <span />
+              <span />
+              <span />
+            </span>
           </div>
         )}
         <div ref={bottomRef} />

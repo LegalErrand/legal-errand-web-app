@@ -1,11 +1,29 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getDashboardActivity, getAccessToken } from '@/lib';
 import type { DashboardData } from '@/lib';
+import { Spinner, Shimmer } from '@/components';
 import mStyles from './ActivityHistoryModal.module.scss';
 import lStyles from './ActivityList.module.scss';
 const styles = { ...mStyles, ...lStyles };
 
 type FilterTab = 'All' | 'Quizzes' | 'AI Sessions' | 'Document';
+
+// Maps tab label → API type values that belong to it
+const FILTER_TYPES: Record<FilterTab, string[]> = {
+  All: [],
+  Quizzes: ['quiz'],
+  'AI Sessions': ['ai_session', 'socratic'],
+  Document: ['case', 'document'],
+};
+
+interface RichItem {
+  _id: string;
+  type: string;
+  title: string;
+  subtitle: string;
+  createdAt: string;
+}
 
 interface Props {
   data: DashboardData | null;
@@ -15,21 +33,47 @@ interface Props {
 export default function ActivityHistoryModal({ data, onClose }: Props) {
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
+  const [items, setItems] = useState<RichItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const FILTERS: FilterTab[] = ['All', 'Quizzes', 'AI Sessions', 'Document'];
-  const activity = data?.recentActivity ?? [];
 
-  const filtered = activity.filter((item) => {
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    void (async () => {
+      try {
+        const res = await getDashboardActivity(token, { limit: 50 });
+        // API: { success, data: RichItem[], meta: {...} }
+        const raw = Array.isArray(res.data) ? res.data : [];
+        setItems(raw as RichItem[]);
+      } catch {
+        // leave empty
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const filtered = items.filter((item) => {
     const matchesSearch =
-      !search || (item.title ?? '').toLowerCase().includes(search.toLowerCase());
-    const matchesFilter =
-      activeFilter === 'All' ||
-      (item.type ?? '').toLowerCase().includes(activeFilter.toLowerCase().replace(' ', '_'));
+      !search ||
+      item.title.toLowerCase().includes(search.toLowerCase()) ||
+      item.subtitle.toLowerCase().includes(search.toLowerCase());
+    const allowed = FILTER_TYPES[activeFilter];
+    const matchesFilter = allowed.length === 0 || allowed.includes(item.type);
     return matchesSearch && matchesFilter;
   });
 
-  const weeklyHours = data?.streak ? (data.streak * 1.5).toFixed(1) : '0';
+  // Stats derived from fetched items
+  const quizzesCompleted = items.filter((i) => i.type === 'quiz').length;
   const topSubject = data?.subjectMastery?.[0]?.subject ?? '—';
-  const quizzesCompleted = data?.recentActivity?.filter((a) => a.type === 'quiz')?.length ?? 0;
+  // streak is { current, longest } — extract current days, estimate hours at 1.5h/day for last 7
+  const streakObj = data?.streak as unknown as { current?: number } | number | undefined;
+  const streakDays = typeof streakObj === 'object' ? (streakObj?.current ?? 0) : (streakObj ?? 0);
+  const weeklyHours = (Math.min(streakDays, 7) * 1.5).toFixed(1);
 
   return (
     <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
@@ -66,7 +110,7 @@ export default function ActivityHistoryModal({ data, onClose }: Props) {
             </svg>
             <p className={styles.statLabel}>Top Subject</p>
             <p className={styles.statValue}>{topSubject}</p>
-            <span className={styles.topBadge}>Top performer</span>
+            {topSubject !== '—' && <span className={styles.topBadge}>Top performer</span>}
           </div>
           <div className={styles.statCard}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -87,7 +131,7 @@ export default function ActivityHistoryModal({ data, onClose }: Props) {
               />
             </svg>
             <p className={styles.statLabel}>Quizzes Completed</p>
-            <p className={styles.statValue}>{quizzesCompleted}</p>
+            <p className={styles.statValue}>{loading ? '—' : quizzesCompleted}</p>
           </div>
         </div>
 
@@ -124,28 +168,34 @@ export default function ActivityHistoryModal({ data, onClose }: Props) {
         </div>
 
         <ul className={styles.activityList}>
-          {filtered.length === 0 ? (
-            <li className={styles.emptyItem}>No activity found.</li>
-          ) : (
-            filtered.map((item, i) => (
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
               <li key={i} className={styles.activityItem}>
                 <div className={styles.activityIcon} aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Shimmer width={32} height={32} radius={8} />
                 </div>
                 <div className={styles.activityBody}>
-                  <p className={styles.activityTitle}>{item.title ?? 'Untitled'}</p>
+                  <Shimmer height={13} width="55%" radius={5} />
+                  <div style={{ height: 5 }} />
+                  <Shimmer height={11} width="35%" radius={4} />
+                </div>
+              </li>
+            ))
+          ) : filtered.length === 0 ? (
+            <li className={styles.emptyItem}>No activity found.</li>
+          ) : (
+            filtered.map((item) => (
+              <li key={item._id} className={styles.activityItem}>
+                <div className={styles.activityIcon} aria-hidden="true">
+                  <ActivityIcon type={item.type} />
+                </div>
+                <div className={styles.activityBody}>
+                  <p className={styles.activityTitle}>{item.title || 'Untitled'}</p>
                   <p className={styles.activityMeta}>
                     {item.createdAt
-                      ? `Viewed ${new Date(item.createdAt).toLocaleDateString()}`
+                      ? `${new Date(item.createdAt).toLocaleDateString()}`
                       : 'Recently'}{' '}
-                    · {item.type ?? 'Activity'}
+                    · {item.subtitle || typeLabel(item.type)}
                   </p>
                 </div>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -162,5 +212,54 @@ export default function ActivityHistoryModal({ data, onClose }: Props) {
         </ul>
       </div>
     </div>
+  );
+}
+
+function typeLabel(type: string): string {
+  if (type === 'quiz') return 'Quiz';
+  if (type === 'case') return 'Case analysis';
+  if (type === 'ai_session') return 'AI session';
+  if (type === 'socratic') return 'Socratic chat';
+  return 'Activity';
+}
+
+function ActivityIcon({ type }: { type: string }) {
+  if (type === 'quiz') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.8" />
+        <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (type === 'ai_session' || type === 'socratic') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  // case / document / default
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
   );
 }

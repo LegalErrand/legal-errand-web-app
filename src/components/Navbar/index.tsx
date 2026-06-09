@@ -9,9 +9,14 @@ export default function Navbar() {
         <div className={styles.logo}>
           <Image src="/logo.svg" alt="LegalErrand" width={160} height={36} priority />
         </div>
-        <Link href="/signup" className={styles.ctaBtn}>
-          Get Started
-        </Link>
+        <div className={styles.actions}>
+          <Link href="/login" className={styles.loginBtn}>
+            Log in
+          </Link>
+          <Link href="/signup" className={styles.ctaBtn}>
+            Get Started
+          </Link>
+        </div>
       </div>
     </nav>
   );

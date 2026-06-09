@@ -153,3 +153,39 @@
   color: $accent-red;
   margin: 0;
 }
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-top: $space-5;
+  padding-top: $space-4;
+  border-top: 1px solid $gray-200;
+}
+
+.pageBtn {
+  background: none;
+  border: 1px solid $gray-200;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: $dark;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s;
+
+  &:hover:not(:disabled) {
+    background: $gray-100;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pageInfo {
+  font-size: 13px;
+  color: $gray-400;
+}

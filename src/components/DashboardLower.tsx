@@ -1,12 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getDashboardActivity, getAccessToken } from '@/lib';
 import type { SubjectMastery, ActivityItem, Achievement } from '@/lib/types';
+import { Shimmer } from '@/components';
 import styles from './DashboardLower.module.scss';
 
 interface Props {
   mastery: SubjectMastery[];
-  activity: ActivityItem[];
   earnedBadges: Achievement[];
   reasoningScore: number | null;
   onViewHistory?: () => void;
@@ -14,11 +16,31 @@ interface Props {
 
 export default function DashboardLower({
   mastery,
-  activity,
   earnedBadges,
   reasoningScore,
   onViewHistory,
 }: Props) {
+  const [activity, setActivity] = useState<ActivityItem[]>([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token) {
+      setActivityLoading(false);
+      return;
+    }
+    void (async () => {
+      try {
+        const res = await getDashboardActivity(token, { limit: 5 });
+        setActivity(Array.isArray(res.data) ? res.data : []);
+      } catch {
+        // leave empty
+      } finally {
+        setActivityLoading(false);
+      }
+    })();
+  }, []);
+
   return (
     <>
       {/* Reasoning score + achievements strip */}
@@ -84,20 +106,35 @@ export default function DashboardLower({
           <div className={styles.notesHeader}>
             <span className={styles.cardTitle}>Recent Activity</span>
           </div>
-          {activity.length > 0 ? (
+          {activityLoading ? (
             <ul className={styles.notesList}>
-              {activity.slice(0, 5).map((item) => (
-                <li key={item.id} className={styles.noteItem}>
-                  <div
-                    className={`${styles.noteIcon} ${item.type === 'case_explainer' ? styles.noteIconCase : styles.noteIconDoc}`}
-                    aria-hidden="true"
-                  >
-                    {item.type === 'case_explainer' ? '⚖' : '📄'}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <li key={i} className={styles.noteItem}>
+                  <div className={styles.noteIcon} aria-hidden="true">
+                    <Shimmer width={24} height={24} radius={6} />
                   </div>
                   <div className={styles.noteBody}>
-                    <p className={styles.noteTitle}>{item.title}</p>
+                    <Shimmer height={13} width="65%" radius={5} />
+                    <div style={{ height: 4 }} />
+                    <Shimmer height={11} width="40%" radius={4} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : activity.length > 0 ? (
+            <ul className={styles.notesList}>
+              {activity.slice(0, 5).map((item) => (
+                <li key={item._id} className={styles.noteItem}>
+                  <div
+                    className={`${styles.noteIcon} ${item.type === 'case' ? styles.noteIconCase : styles.noteIconDoc}`}
+                    aria-hidden="true"
+                  >
+                    {item.type === 'case' ? '⚖' : item.type === 'quiz' ? '📝' : '💬'}
+                  </div>
+                  <div className={styles.noteBody}>
+                    <p className={styles.noteTitle}>{item.title || 'Untitled'}</p>
                     <p className={styles.noteMeta}>
-                      {item.subject && `${item.subject} · `}
+                      {item.subtitle ? `${item.subtitle} · ` : ''}
                       {new Date(item.createdAt).toLocaleDateString()}
                     </p>
                   </div>
