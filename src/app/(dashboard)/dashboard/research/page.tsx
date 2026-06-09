@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -13,17 +13,27 @@ import {
 import type { ResearchResult, ResearchSession } from '@/lib';
 import styles from './page.module.scss';
 
+const COURT_LEVELS = ['Supreme court', 'Appeal Court', 'High Court'];
+const SUBJECT_TAGS = ['Tort law', 'Cases', 'Statute', 'Principles'];
+
 export default function ResearchPage() {
   const router = useRouter();
   const [token, setToken] = useState('');
   const [query, setQuery] = useState('');
   const [jurisdiction, setJurisdiction] = useState('');
+  const [courtLevel, setCourtLevel] = useState('');
+  const [activeSubjects, setActiveSubjects] = useState<string[]>([]);
   const [results, setResults] = useState<ResearchResult[]>([]);
   const [refinedQuery, setRefinedQuery] = useState('');
   const [sessions, setSessions] = useState<ResearchSession[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchErr, setSearchErr] = useState('');
   const [sessionsLoading, setSessionsLoading] = useState(true);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Tracks the last committed query so filter changes re-search with the same query
+  const committedQuery = useRef('');
+  const tokenRef = useRef('');
 
   useEffect(() => {
     const t = getAccessToken();
@@ -32,8 +42,22 @@ export default function ResearchPage() {
       return;
     }
     setToken(t);
+    tokenRef.current = t;
     void loadSessions(t);
   }, [router]);
+
+  // Re-run backend search whenever filters change — but only after an initial search
+  useEffect(() => {
+    if (!hasSearched || !committedQuery.current) return;
+    void runSearch(
+      tokenRef.current,
+      committedQuery.current,
+      jurisdiction,
+      courtLevel,
+      activeSubjects
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jurisdiction, courtLevel, activeSubjects]);
 
   async function loadSessions(t: string) {
     setSessionsLoading(true);
@@ -47,22 +71,22 @@ export default function ResearchPage() {
     }
   }
 
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    if (!token || !query.trim()) return;
+  async function runSearch(t: string, q: string, jur: string, cl: string, subjects: string[]) {
+    if (!t || !q.trim()) return;
     setSearching(true);
     setSearchErr('');
-    setResults([]);
-    setRefinedQuery('');
     try {
-      const payload = jurisdiction
-        ? { query: query.trim(), jurisdiction }
-        : { query: query.trim() };
-      const res = await searchResearch(payload, token);
+      const payload = {
+        query: q.trim(),
+        ...(jur ? { jurisdiction: jur } : {}),
+        ...(cl ? { courtLevel: cl } : {}),
+        ...(subjects.length ? { subject: subjects[0] } : {}),
+      };
+      const res = await searchResearch(payload, t);
       if (res.data) {
         setResults(res.data.results);
         setRefinedQuery(res.data.refinedQuery);
-        void loadSessions(token);
+        setHasSearched(true);
       } else {
         setSearchErr(res.message ?? 'Search failed');
       }
@@ -71,6 +95,26 @@ export default function ResearchPage() {
     } finally {
       setSearching(false);
     }
+  }
+
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (!token || !query.trim()) return;
+    committedQuery.current = query.trim();
+    setResults([]);
+    setRefinedQuery('');
+    await runSearch(token, query, jurisdiction, courtLevel, activeSubjects);
+    void loadSessions(token);
+  }
+
+  function toggleSubject(s: string) {
+    setActiveSubjects((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
+  }
+
+  function handleReset() {
+    setJurisdiction('');
+    setCourtLevel('');
+    setActiveSubjects([]);
   }
 
   async function handleDeleteSession(id: string) {
@@ -86,19 +130,35 @@ export default function ResearchPage() {
   return (
     <div className={styles.page}>
       <div className={styles.content}>
-        <h1 className={styles.pageHeading}>Legal Research</h1>
-        <p className={styles.pageSub}>
+        <h1 className={styles.pageHeading}>
           Explore the entire corpus of Nigerian law using natural language.
-        </p>
+        </h1>
 
         <form onSubmit={handleSearch} className={styles.searchForm}>
-          <div className={styles.queryRow}>
-            <input
-              className={styles.queryInput}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="What are the defense to negligence under Nigerian tort law?"
-            />
+          <div className={styles.searchRow}>
+            <div className={styles.inputWrap}>
+              <svg
+                className={styles.searchIcon}
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              <input
+                className={styles.queryInput}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="what is the Defense to negligence under Nigerian tort law?"
+              />
+            </div>
             <button
               type="submit"
               className={styles.searchBtn}
@@ -114,18 +174,26 @@ export default function ResearchPage() {
           )}
         </form>
 
-        {(results.length > 0 || refinedQuery) && (
+        {hasSearched && (
           <>
             {refinedQuery && (
-              <p className={styles.refinedQuery}>
+              <p className={styles.showingLabel}>
                 Showing results for: <em>&quot;{refinedQuery}&quot;</em>
               </p>
             )}
+
             <div className={styles.mainSplit}>
+              {/* Results */}
               <div className={styles.resultsCol}>
+                {searching && <p className={styles.stateMsg}>Searching…</p>}
+                {!searching && results.length === 0 && (
+                  <p className={styles.emptyMsg}>
+                    No results found. Try a different query or adjust filters.
+                  </p>
+                )}
                 {results.map((r) => (
-                  <div key={r.documentId} className={styles.resultCard}>
-                    <div className={styles.resultHeader}>
+                  <div key={r.documentId} className={styles.resultItem}>
+                    <div className={styles.resultTop}>
                       <Link
                         href={`/dashboard/library/${r.documentId}`}
                         className={styles.resultTitle}
@@ -133,38 +201,35 @@ export default function ResearchPage() {
                         {r.title}
                       </Link>
                       <span className={styles.matchScore}>
-                        {Math.round(r.matchScore * 100)}% Match
+                        {Math.round((r.relevanceScore ?? r.matchScore ?? 0) * 100)}% Match
                       </span>
                     </div>
+
                     {r.courtLevel && <span className={styles.courtBadge}>{r.courtLevel}</span>}
+
                     <div className={styles.matchBarWrap}>
                       <div
                         className={styles.matchBar}
-                        style={{ ['--bar-pct' as string]: `${Math.round(r.matchScore * 100)}%` }}
+                        style={{
+                          ['--bar-pct' as string]: `${Math.round((r.relevanceScore ?? r.matchScore ?? 0) * 100)}%`,
+                        }}
                       />
                     </div>
-                    {r.citation && <p className={styles.resultCitation}>{r.citation}</p>}
+
                     {r.excerpt && <p className={styles.resultExcerpt}>{r.excerpt}</p>}
-                    <div className={styles.resultTags}>
-                      {r.subject && <span className={styles.tag}>{r.subject}</span>}
-                      {r.type && <span className={styles.tag}>{r.type}</span>}
-                    </div>
                   </div>
                 ))}
               </div>
 
-              {/* Filter panel */}
+              {/* Filters */}
               <div className={styles.filterPanel}>
                 <div className={styles.filterHeader}>
                   <h3 className={styles.filterHeading}>Filters</h3>
-                  <button
-                    className={styles.filterReset}
-                    onClick={() => setJurisdiction('')}
-                    type="button"
-                  >
+                  <button className={styles.filterReset} onClick={handleReset} type="button">
                     Reset
                   </button>
                 </div>
+
                 <div className={styles.filterGroup}>
                   <p className={styles.filterGroupLabel}>Jurisdiction</p>
                   {['Federal', 'State'].map((j) => (
@@ -178,36 +243,34 @@ export default function ResearchPage() {
                     </label>
                   ))}
                 </div>
+
                 <div className={styles.filterGroup}>
                   <p className={styles.filterGroupLabel}>Court Level</p>
-                  <label className={styles.filterCheckRow}>
-                    <input type="checkbox" />
-                    <span className={styles.filterCheckLabel}>Supreme court</span>
-                  </label>
-                  <label className={styles.filterCheckRow}>
-                    <input type="checkbox" />
-                    <span className={styles.filterCheckLabel}>Appeal Court</span>
-                  </label>
-                  <label className={styles.filterCheckRow}>
-                    <input type="checkbox" />
-                    <span className={styles.filterCheckLabel}>High Court</span>
-                  </label>
+                  {COURT_LEVELS.map((c) => (
+                    <label key={c} className={styles.filterCheckRow}>
+                      <input
+                        type="checkbox"
+                        checked={courtLevel === c}
+                        onChange={(e) => setCourtLevel(e.target.checked ? c : '')}
+                      />
+                      <span className={styles.filterCheckLabel}>{c}</span>
+                    </label>
+                  ))}
                 </div>
+
                 <div className={styles.filterGroup}>
                   <p className={styles.filterGroupLabel}>Subject Area</p>
                   <div className={styles.filterTagRow}>
-                    <button type="button" className={styles.filterTag}>
-                      Tort law
-                    </button>
-                    <button type="button" className={styles.filterTag}>
-                      Cases
-                    </button>
-                    <button type="button" className={styles.filterTag}>
-                      Statute
-                    </button>
-                    <button type="button" className={styles.filterTag}>
-                      Principles
-                    </button>
+                    {SUBJECT_TAGS.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className={`${styles.filterTag} ${activeSubjects.includes(s) ? styles.filterTagActive : ''}`}
+                        onClick={() => toggleSubject(s)}
+                      >
+                        {s}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -215,35 +278,41 @@ export default function ResearchPage() {
           </>
         )}
 
-        <section className={styles.historySection}>
-          <h2 className={styles.sectionTitle}>Research History</h2>
-          {sessionsLoading ? (
-            <p className={styles.stateMsg}>Loading…</p>
-          ) : sessions.length === 0 ? (
-            <p className={styles.stateMsg}>No research sessions yet.</p>
-          ) : (
-            <ul className={styles.sessionList}>
-              {sessions.map((s) => (
-                <li key={s.id} className={styles.sessionItem}>
-                  <Link href={`/dashboard/research/${s.id}`} className={styles.sessionLink}>
-                    <p className={styles.sessionQuery}>{s.query}</p>
-                    <p className={styles.sessionMeta}>
-                      {s.results.length} results · {new Date(s.createdAt).toLocaleDateString()}
-                    </p>
-                  </Link>
-                  <button
-                    className={styles.deleteBtn}
-                    onClick={() => handleDeleteSession(s.id)}
-                    aria-label="Delete"
-                    title="Delete"
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        {/* Research History — shown only before first search */}
+        {!hasSearched && (
+          <section className={styles.historySection}>
+            <h2 className={styles.sectionTitle}>Research History</h2>
+            {sessionsLoading ? (
+              <p className={styles.stateMsg}>Loading…</p>
+            ) : sessions.length === 0 ? (
+              <p className={styles.stateMsg}>
+                No research sessions yet. Run a search to get started.
+              </p>
+            ) : (
+              <ul className={styles.sessionList}>
+                {sessions.map((s) => (
+                  <li key={s.id} className={styles.sessionItem}>
+                    <Link href={`/dashboard/research/${s.id}`} className={styles.sessionLink}>
+                      <p className={styles.sessionQuery}>{s.query}</p>
+                      <p className={styles.sessionMeta}>
+                        {s.results.length} result{s.results.length !== 1 ? 's' : ''} ·{' '}
+                        {new Date(s.createdAt).toLocaleDateString()}
+                      </p>
+                    </Link>
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={() => handleDeleteSession(s.id)}
+                      aria-label="Delete session"
+                      title="Delete"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
       </div>
     </div>
   );

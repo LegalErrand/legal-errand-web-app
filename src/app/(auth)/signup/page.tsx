@@ -127,19 +127,16 @@ export default function SignupPage() {
             {/* Email */}
             <div className={styles.field}>
               <label className={styles.label} htmlFor="email">
-                School Email Address
+                Email Address
               </label>
               <input
                 id="email"
                 className={`${styles.input} ${errors.email ? styles.inputErr : ''}`}
                 type="email"
-                placeholder="E.g shola@universityname.edu.ng"
+                placeholder="E.g example@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <span className={styles.hint}>
-                Your student email would be used to verify your account
-              </span>
               {errors.email && <span className={styles.errMsg}>{errors.email}</span>}
             </div>
 

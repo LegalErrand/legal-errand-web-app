@@ -329,6 +329,8 @@ export interface ResearchResult {
   documentId: string;
   title: string;
   matchScore: number;
+  relevanceScore?: number;
+  snippet?: string;
   excerpt?: string;
   subject?: string;
   type?: string;
