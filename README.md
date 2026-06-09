@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LegalErrand Web App
+
+Student-facing Next.js app for LegalErrand Academy — AI-native study platform for Nigerian law students.
+
+## Stack
+
+- **Framework:** Next.js 15 (App Router) + TypeScript
+- **Styling:** SCSS Modules (no Tailwind)
+- **Monitoring:** Sentry, Vercel Analytics + Speed Insights
+- **API:** `legalerrand-api` (Express REST)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # fill in your values
+npm install
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Description |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Production build |
+| `npm start` | Run production build |
+| `npm run lint` | ESLint |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+├── app/
+│   ├── (auth)/             # Login, signup, OTP, bio-data, password reset
+│   ├── (dashboard)/        # Authenticated student dashboard
+│   │   └── dashboard/
+│   │       ├── cases/      # Case law browser
+│   │       ├── library/    # Document library
+│   │       ├── notes/      # Notes CRUD
+│   │       ├── quiz/       # Quiz sessions
+│   │       ├── research/   # AI research tool
+│   │       ├── reasoning/  # Legal reasoning practice
+│   │       └── progress/   # Study progress
+│   └── page.tsx            # Landing / waitlist
+├── components/             # Shared UI (barrel: @/components)
+│   ├── SearchableSelect/   # Dropdown with search
+│   ├── CountrySelect/      # Country picker with auto-detect
+│   ├── DocCard/            # Document card
+│   └── ui/                 # Button, etc.
+├── lib/                    # Utilities (barrel: @/lib)
+│   ├── api.ts              # Axios client
+│   ├── constants.ts        # Universities, countries, levels
+│   ├── validation.ts       # Zod schemas
+│   └── types.ts            # Shared types
+└── styles/                 # Global SCSS + variables
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Conventions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- No Tailwind — SCSS Modules only
+- No inline styles, no hardcoded values
+- No file over 200 lines
+- All component imports from `@/components`, all lib imports from `@/lib`

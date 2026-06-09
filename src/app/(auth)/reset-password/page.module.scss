@@ -1,0 +1,209 @@
+@use '../../../styles/variables' as *;
+
+.page {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  min-height: 100vh;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  position: relative;
+  background: $dark;
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.panelLogo {
+  position: absolute;
+  top: $space-4;
+  left: $space-4;
+  z-index: 2;
+}
+
+.panelImg {
+  object-fit: cover;
+  object-position: center top;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff2f7;
+  padding: $space-7 $space-4;
+
+  @media (max-width: 900px) {
+    padding: $space-5 $space-3;
+  }
+}
+
+.formWrap {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.heading {
+  font-family: $font-heading;
+  font-size: 30px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.otpSection {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.otpTitle {
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.sub {
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.formCard {
+  background: $white;
+  border-radius: 12px;
+  padding: $space-5;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.formError {
+  font-size: 13px;
+  color: $accent-red;
+  margin: 0;
+}
+
+.successMsg {
+  font-size: 13px;
+  color: #16a34a;
+  margin: 0;
+}
+
+.otpRow {
+  display: flex;
+  gap: $space-2;
+  justify-content: center;
+}
+
+.otpBox {
+  width: 52px;
+  height: 60px;
+  border: 1.5px solid $gray-200;
+  border-radius: $radius;
+  font-size: 22px;
+  font-weight: 700;
+  color: $dark;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+  background: $white;
+  font-family: inherit;
+
+  &:focus {
+    border-color: $primary;
+  }
+
+  @media (max-width: 400px) {
+    width: 40px;
+    height: 50px;
+    font-size: 18px;
+  }
+}
+
+.submitBtn {
+  width: 100%;
+  height: 50px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.resendRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+}
+
+.resendText {
+  font-size: 13px;
+  color: $gray-600;
+}
+
+.resendBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: $primary;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px $space-3;
+  border: 1px solid $primary;
+  border-radius: $radius;
+  transition: background 0.12s;
+
+  &:hover:not(:disabled) {
+    background: rgba($primary, 0.06);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.footerLine {
+  text-align: center;
+  font-size: 14px;
+  color: $gray-600;
+  margin: 0;
+}
+
+.footerLink {
+  color: $primary;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

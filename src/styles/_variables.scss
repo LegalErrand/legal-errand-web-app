@@ -1,20 +1,27 @@
 // Colors
-$primary: #D97706;
-$primary-light: #F59E0B;
-$primary-dark: #B45309;
+$primary: #d97706;
+$primary-light: #f59e0b;
+$primary-dark: #b45309;
 
-$accent-green: #00FF78;
-$accent-blue: #0088FF;
-$accent-yellow: #DFB400;
-$accent-red: #FB3748;
+$accent-green: #00ff78;
+$accent-blue: #0088ff;
+$accent-yellow: #dfb400;
+$accent-red: #fb3748;
 
-$dark: #1E293B;
-$white: #FFFFFF;
-$gray-100: #F8F9FA;
-$gray-200: #E9ECEF;
-$gray-400: #9CA3AF;
-$gray-600: #6B7280;
+$dark: #1e293b;
+$white: #ffffff;
+$gray-50: #f9fafb;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-400: #9ca3af;
+$gray-600: #6b7280;
 $gray-800: #374151;
+
+$orange-50: #fff7ed;
+$green-500: #16a34a;
+$green-100: #dcfce7;
+$blue-100: #dbeafe;
+$blue-600: #2563eb;
 
 // Typography
 $font-heading: 'Bricolage Grotesque', sans-serif;
@@ -32,8 +39,13 @@ $space-8: 64px;
 
 // Border radius
 $radius: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+
+// Sidebar
+$sidebar-width: 220px;
 
 // Shadows
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);

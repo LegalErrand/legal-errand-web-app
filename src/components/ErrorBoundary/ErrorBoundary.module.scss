@@ -1,0 +1,42 @@
+@use '../../styles/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: $space-6;
+  text-align: center;
+  gap: $space-3;
+}
+
+.title {
+  font-family: $font-heading;
+  font-size: 24px;
+  font-weight: 700;
+  color: $dark;
+}
+
+.message {
+  font-size: 15px;
+  color: $gray-600;
+  max-width: 400px;
+}
+
+.btn {
+  margin-top: $space-2;
+  padding: $space-2 $space-5;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}

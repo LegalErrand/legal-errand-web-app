@@ -1,0 +1,17 @@
+@use '../../styles/variables' as *;
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: $gray-100;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  // Needed so children that want height: 100% / flex fill get a defined height
+  display: flex;
+  flex-direction: column;
+}

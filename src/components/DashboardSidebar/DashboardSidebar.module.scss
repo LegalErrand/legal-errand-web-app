@@ -1,0 +1,139 @@
+@use '../../styles/variables' as *;
+
+.sidebar {
+  width: $sidebar-width;
+  min-height: 100vh;
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  padding: $space-3 0 $space-3;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+// ─── Logo ─────────────────────────────────────────────────────────────────────
+
+.logoWrap {
+  padding: $space-1 $space-3 $space-4;
+}
+
+// ─── Nav ──────────────────────────────────────────────────────────────────────
+
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 $space-2;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px $space-3;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-600;
+  text-decoration: none;
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: $gray-100;
+    color: $dark;
+  }
+}
+
+.navActive {
+  background: $primary;
+  color: $white;
+  font-weight: 600;
+
+  &:hover {
+    background: $primary-dark;
+    color: $white;
+  }
+}
+
+// ─── User row ─────────────────────────────────────────────────────────────────
+
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3;
+  margin-top: auto;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: $gray-200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  font-size: 11px;
+  color: $gray-600;
+  text-transform: capitalize;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: $gray-400;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  &:hover:not(:disabled) {
+    background: $gray-100;
+    color: $dark;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

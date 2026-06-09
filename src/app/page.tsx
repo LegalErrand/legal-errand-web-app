@@ -1,6 +1,5 @@
-import Navbar from '@/components/Navbar';
-import WaitlistForm from '@/components/WaitlistForm';
-import { FEATURES, STATS } from '@/lib/constants';
+import { Navbar, WaitlistForm } from '@/components';
+import { FEATURES, STATS } from '@/lib';
 import styles from './page.module.scss';
 
 export default function WaitlistPage() {
@@ -13,16 +12,14 @@ export default function WaitlistPage() {
           <p className={styles.eyebrow}>For Undergraduate Law Students Globally</p>
 
           <h1 className={styles.headline}>
-            The study tool your lecturer{' '}
-            <span>never gave you.</span>
+            The study tool your lecturer <span>never gave you.</span>
           </h1>
 
           <p className={styles.description}>
-            LegalErrand uses AI to breakdown court cases, simplify legal
-            concepts, and prepare you for your exams.
+            LegalErrand uses AI to breakdown court cases, simplify legal concepts, and prepare you
+            for your exams.
             <br />
-            Built specifically for law undergraduates across the globe, from
-            year one to finals.
+            Built specifically for law undergraduates across the globe, from year one to finals.
           </p>
 
           <div className={styles.stats}>
@@ -36,7 +33,9 @@ export default function WaitlistPage() {
 
           <div className={styles.features}>
             {FEATURES.map((f) => (
-              <div key={f} className={styles.featureItem}>{f}</div>
+              <div key={f} className={styles.featureItem}>
+                {f}
+              </div>
             ))}
           </div>
         </div>

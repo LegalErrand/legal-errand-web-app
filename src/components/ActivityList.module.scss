@@ -1,0 +1,67 @@
+@use '../styles/variables' as *;
+
+.activityList {
+  list-style: none;
+  margin: 0;
+  padding: $space-2 $space-4;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.emptyItem {
+  padding: $space-5;
+  text-align: center;
+  font-size: 13px;
+  color: $gray-400;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 0;
+  border-bottom: 1px solid $gray-200;
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: $gray-50;
+  }
+}
+
+.activityIcon {
+  width: 36px;
+  height: 36px;
+  background: $orange-50;
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary;
+  flex-shrink: 0;
+}
+
+.activityBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.activityTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activityMeta {
+  font-size: 11px;
+  color: $gray-400;
+  margin: 2px 0 0;
+  text-transform: capitalize;
+}

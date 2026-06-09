@@ -1,0 +1,333 @@
+@use '../../../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: $white;
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
+.tabs {
+  display: flex;
+  gap: 0;
+  padding: $space-4 $space-5 0;
+  border-bottom: 1px solid $gray-200;
+}
+
+.tabBtn {
+  padding: 8px $space-3;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-600;
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    border-color 0.12s;
+  margin-bottom: -1px;
+
+  &:hover:not(:disabled) {
+    color: $dark;
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.tabActive {
+  color: $primary;
+  border-bottom-color: $primary;
+  font-weight: 600;
+}
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+
+.content {
+  flex: 1;
+  padding: $space-5;
+  max-width: 800px;
+  width: 100%;
+}
+
+// ─── Heading ──────────────────────────────────────────────────────────────────
+
+.pageHeading {
+  font-family: $font-heading;
+  font-size: 24px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 $space-1;
+}
+
+.pageSub {
+  font-size: 14px;
+  color: $gray-600;
+  margin: 0 0 $space-4;
+}
+
+// ─── Label & Textarea ─────────────────────────────────────────────────────────
+
+.inputLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: $gray-800;
+  display: block;
+  margin-bottom: $space-2;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 160px;
+  padding: $space-3;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+  line-height: 1.6;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+// ─── Bottom row ───────────────────────────────────────────────────────────────
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $space-3;
+}
+
+.selectLibraryLink {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: 14px;
+  font-weight: 600;
+  color: $primary;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.startBtn {
+  padding: 11px $space-4;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: $primary-dark;
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.formError {
+  font-size: 13px;
+  color: $accent-red;
+  margin: $space-2 0 0;
+}
+
+// ─── Mode tabs (hidden — keeping for backward compat) ─────────────────────────
+
+.modeTabs {
+  display: flex;
+  gap: $space-2;
+  margin-bottom: $space-3;
+}
+
+.modeTab {
+  padding: 6px $space-3;
+  background: none;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    border-color: $primary;
+  }
+}
+
+.modeTabActive {
+  background: $primary;
+  border-color: $primary;
+  color: $white;
+
+  &:hover {
+    background: $primary-dark;
+    border-color: $primary-dark;
+  }
+}
+
+.input {
+  height: 48px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 $space-3;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+// ─── History section ──────────────────────────────────────────────────────────
+
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  margin-top: $space-5;
+}
+
+.sectionTitle {
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: $white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $gray-100;
+  text-decoration: none;
+  transition: background 0.12s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: $gray-100;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $gray-400;
+    margin-left: auto;
+  }
+}
+
+.caseIcon {
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  background: rgba($primary, 0.1);
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.caseBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.caseTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.caseMeta {
+  font-size: 11px;
+  color: $gray-400;
+  margin: 0;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 100px;
+  background: $gray-200;
+  color: $gray-600;
+}
+
+.status_complete {
+  background: rgba($green-500, 0.1);
+  color: $green-500;
+}
+.status_pending {
+  background: rgba($primary, 0.1);
+  color: $primary;
+}
+.status_processing {
+  background: rgba($accent-blue, 0.1);
+  color: $accent-blue;
+}
+.status_error {
+  background: rgba($accent-red, 0.1);
+  color: $accent-red;
+}
+
+.stateMsg {
+  font-size: 13px;
+  color: $gray-400;
+  margin: 0;
+}

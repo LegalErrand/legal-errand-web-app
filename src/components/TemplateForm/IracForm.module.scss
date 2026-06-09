@@ -1,0 +1,64 @@
+@use '../../styles/variables' as *;
+
+.iracTabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: $space-4;
+  border-bottom: 2px solid $gray-200;
+}
+
+.iracTab {
+  padding: 10px $space-3;
+  font-size: 12px;
+  font-weight: 700;
+  color: $gray-400;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: inherit;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+
+  &:hover {
+    color: $dark;
+  }
+}
+
+.iracTabActive {
+  color: $primary;
+  border-bottom-color: $primary;
+}
+
+.toolbar {
+  display: flex;
+  gap: $space-1;
+  margin-bottom: $space-3;
+  padding-bottom: $space-2;
+  border-bottom: 1px solid $gray-200;
+}
+
+.toolBtn {
+  width: 28px;
+  height: 28px;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  &:hover {
+    background: $orange-50;
+    color: $primary;
+  }
+}

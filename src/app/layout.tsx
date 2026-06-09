@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import NextTopLoader from 'nextjs-toploader';
+import { ErrorBoundary } from '@/components';
 import '../styles/globals.scss';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://legalerrand.com';
@@ -28,21 +29,16 @@ export const metadata: Metadata = {
     images: ['/social-share.png'],
   },
   icons: {
-    icon: '/favivon.svg',
+    icon: '/favicon.svg',
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+        <NextTopLoader color="#D97706" showSpinner={false} />
+        <ErrorBoundary>{children}</ErrorBoundary>
         <Analytics />
         <SpeedInsights />
       </body>

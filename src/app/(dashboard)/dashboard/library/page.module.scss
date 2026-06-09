@@ -1,0 +1,155 @@
+@use '../../../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: $white;
+}
+
+// ─── Search bar at top ────────────────────────────────────────────────────────
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  padding: 0 $space-3;
+  margin: $space-4 $space-5 0;
+}
+
+.searchIcon {
+  color: $gray-400;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  height: 44px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: $dark;
+  outline: none;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
+.tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 $space-5;
+  border-bottom: 1px solid $gray-200;
+  margin-top: $space-3;
+}
+
+.tab {
+  padding: 10px $space-3;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-600;
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    border-color 0.12s;
+  margin-bottom: -1px;
+
+  &:hover {
+    color: $dark;
+  }
+}
+
+.tabActive {
+  color: $primary;
+  border-bottom-color: $primary;
+  font-weight: 600;
+}
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+
+.content {
+  flex: 1;
+  padding: $space-4 $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.sectionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.uploadBtn {
+  padding: 10px $space-4;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+// ─── Grid ─────────────────────────────────────────────────────────────────────
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-4;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── States ───────────────────────────────────────────────────────────────────
+
+.emptyBox {
+  background: $gray-50;
+  border-radius: $radius-lg;
+  padding: $space-7;
+  text-align: center;
+  font-size: 14px;
+  color: $gray-600;
+}
+
+.emptyState {
+  font-size: 14px;
+  color: $gray-400;
+  text-align: center;
+  padding: $space-7 0;
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: $accent-red;
+  margin: 0;
+}
