@@ -1,80 +1,149 @@
 'use client';
 
-import { Suspense, useEffect, useState, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   getLibraryDocuments,
   getMyDocuments,
-  getBookmarks,
-  toggleBookmark,
-  deleteDocument,
   getFetchErrorMessage,
   getUploadUrl,
   completeUpload,
   getAccessToken,
 } from '@/lib';
 import type { LibraryDocument } from '@/lib';
-import { SearchIcon, DocCard, ShimmerCard } from '@/components';
+import { ShimmerCard } from '@/components';
 import LibraryUploadModal from '@/components/LibraryUploadModal';
 import styles from './page.module.scss';
 
-type Tab = 'my' | 'free' | 'bookmarks';
-const PAGE_SIZE = 12;
+type Tab = 'my-document' | 'free-library' | 'marketplace';
 
-export default function LibraryPage() {
+const FREE_SUBJECTS = [
+  'All Resources',
+  'Constitutional Law',
+  'Torts',
+  'Criminal Procedure',
+  'Taxation',
+] as const;
+type FreeSubject = (typeof FREE_SUBJECTS)[number];
+
+function BookIcon() {
   return (
-    <Suspense>
-      <LibraryPageInner />
-    </Suspense>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"
+        stroke="white"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"
+        stroke="white"
+        strokeWidth="1.8"
+      />
+    </svg>
   );
 }
 
-function LibraryPageInner() {
+function DocCover() {
+  return (
+    <div className={styles.docCover}>
+      <div className={styles.docCoverInner}>
+        <BookIcon />
+      </div>
+    </div>
+  );
+}
+
+function DocCard({ doc, cta = 'Read' }: { doc: LibraryDocument; cta?: string }) {
+  return (
+    <div className={styles.docCard}>
+      <DocCover />
+      <h3 className={styles.docTitle}>{doc.title}</h3>
+      {doc.description && <p className={styles.docDesc}>{doc.description}</p>}
+      <Link href={`/dashboard/library/${doc._id}`} className={styles.docReadBtn}>
+        {cta} →
+      </Link>
+    </div>
+  );
+}
+
+function EmptyMyDocs({ onUpload }: { onUpload: () => void }) {
+  return (
+    <div className={styles.emptyState}>
+      <div className={styles.emptyIcon}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <polyline
+            points="17 8 12 3 7 8"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <line
+            x1="12"
+            y1="3"
+            x2="12"
+            y2="15"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
+      <p className={styles.emptyTitle}>No documents yet</p>
+      <p className={styles.emptySub}>Upload your first PDF to get started</p>
+      <button className={styles.uploadBtnPrimary} onClick={onUpload}>
+        Upload PDF
+      </button>
+    </div>
+  );
+}
+
+export default function LibraryPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // Tab and page persisted in URL
-  const tab = (searchParams.get('tab') as Tab) ?? 'my';
-  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10));
-
-  const [docs, setDocs] = useState<LibraryDocument[]>([]);
-  const [total, setTotal] = useState(0);
+  const [token, setToken] = useState('');
+  const [tab, setTab] = useState<Tab>('my-document');
+  const [myDocs, setMyDocs] = useState<LibraryDocument[]>([]);
+  const [freeDocs, setFreeDocs] = useState<LibraryDocument[]>([]);
+  const [freeSubject, setFreeSubject] = useState<FreeSubject>('All Resources');
   const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [myLoading, setMyLoading] = useState(true);
+  const [freeLoading, setFreeLoading] = useState(false);
   const [error, setError] = useState('');
   const [showUpload, setShowUpload] = useState(false);
-  const [token, setToken] = useState('');
 
-  function setTab(t: Tab) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', t);
-    params.set('page', '1');
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }
-
-  function setPage(p: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(p));
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }
-
-  const load = useCallback(async (t: string, activeTab: Tab, q: string, pg: number) => {
-    setLoading(true);
+  const loadMyDocs = useCallback(async (t: string, q?: string) => {
+    setMyLoading(true);
     setError('');
     try {
-      const params = { limit: PAGE_SIZE, page: pg, ...(q ? { search: q } : {}) };
-      const res =
-        activeTab === 'my'
-          ? await getMyDocuments(t, params)
-          : activeTab === 'bookmarks'
-            ? await getBookmarks(t, params)
-            : await getLibraryDocuments(t, params);
-      setDocs(res.data ?? []);
-      setTotal((res.meta?.total as number) ?? res.data?.length ?? 0);
+      const res = await getMyDocuments(t, { limit: 50, ...(q ? { search: q } : {}) });
+      setMyDocs(res.data ?? []);
     } catch (err) {
       setError(getFetchErrorMessage(err));
     } finally {
-      setLoading(false);
+      setMyLoading(false);
+    }
+  }, []);
+
+  const loadFreeDocs = useCallback(async (t: string, subject?: string) => {
+    setFreeLoading(true);
+    setError('');
+    try {
+      const params: Record<string, string | number> = { limit: 50, type: 'free' };
+      if (subject && subject !== 'All Resources') params.subject = subject;
+      const res = await getLibraryDocuments(t, params as Parameters<typeof getLibraryDocuments>[1]);
+      setFreeDocs(res.data ?? []);
+    } catch (err) {
+      setError(getFetchErrorMessage(err));
+    } finally {
+      setFreeLoading(false);
     }
   }, []);
 
@@ -85,130 +154,163 @@ function LibraryPageInner() {
       return;
     }
     setToken(t);
-    void load(t, tab, search, page);
-  }, [router, load, tab, search, page]);
+    void loadMyDocs(t);
+  }, [router, loadMyDocs]);
 
-  async function handleBookmark(id: string) {
+  useEffect(() => {
     if (!token) return;
-    try {
-      await toggleBookmark(id, token);
-      setDocs((prev) =>
-        prev.map((d) => (d._id === id ? { ...d, isBookmarked: !d.isBookmarked } : d))
-      );
-    } catch {
-      /* silent */
-    }
-  }
+    if (tab === 'free-library') void loadFreeDocs(token, freeSubject);
+  }, [tab, freeSubject, token, loadFreeDocs]);
 
-  async function handleDelete(id: string) {
-    if (!token || !confirm('Delete this document?')) return;
-    try {
-      await deleteDocument(id, token);
-      setDocs((prev) => prev.filter((d) => d._id !== id));
-    } catch (err) {
-      setError(getFetchErrorMessage(err));
-    }
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (tab === 'my-document') void loadMyDocs(token, search);
   }
-
-  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <div className={styles.page}>
-      <div className={styles.searchBar}>
-        <SearchIcon size={16} className={styles.searchIcon} />
-        <input
-          className={styles.searchInput}
-          placeholder="Search documents, cases & statutes"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* Top search bar */}
+      <div className={styles.topBar}>
+        <form className={styles.searchWrap} onSubmit={handleSearch}>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            className={styles.searchIcon}
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+          </svg>
+          <input
+            className={styles.searchInput}
+            placeholder="Search archives, statutes..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </form>
       </div>
 
-      <div className={styles.tabs}>
-        {(['my', 'free', 'bookmarks'] as Tab[]).map((t) => (
+      {/* Tabs */}
+      <div className={styles.tabRow}>
+        {(['my-document', 'free-library', 'marketplace'] as Tab[]).map((t) => (
           <button
             key={t}
             className={`${styles.tab} ${tab === t ? styles.tabActive : ''}`}
             onClick={() => setTab(t)}
           >
-            {t === 'my' ? 'My Document' : t === 'free' ? 'Free Library' : 'Marketplace'}
+            {t === 'my-document'
+              ? 'My Document'
+              : t === 'free-library'
+                ? 'Free Library'
+                : 'Marketplace'}
           </button>
         ))}
       </div>
 
-      <div className={styles.content}>
-        <div className={styles.sectionRow}>
-          <h1 className={styles.sectionTitle}>
-            {tab === 'my' ? 'My Document' : tab === 'free' ? 'Free Library' : 'Marketplace'}
-          </h1>
-          <button className={styles.uploadBtn} onClick={() => setShowUpload(true)}>
-            Upload PDF
-          </button>
-        </div>
+      {error && (
+        <p className={styles.errorMsg} role="alert">
+          {error}
+        </p>
+      )}
 
-        {error && (
-          <p className={styles.errorMsg} role="alert">
-            {error}
-          </p>
-        )}
+      {/* ── My Document ── */}
+      {tab === 'my-document' && (
+        <div className={styles.content}>
+          <div className={styles.contentHeader}>
+            <div>
+              <h1 className={styles.pageTitle}>My Document</h1>
+            </div>
+            <button className={styles.uploadBtn} onClick={() => setShowUpload(true)}>
+              Upload PDF
+            </button>
+          </div>
 
-        {loading ? (
-          <div className={styles.grid}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <ShimmerCard key={i} lines={2} />
-            ))}
-          </div>
-        ) : docs.length === 0 ? (
-          <div className={styles.emptyBox}>
-            <p>
-              {tab === 'my'
-                ? 'You have no documents yet. Upload one to get started.'
-                : tab === 'bookmarks'
-                  ? 'No bookmarked documents yet.'
-                  : 'No documents found.'}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className={styles.grid}>
-              {docs.map((doc) => (
-                <DocCard
-                  key={doc._id}
-                  id={doc._id}
-                  title={doc.title}
-                  subject={doc.subject}
-                  description={doc.description}
-                  href={`/dashboard/library/${doc._id}`}
-                />
+          {myLoading ? (
+            <div className={styles.docGrid}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ShimmerCard key={i} lines={2} />
               ))}
             </div>
+          ) : myDocs.length === 0 ? (
+            <EmptyMyDocs onUpload={() => setShowUpload(true)} />
+          ) : (
+            <div className={styles.docGrid}>
+              {myDocs.map((doc) => (
+                <DocCard key={doc._id} doc={doc} cta="Read" />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
-            {totalPages > 1 && (
-              <div className={styles.pagination}>
-                <button
-                  className={styles.pageBtn}
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page === 1}
-                  type="button"
-                >
-                  ← Prev
-                </button>
-                <span className={styles.pageInfo}>
-                  {page} / {totalPages}
-                </span>
-                <button
-                  className={styles.pageBtn}
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  disabled={page === totalPages}
-                  type="button"
-                >
-                  Next →
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* ── Free Library ── */}
+      {tab === 'free-library' && (
+        <div className={styles.content}>
+          <div className={styles.freeHeader}>
+            <span className={styles.openAccessBadge}>OPEN ACCESS</span>
+            <h1 className={styles.pageTitle}>Free Library</h1>
+            <p className={styles.pageSub}>
+              Access verified copies of the Nigerian constitution, statutes, and landmark Supreme
+              Court rulings curated by legal experts.
+            </p>
+          </div>
+
+          <div className={styles.filterRow}>
+            {FREE_SUBJECTS.map((s) => (
+              <button
+                key={s}
+                className={`${styles.filterChip} ${freeSubject === s ? styles.filterChipActive : ''}`}
+                onClick={() => setFreeSubject(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+
+          {freeLoading ? (
+            <div className={styles.docGrid}>
+              {Array.from({ length: 9 }).map((_, i) => (
+                <ShimmerCard key={i} lines={2} />
+              ))}
+            </div>
+          ) : freeDocs.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p className={styles.emptyTitle}>No documents in this category yet.</p>
+            </div>
+          ) : (
+            <div className={styles.docGrid}>
+              {freeDocs.map((doc) => (
+                <DocCard key={doc._id} doc={doc} cta="Start Reading" />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Marketplace ── */}
+      {tab === 'marketplace' && (
+        <div className={styles.content}>
+          <div className={styles.contentHeader}>
+            <div>
+              <h1 className={styles.pageTitle}>Marketplace</h1>
+              <p className={styles.pageSub}>Premium legal resources and study materials</p>
+            </div>
+          </div>
+          <div className={styles.emptyState}>
+            <p className={styles.emptyTitle}>Coming Soon</p>
+            <p className={styles.emptySub}>
+              Premium marketplace resources will be available shortly.
+            </p>
+          </div>
+        </div>
+      )}
 
       {showUpload && (
         <LibraryUploadModal
@@ -218,7 +320,7 @@ function LibraryPageInner() {
           onClose={() => setShowUpload(false)}
           onSuccess={() => {
             setShowUpload(false);
-            void load(token, tab, search, 1);
+            void loadMyDocs(token);
           }}
         />
       )}

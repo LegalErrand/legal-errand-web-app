@@ -8,9 +8,13 @@ import {
   getFetchErrorMessage,
   updateBioData,
   getAccessToken,
+  getValidAccessToken,
+  isAccessTokenExpired,
+  clearAccessToken,
   getSessionEmail,
   getSessionProfile,
   validateBioDataFields,
+  loginPath,
 } from '@/lib';
 import type { BioDataFormErrors } from '@/lib';
 import BioDataCredentials from './BioDataCredentials';
@@ -37,19 +41,24 @@ export default function BioDataClient() {
 
   useEffect(() => {
     let cancelled = false;
-    const t = getAccessToken();
-    if (!t) {
+    const raw = getAccessToken();
+    if (!raw) {
       router.replace('/signup');
       return;
     }
-    setToken(t);
+    if (isAccessTokenExpired(raw)) {
+      clearAccessToken();
+      router.replace(loginPath('/bio-data'));
+      return;
+    }
+    setToken(raw);
     setSessionEmailState(getSessionEmail() ?? '');
     const profile = getSessionProfile();
     setFirstName(profile.firstName ?? '');
     setLastName(profile.lastName ?? '');
 
     void (async () => {
-      const url = await fetchAvatarDisplayUrl(t);
+      const url = await fetchAvatarDisplayUrl(raw);
       if (!cancelled && url) setAvatarUrl(url);
     })();
 
@@ -71,9 +80,9 @@ export default function BioDataClient() {
     setFieldErrors(errs);
     if (Object.keys(errs).length) return;
 
-    const t = getAccessToken();
+    const t = getValidAccessToken();
     if (!t) {
-      router.replace('/signup');
+      router.replace(loginPath('/bio-data'));
       return;
     }
 

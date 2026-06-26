@@ -346,31 +346,48 @@
   gap: $space-2;
 }
 
-.submittedBox {
+// ─── Save to notes button ─────────────────────────────────────────────────────
+
+.saveNotesBtn {
+  padding: 9px $space-4;
+  background: $white;
+  color: $dark;
+  border: 1.5px solid $gray-200;
+  border-radius: $radius;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+  }
+}
+
+// ─── Result view ──────────────────────────────────────────────────────────────
+
+.resultScroll {
   flex: 1;
+  overflow-y: auto;
+  padding: $space-6 $space-5;
+  display: flex;
+  justify-content: center;
+}
+
+.resultCard {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  padding: $space-6;
+  width: 100%;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $space-3;
-  text-align: center;
-  padding: $space-7 $space-5;
+  gap: $space-5;
 }
 
-.submittedIcon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: $green-100;
-  color: $green-500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.submittedTitle {
+.resultTitle {
   font-family: $font-heading;
   font-size: 22px;
   font-weight: 700;
@@ -378,72 +395,123 @@
   margin: 0;
 }
 
-.submittedSub {
-  font-size: 14px;
-  color: $gray-600;
-  max-width: 400px;
+.resultScore {
+  font-size: 24px;
+  font-weight: 600;
   margin: 0;
-  line-height: 1.6;
+
+  strong {
+    font-size: 32px;
+    font-weight: 800;
+  }
 }
 
-.submittedActions {
-  margin-top: $space-2;
+.scoreChips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-3;
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.scoreChip {
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  padding: $space-3;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scoreChipLabel {
+  font-size: 11px;
+  color: $gray-600;
+  font-weight: 500;
+}
+
+.scoreChipVal {
+  font-size: 18px;
+  font-weight: 700;
+  color: $dark;
+}
+
+.feedbackBlock {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.feedbackTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.feedbackText {
+  font-size: 14px;
+  color: $gray-700;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.modelAnswerBlock {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.modelAnswerBox {
+  background: $gray-50;
+  border-radius: $radius;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.modelAnswerLine {
+  font-size: 13px;
+  color: $gray-800;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.resultActions {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding-top: $space-2;
+  border-top: 1px solid $gray-200;
 }
 
 .backToBank {
-  display: inline-block;
-  padding: 11px 28px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.tryAgainBtn {
+  padding: 9px $space-4;
   background: $primary;
   color: $white;
   border-radius: $radius;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
   transition: background 0.15s;
+  margin-left: auto;
 
   &:hover {
     background: $primary-dark;
   }
-}
-
-// ─── Score breakdown ──────────────────────────────────────────────────────────
-
-.scoreBreakdown {
-  width: 100%;
-  max-width: 420px;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: $space-2;
-  margin-top: $space-2;
-}
-
-.scoreRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: $gray-800;
-}
-
-.scoreVal {
-  font-weight: 700;
-}
-
-.scoreValHigh {
-  color: $green-500;
-}
-.scoreValMedium {
-  color: $primary;
-}
-.scoreValLow {
-  color: $accent-red;
-}
-
-.submittedIconPass {
-  background: $green-100;
-  color: $green-500;
-}
-.submittedIconFail {
-  background: rgba($accent-red, 0.1);
-  color: $accent-red;
 }

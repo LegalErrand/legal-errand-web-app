@@ -249,6 +249,7 @@ export interface QuestionAttempt {
     total: number;
   };
   aiFeedback: string;
+  modelAnswer?: string;
   createdAt: string;
 }
 
@@ -437,4 +438,16 @@ export interface QuestionStats {
   subjectBreakdown?: Record<string, { attempted: number; averageScore: number }>;
   topSubject?: string;
   recentAttempts?: number;
+}
+
+// ─── Toast Notifications ──────────────────────────────────────────────────────
+
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
+
+export interface ToastMessage {
+  id: string;
+  type: ToastType;
+  title: string;
+  message?: string;
+  duration?: number;
 }

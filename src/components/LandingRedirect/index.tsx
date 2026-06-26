@@ -2,13 +2,13 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAccessToken } from '@/lib';
+import { getValidAccessToken } from '@/lib';
 
 export default function LandingRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    if (getAccessToken()) {
+    if (getValidAccessToken()) {
       router.replace('/dashboard');
     }
   }, [router]);

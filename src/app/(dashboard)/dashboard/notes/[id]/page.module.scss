@@ -113,6 +113,15 @@
   text-align: center;
 }
 
+.draftBanner {
+  font-size: 12px;
+  color: $primary;
+  font-weight: 600;
+  background: rgba($primary, 0.08);
+  padding: 3px 10px;
+  border-radius: $radius;
+}
+
 .savingLabel {
   font-size: 12px;
   color: $gray-400;

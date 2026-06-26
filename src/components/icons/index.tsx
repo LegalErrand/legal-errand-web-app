@@ -147,3 +147,9 @@ export const TrashIcon = makeIcon(
     <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
   </>
 );
+export const SparklesIcon = makeIcon(
+  <>
+    <path d="M9 3L10.5 7.5L15 9L10.5 10.5L9 15L7.5 10.5L3 9L7.5 7.5L9 3Z" />
+    <path d="M19 14L19.5 16.5L22 17L19.5 17.5L19 20L18.5 17.5L16 17L18.5 16.5L19 14Z" />
+  </>
+);

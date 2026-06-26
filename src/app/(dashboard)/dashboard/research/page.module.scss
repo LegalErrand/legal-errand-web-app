@@ -2,7 +2,8 @@
 
 .page {
   background: $white;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .content {
@@ -23,13 +24,19 @@
   font-size: 22px;
   font-weight: 700;
   color: $dark;
-  margin: 0;
-  max-width: 600px;
+  margin: 0 0 $space-1;
+  max-width: 640px;
   line-height: 1.35;
 
   @media (max-width: 600px) {
     font-size: 18px;
   }
+}
+
+.pageSubhead {
+  font-size: 14px;
+  color: $gray-500;
+  margin: 0 0 $space-4;
 }
 
 // ─── Search form ──────────────────────────────────────────────────────────────

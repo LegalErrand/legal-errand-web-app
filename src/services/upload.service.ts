@@ -21,6 +21,8 @@
  *   if (result.success) navigate(`/library/${result.s3Key}`);
  */
 
+import { forceLogoutToLogin } from '@/lib/session';
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3003/api/v1';
 
 // ─── Size limits ──────────────────────────────────────────────────────────────
@@ -185,6 +187,9 @@ async function authFetch<T>(
   }
 
   if (!res.ok) {
+    if (res.status === 401) {
+      forceLogoutToLogin();
+    }
     const body = await res.text().catch(() => res.statusText);
     throw new UploadError(body || `HTTP ${res.status}`, stage, res.status);
   }

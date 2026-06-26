@@ -45,7 +45,33 @@ import type {
   ReasoningScoreData,
 } from './types';
 
+import { getAccessToken } from './authStorage';
+import { forceLogoutToLogin } from './session';
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3003/api/v1';
+
+const PUBLIC_AUTH_PATHS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/verify-email',
+  '/auth/resend-verification-otp',
+  '/auth/forgot-password',
+  '/auth/verify-otp',
+  '/auth/reset-password',
+];
+
+function isPublicAuthPath(path: string): boolean {
+  const pathname = path.split('?')[0];
+  return PUBLIC_AUTH_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+function handleUnauthorized(path: string, headers: Headers): void {
+  if (isPublicAuthPath(path)) return;
+  const sentAuth = headers.has('Authorization');
+  if (sentAuth || getAccessToken()) {
+    forceLogoutToLogin();
+  }
+}
 
 /** User-facing message from thrown API/network errors. */
 export function getFetchErrorMessage(error: unknown): string {
@@ -91,6 +117,9 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
   });
 
   if (!res.ok) {
+    if (res.status === 401) {
+      handleUnauthorized(path, mergedHeaders);
+    }
     const body = await res.text().catch(() => res.statusText);
     throw new Error(body || `HTTP ${res.status}`);
   }
@@ -522,6 +551,9 @@ export async function* streamAiChat(
   });
 
   if (!response.ok || !response.body) {
+    if (response.status === 401) {
+      forceLogoutToLogin();
+    }
     yield { error: `HTTP ${response.status}` };
     return;
   }
@@ -635,6 +667,11 @@ export async function fetchAvatarDisplayUrl(token: string): Promise<string | und
   });
 
   if (res.status === 404 || res.status === 204) {
+    return undefined;
+  }
+
+  if (res.status === 401) {
+    forceLogoutToLogin();
     return undefined;
   }
 

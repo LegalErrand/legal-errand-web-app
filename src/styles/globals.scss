@@ -2,3 +2,101 @@
 @use 'reset';
 
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap');
+
+// ─── Scroll-triggered entrance animations ─────────────────────────────────────
+
+[data-animate] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-animate='fade'] {
+  transform: none;
+
+  &.is-visible {
+    transform: none;
+  }
+}
+
+[data-animate='slide-right'] {
+  transform: translateX(-24px);
+
+  &.is-visible {
+    transform: translateX(0);
+  }
+}
+
+[data-animate='slide-left'] {
+  transform: translateX(24px);
+
+  &.is-visible {
+    transform: translateX(0);
+  }
+}
+
+[data-animate='scale'] {
+  transform: scale(0.96);
+
+  &.is-visible {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-animate] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+// ─── Hero entrance (above-fold — runs on paint) ───────────────────────────────
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes badgePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

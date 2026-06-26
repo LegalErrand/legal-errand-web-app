@@ -1,34 +1,100 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  sendAiChat,
-  getAiConversations,
-  deleteAiConversation,
-  startSocraticSession,
-  respondSocratic,
-  endSocraticSession,
-  getCurrentUser,
-  getFetchErrorMessage,
-  getAccessToken,
-} from '@/lib';
-import type { AiConversation, AuthUserSummary } from '@/lib';
-import StandardChat from '@/components/StandardChat';
-import SocraticChat from '@/components/SocraticChat';
+import Link from 'next/link';
+import { getQuestions, getQuestionStats, getFetchErrorMessage, getAccessToken } from '@/lib';
+import type { Question, QuestionStats, SubjectMastery } from '@/lib';
+import { ShimmerCard } from '@/components';
 import styles from './page.module.scss';
 
-type Mode = 'standard' | 'socratic';
+const SUBJECT_TABS = ['All question banks', 'Contract law', 'Criminal law', 'Tort law'] as const;
+type SubjectTab = (typeof SUBJECT_TABS)[number];
+
+const SUBJECT_PARAM: Record<SubjectTab, string | undefined> = {
+  'All question banks': undefined,
+  'Contract law': 'Contract law',
+  'Criminal law': 'Criminal law',
+  'Tort law': 'Tort law',
+};
+
+function MiniDonut({ score }: { score: number }) {
+  const r = 22;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (Math.min(100, score) / 100) * circ;
+  const color = score >= 80 ? '#16A34A' : score >= 50 ? '#D97706' : '#9CA3AF';
+  return (
+    <div className={styles.miniDonutWrap}>
+      <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
+        <circle cx="30" cy="30" r={r} fill="none" stroke="#F3F4F6" strokeWidth="6" />
+        <circle
+          cx="30"
+          cy="30"
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="6"
+          strokeDasharray={circ}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          transform="rotate(-90 30 30)"
+        />
+      </svg>
+      <span className={styles.miniDonutLabel} style={{ color }}>
+        {score}%
+      </span>
+    </div>
+  );
+}
+
+function QuestionCard({ item, onStart }: { item: Question; onStart: () => void }) {
+  const label = item.subject ?? 'General';
+  const minutes = item.estimatedMinutes;
+  return (
+    <div className={styles.qCard}>
+      <div className={styles.qCardTop}>
+        <span className={styles.qCategory}>{label}</span>
+        {minutes && <span className={styles.qTime}>{minutes}min</span>}
+      </div>
+      <h3 className={styles.qTitle}>{item.prompt ?? item.text ?? 'Practice Question'}</h3>
+      {item.difficulty && <p className={styles.qDiff}>Difficulty: {item.difficulty}</p>}
+      <button className={styles.startBtn} onClick={onStart}>
+        Start practice
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M5 12h14M13 6l6 6-6 6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 export default function ReasoningPage() {
   const router = useRouter();
   const [token, setToken] = useState('');
-  const [mode, setMode] = useState<Mode>('standard');
-  const [conversations, setConversations] = useState<AiConversation[]>([]);
-  const [activeSessionId, setActiveSessionId] = useState<string | undefined>();
-  const [convsLoading, setConvsLoading] = useState(true);
-  const [initialQuery, setInitialQuery] = useState('');
-  const [user, setUser] = useState<AuthUserSummary | null>(null);
+  const [activeTab, setActiveTab] = useState<SubjectTab>('All question banks');
+  const [items, setItems] = useState<Question[]>([]);
+  const [stats, setStats] = useState<QuestionStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const loadItems = useCallback(async (t: string, subject?: string) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await getQuestions(t, { subject, limit: 30 });
+      setItems(res.data?.data ?? []);
+    } catch (err) {
+      setError(getFetchErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const t = getAccessToken();
@@ -37,190 +103,107 @@ export default function ReasoningPage() {
       return;
     }
     setToken(t);
-    void loadConversations(t);
-    void getCurrentUser(t)
-      .then((res) => {
-        if (res.data) setUser(res.data);
-      })
-      .catch(() => undefined);
-    const q = new URLSearchParams(window.location.search).get('q') ?? '';
-    if (q) setInitialQuery(q);
-  }, [router]);
+    void Promise.allSettled([
+      loadItems(t, undefined),
+      getQuestionStats(t).then((r) => {
+        if (r.data) setStats(r.data);
+      }),
+    ]);
+  }, [router, loadItems]);
 
-  async function loadConversations(t: string) {
-    setConvsLoading(true);
-    try {
-      const res = await getAiConversations(t, { limit: 30 });
-      setConversations(res.data?.data ?? []);
-    } catch {
-      /* silent */
-    } finally {
-      setConvsLoading(false);
-    }
+  function handleTabChange(tab: SubjectTab) {
+    setActiveTab(tab);
+    void loadItems(token, SUBJECT_PARAM[tab]);
   }
 
-  async function handleDeleteConv(sessionId: string) {
-    if (!token || !confirm('Delete this conversation?')) return;
-    try {
-      await deleteAiConversation(sessionId, token);
-      setConversations((prev) => prev.filter((c) => c.sessionId !== sessionId));
-      if (activeSessionId === sessionId) setActiveSessionId(undefined);
-    } catch {
-      /* silent */
-    }
-  }
-
-  if (!token) return null;
+  const masteryDisplay: SubjectMastery[] = stats?.subjectBreakdown
+    ? Object.entries(stats.subjectBreakdown)
+        .slice(0, 3)
+        .map(([subject, data]) => ({ subject, score: Math.round(data.averageScore) }))
+    : [];
 
   return (
     <div className={styles.page}>
-      {/* Left sidebar — own logo, chat history, new conv button */}
-      <div className={styles.sidebar}>
-        <div className={styles.logoWrap}>
-          <svg width="120" height="28" viewBox="0 0 140 32" fill="none" aria-label="LegalErrand">
-            <text
-              x="0"
-              y="24"
-              fontFamily="sans-serif"
-              fontWeight="700"
-              fontSize="18"
-              fill="#D97706"
-            >
-              LegalErrand
-            </text>
-          </svg>
+      <header className={styles.topBar}>
+        <div>
+          <h1 className={styles.pageTitle}>Reasoning question bank</h1>
+          <p className={styles.pageSub}>
+            Master the art of legal reasoning through curated hypotheticals.
+          </p>
         </div>
-
-        <p className={styles.chatHistoryLabel}>Chat history</p>
-
-        <button className={styles.newConvBtn} onClick={() => setActiveSessionId(undefined)}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <Link href="/dashboard/ai" className={styles.aiChatBtn}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
-              d="M12 5v14M5 12h14"
+              d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6H8.3A6.97 6.97 0 0 1 5 9a7 7 0 0 1 7-7Z"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="1.8"
+            />
+            <path
+              d="M9 18v3M15 18v3M9 21h6"
+              stroke="currentColor"
+              strokeWidth="1.8"
               strokeLinecap="round"
             />
           </svg>
-          New conversation
-        </button>
+          AI Chat
+        </Link>
+      </header>
 
-        <hr className={styles.sidebarDivider} />
-
-        <div className={styles.convList}>
-          {convsLoading ? (
-            <p className={styles.convEmpty}>Loading…</p>
-          ) : conversations.length === 0 ? (
-            <p className={styles.convEmpty}>No conversations yet.</p>
-          ) : (
-            conversations.map((c) => (
-              <div
-                key={c.sessionId}
-                className={`${styles.convItem} ${activeSessionId === c.sessionId ? styles.convItemActive : ''}`}
-              >
-                <button className={styles.convBtn} onClick={() => setActiveSessionId(c.sessionId)}>
-                  <span className={styles.convTitle}>{c.title ?? 'Chat'}</span>
-                  <span className={styles.convMeta}>
-                    {new Date(c.createdAt).toLocaleDateString()}
-                  </span>
-                </button>
-                <button
-                  className={styles.delConvBtn}
-                  onClick={() => handleDeleteConv(c.sessionId)}
-                  aria-label="Delete conversation"
-                  title="Delete"
-                >
-                  ✕
-                </button>
-              </div>
-            ))
-          )}
+      <div className={styles.content}>
+        <div className={styles.tabRow}>
+          {SUBJECT_TABS.map((tab) => (
+            <button
+              key={tab}
+              className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
+              onClick={() => handleTabChange(tab)}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
-        {user && (
-          <div className={styles.userRow}>
-            <div className={styles.userAvatar} aria-label="User profile" />
-            <div className={styles.userInfo}>
-              <span className={styles.userName}>
-                {[user.firstName, user.lastName].filter(Boolean).join(' ') || 'Student'}
-              </span>
-              <span className={styles.userRole}>Student</span>
-            </div>
+        {masteryDisplay.length > 0 && (
+          <div className={styles.masteryRow}>
+            {masteryDisplay.map(({ subject, score }) => (
+              <div key={subject} className={styles.masteryCard}>
+                <p className={styles.masteryLabel}>SUBJECT MASTERY</p>
+                <div className={styles.masteryScoreRow}>
+                  <span className={styles.masterySubject}>{subject}</span>
+                  <MiniDonut score={score} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {error && (
+          <p className={styles.errorMsg} role="alert">
+            {error}
+          </p>
+        )}
+
+        {loading ? (
+          <div className={styles.questionGrid}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ShimmerCard key={i} lines={2} />
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <div className={styles.emptyState}>
+            <p>No questions available for this subject yet. Check back soon.</p>
+          </div>
+        ) : (
+          <div className={styles.questionGrid}>
+            {items.map((item) => (
+              <QuestionCard
+                key={item.id}
+                item={item}
+                onStart={() => router.push(`/dashboard/quiz/${item.id}`)}
+              />
+            ))}
           </div>
         )}
       </div>
-
-      {/* Main content area */}
-      <main className={styles.main}>
-        {/* Top bar: mode toggle + bell + avatar */}
-        <div className={styles.mainTopBar}>
-          <div className={styles.modePills}>
-            <button
-              className={`${styles.modePill} ${mode === 'standard' ? styles.modePillActive : ''}`}
-              onClick={() => setMode('standard')}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M13 2L3 14h9l-1 8 10-12h-9l1-8Z"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Standard
-            </button>
-            <button
-              className={`${styles.modePill} ${mode === 'socratic' ? styles.modePillActive : ''}`}
-              onClick={() => setMode('socratic')}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M12 2a7 7 0 0 1 7 7c0 2.7-1.52 5.05-3.75 6.28L15 21H9l.75-5.72A7 7 0 0 1 5 9a7 7 0 0 1 7-7Z"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Socratic
-            </button>
-          </div>
-
-          <div className={styles.topBarActions}>
-            <button className={styles.bellBtn} aria-label="Notifications">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            <button className={styles.avatarBtn} aria-label="User menu" />
-          </div>
-        </div>
-
-        {mode === 'standard' ? (
-          <StandardChat
-            token={token}
-            sessionId={activeSessionId}
-            initialMessage={initialQuery}
-            onSessionStart={(sid) => {
-              setActiveSessionId(sid);
-              void loadConversations(token);
-            }}
-            sendAiChat={sendAiChat}
-          />
-        ) : (
-          <SocraticChat
-            token={token}
-            startSocraticSession={startSocraticSession}
-            respondSocratic={respondSocratic}
-            endSocraticSession={endSocraticSession}
-          />
-        )}
-      </main>
     </div>
   );
 }
