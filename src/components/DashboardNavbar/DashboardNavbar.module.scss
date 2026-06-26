@@ -1,0 +1,93 @@
+@use 'sass:color';
+@use '../../styles/variables' as *;
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-4 $space-6;
+  background: transparent;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9; // slightly darker than the white background
+  border-radius: $radius-lg;
+  padding: 10px $space-4;
+  width: 480px;
+  gap: $space-3;
+}
+
+.sparkleIcon {
+  color: #64748b;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: $dark;
+  font-family: $font-body;
+  &::placeholder {
+    color: #94a3b8;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.streakPill {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  background: $green-100;
+  padding: 6px $space-3;
+  border-radius: 20px;
+}
+
+.fireIcon {
+  font-size: 14px;
+}
+
+.streakText {
+  color: $green-500;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: $gray-200;
+  color: $gray-600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+
+  &:hover {
+    background: color.adjust($gray-200, $lightness: -4%);
+    color: $dark;
+  }
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  img {
+    object-fit: cover;
+  }
+}

@@ -9,25 +9,33 @@ import {
   analyzeNote,
   summarizeNote,
   expandNote,
+  getNoteTemplates,
+  createNote,
   getFetchErrorMessage,
   getAccessToken,
 } from '@/lib';
-import type { Note } from '@/lib';
+import type { Note, NoteTemplate } from '@/lib';
 import TemplateForm from '@/components/TemplateForm';
 import NoteAISidebar from '@/components/NoteAISidebar';
+import { Spinner } from '@/components';
+import { useNoteDraft } from '@/hooks/useNoteDraft';
+import { useToast } from '@/hooks/useToast';
 import styles from './page.module.scss';
 
 export default function NoteWorkspacePage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const [note, setNote] = useState<Note | null>(null);
+  const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveErr, setSaveErr] = useState('');
   const [token, setToken] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  // Text queued for insertion into the editor by the AI sidebar
   const [pendingInsert, setPendingInsert] = useState<string | undefined>(undefined);
+  const [draftRestored, setDraftRestored] = useState(false);
+
+  const draft = useNoteDraft(id ?? '');
+  const { addToast } = useToast();
 
   useEffect(() => {
     const t = getAccessToken();
@@ -37,33 +45,50 @@ export default function NoteWorkspacePage() {
     }
     setToken(t);
     if (!id) return;
-    void (async () => {
-      try {
-        const res = await getNote(id, t);
-        if (res.data) setNote(res.data);
-      } catch (err) {
-        setSaveErr(getFetchErrorMessage(err));
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [router, id]);
+
+    void Promise.all([
+      getNote(id, t).then((res) => {
+        if (res.data) {
+          // Restore cached draft if it exists (user refreshed mid-edit)
+          const cached = draft.read();
+          if (cached) {
+            setNote({ ...res.data, title: cached.title, content: cached.content });
+            setDraftRestored(true);
+          } else {
+            setNote(res.data);
+          }
+        }
+      }),
+      getNoteTemplates(t).then((res) => setTemplates(res.data ?? [])),
+    ])
+      .catch((err) => setSaveErr(getFetchErrorMessage(err)))
+      .finally(() => setLoading(false));
+  }, [router, id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = useCallback(
     async (title: string, content: string) => {
       if (!token || !id) return;
       setSaving(true);
       setSaveErr('');
+      // Write to cache before the API call — if the request fails the draft survives
+      draft.write(title, content);
       try {
         const res = await updateNote(id, { title, content }, token);
-        if (res.data) setNote(res.data);
+        if (res.data) {
+          setNote(res.data);
+          draft.clear();
+          setDraftRestored(false);
+          addToast('success', 'Note saved');
+        }
       } catch (err) {
-        setSaveErr(getFetchErrorMessage(err));
+        const msg = getFetchErrorMessage(err);
+        setSaveErr(msg);
+        addToast('error', 'Save failed', msg);
       } finally {
         setSaving(false);
       }
     },
-    [token, id]
+    [token, id, draft]
   );
 
   const handleAnalyze = useCallback(async () => {
@@ -84,26 +109,46 @@ export default function NoteWorkspacePage() {
     return res.data?.expanded ?? null;
   }, [token, id]);
 
-  // Persist score/feedback changes from sidebar back to note state
   const handleScoreChange = useCallback((score: number, feedback: string) => {
     setNote((prev) => (prev ? { ...prev, qualityScore: score, qualityFeedback: feedback } : prev));
   }, []);
 
+  async function handleSwitchTemplate(tpl: NoteTemplate) {
+    if (!token) return;
+    try {
+      const res = await createNote({ title: tpl.name, content: tpl.content }, token);
+      if (res.data?.id) router.push(`/dashboard/notes/${res.data.id}`);
+    } catch {
+      // non-fatal
+    }
+  }
+
   if (loading)
     return (
       <div className={styles.page}>
-        <p className={styles.state}>Loading note…</p>
-      </div>
-    );
-  if (!note)
-    return (
-      <div className={styles.page}>
-        <p className={styles.state}>Note not found.</p>
+        <div className={styles.state}>
+          <Spinner size={24} />
+        </div>
       </div>
     );
 
-  // Derive template name from note title for breadcrumb
-  const templateName = note.title || 'Note';
+  if (!note)
+    return (
+      <div className={styles.page}>
+        <div className={styles.state}>
+          <Spinner size={24} />
+        </div>
+      </div>
+    );
+
+  const activeTemplateId =
+    templates.find(
+      (t) =>
+        note.title.toLowerCase().includes(t.name.toLowerCase()) ||
+        t.name.toLowerCase().includes(note.title.toLowerCase())
+    )?.id ?? null;
+
+  const sidebarTemplates = templates.filter((t) => t.id !== 'blank');
 
   return (
     <div className={styles.page}>
@@ -111,9 +156,10 @@ export default function NoteWorkspacePage() {
         <Link href="/dashboard/notes" className={styles.breadcrumb}>
           <span>Smart Note</span>
           <span className={styles.breadSep}>›</span>
-          <span className={styles.breadCurrent}>{templateName}</span>
+          <span className={styles.breadCurrent}>{note.title || 'Note'}</span>
         </Link>
         <div className={styles.headerActions}>
+          {draftRestored && <span className={styles.draftBanner}>Draft restored</span>}
           {saving && <span className={styles.savingLabel}>Saving…</span>}
           {saveErr && <span className={styles.saveErrLabel}>{saveErr}</span>}
           <button className={styles.exportBtn}>Export</button>
@@ -124,50 +170,45 @@ export default function NoteWorkspacePage() {
           >
             Save Note
           </button>
-          <button className={styles.bellBtn} aria-label="Notifications">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <button className={styles.avatarBtn} aria-label="User menu" />
         </div>
       </header>
 
       <div className={`${styles.workspace} ${styles.withSidebar}`}>
-        {/* Left template list */}
         <div className={styles.templateSidebar}>
           <p className={styles.templateSidebarHeading}>Notes Templates</p>
-          {[
-            { slug: 'case-brief', name: 'Case Brief', sub: '7 section case analysis' },
-            { slug: 'irac', name: 'IRAC brief', sub: 'Legal reasoning framework' },
-            { slug: 'statute', name: 'Statute summary', sub: 'Provision-by-provision' },
-            { slug: 'research', name: 'Research memo', sub: 'findings, source & gaps' },
-            { slug: 'lecture', name: 'Lecture Notes', sub: 'lecture capture' },
-          ].map((tpl) => (
-            <button key={tpl.slug} className={styles.templateItem}>
-              <div className={styles.templateItemIcon}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinejoin="round"
-                  />
-                  <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.8" />
-                </svg>
-              </div>
-              <div className={styles.templateItemText}>
-                <span className={styles.templateItemName}>{tpl.name}</span>
-                <span className={styles.templateItemSub}>{tpl.sub}</span>
-              </div>
-            </button>
-          ))}
+          {sidebarTemplates.map((tpl) => {
+            const isActive = tpl.id === activeTemplateId;
+            return (
+              <button
+                key={tpl.id}
+                className={`${styles.templateItem} ${isActive ? styles.templateItemActive : ''}`}
+                onClick={() => {
+                  if (!isActive) void handleSwitchTemplate(tpl);
+                }}
+                title={isActive ? 'Current template' : `New note: ${tpl.name}`}
+              >
+                <div className={styles.templateItemIcon}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinejoin="round"
+                    />
+                    <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.8" />
+                  </svg>
+                </div>
+                <div className={styles.templateItemText}>
+                  <span className={styles.templateItemName}>{tpl.name}</span>
+                  <span className={styles.templateItemSub}>
+                    {tpl.description.length > 35
+                      ? tpl.description.slice(0, 35) + '…'
+                      : tpl.description}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         <TemplateForm
@@ -176,17 +217,15 @@ export default function NoteWorkspacePage() {
           pendingInsert={pendingInsert}
           onInsertApplied={() => setPendingInsert(undefined)}
         />
-        {sidebarOpen && (
-          <NoteAISidebar
-            qualityScore={note.qualityScore}
-            qualityFeedback={note.qualityFeedback}
-            onAnalyze={handleAnalyze}
-            onSummarize={handleSummarize}
-            onExpand={handleExpand}
-            onInsertContent={(text) => setPendingInsert(text)}
-            onScoreChange={handleScoreChange}
-          />
-        )}
+        <NoteAISidebar
+          qualityScore={note.qualityScore}
+          qualityFeedback={note.qualityFeedback}
+          onAnalyze={handleAnalyze}
+          onSummarize={handleSummarize}
+          onExpand={handleExpand}
+          onInsertContent={(text) => setPendingInsert(text)}
+          onScoreChange={handleScoreChange}
+        />
       </div>
     </div>
   );

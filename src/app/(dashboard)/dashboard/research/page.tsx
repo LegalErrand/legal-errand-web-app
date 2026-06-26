@@ -150,6 +150,9 @@ export default function ResearchPage() {
         <h1 className={styles.pageHeading}>
           Explore the entire corpus of Nigerian law using natural language.
         </h1>
+        <p className={styles.pageSubhead}>
+          Search statutes, case law, and legal principles with AI-powered precision.
+        </p>
 
         <form onSubmit={handleSearch} className={styles.searchForm}>
           <div className={styles.searchRow}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,7 @@ import {
   setSessionEmail,
   setSessionProfile,
   pickAccessTokenFromPayload,
+  getValidAccessToken,
 } from '@/lib';
 import styles from './page.module.scss';
 
@@ -21,6 +22,12 @@ export default function LoginPage() {
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState('');
+
+  useEffect(() => {
+    if (getValidAccessToken()) {
+      router.replace('/dashboard');
+    }
+  }, [router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
