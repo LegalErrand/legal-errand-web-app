@@ -15,6 +15,7 @@ import {
   getSessionProfile,
   validateBioDataFields,
   loginPath,
+  COUNTRY_DIAL_CODES,
 } from '@/lib';
 import type { BioDataFormErrors } from '@/lib';
 import BioDataCredentials from './BioDataCredentials';
@@ -35,6 +36,7 @@ export default function BioDataClient() {
   const [phone, setPhone] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [editing, setEditing] = useState(true);
+  const [accountType, setAccountTypeState] = useState('');
   const [fieldErrors, setFieldErrors] = useState<BioDataFormErrors>({});
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -56,6 +58,7 @@ export default function BioDataClient() {
     const profile = getSessionProfile();
     setFirstName(profile.firstName ?? '');
     setLastName(profile.lastName ?? '');
+    setAccountTypeState(profile.accountType ?? '');
 
     void (async () => {
       const url = await fetchAvatarDisplayUrl(raw);
@@ -86,8 +89,9 @@ export default function BioDataClient() {
       return;
     }
 
+    const dialCode = COUNTRY_DIAL_CODES[country] ?? '+234';
     const digits = phone.replace(/\D/g, '').replace(/^0+/, '');
-    const phoneNumber = `+234${digits}`;
+    const phoneNumber = `${dialCode}${digits}`;
 
     setSaving(true);
     setFormError('');
@@ -161,6 +165,7 @@ export default function BioDataClient() {
             city={city}
             school={school}
             phone={phone}
+            accountType={accountType}
             fieldErrors={fieldErrors}
             onCountryChange={setCountry}
             onCityChange={setCity}
