@@ -1,4 +1,4 @@
-import { NIGERIAN_UNIVERSITIES } from '@/lib';
+import { NLS_CAMPUSES, NIGERIAN_UNIVERSITIES, COUNTRY_DIAL_CODES } from '@/lib';
 import type { BioDataFormErrors } from '@/lib';
 import { SearchableSelect, CountrySelect } from '@/components';
 import styles from './page.module.scss';
@@ -8,6 +8,7 @@ export interface BioDataCredentialsProps {
   city: string;
   school: string;
   phone: string;
+  accountType: string;
   fieldErrors: BioDataFormErrors;
   onCountryChange: (value: string) => void;
   onCityChange: (value: string) => void;
@@ -15,9 +16,12 @@ export interface BioDataCredentialsProps {
   onPhoneChange: (value: string) => void;
 }
 
-const SCHOOL_OPTIONS = NIGERIAN_UNIVERSITIES as unknown as string[];
+const NLS_OPTIONS = [...NLS_CAMPUSES, 'Other'] as string[];
+const UNI_OPTIONS = [...NIGERIAN_UNIVERSITIES, 'Other'] as string[];
 
-const isKnownSchool = (v: string) => !v || SCHOOL_OPTIONS.includes(v);
+function isKnownOption(v: string, options: string[]) {
+  return !v || options.includes(v);
+}
 
 export default function BioDataCredentials(props: BioDataCredentialsProps) {
   const {
@@ -25,6 +29,7 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
     city,
     school,
     phone,
+    accountType,
     fieldErrors,
     onCountryChange,
     onCityChange,
@@ -32,7 +37,19 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
     onPhoneChange,
   } = props;
 
-  const schoolIsOther = school !== '' && !isKnownSchool(school);
+  const isLawSchool = accountType === 'Law School Student';
+  const schoolOptions = isLawSchool ? NLS_OPTIONS : UNI_OPTIONS;
+  const schoolLabel = isLawSchool ? 'Law School' : 'University / Campus';
+  const schoolPlaceholder = isLawSchool ? 'Select your NLS campus' : 'Select your university';
+  const searchPlaceholder = isLawSchool ? 'Search campuses...' : 'Search universities...';
+
+  const dialCode = COUNTRY_DIAL_CODES[country] ?? '+234';
+  const schoolIsOther =
+    school !== '' &&
+    !isKnownOption(
+      school,
+      schoolOptions.filter((o) => o !== 'Other')
+    );
   const schoolSelectValue = schoolIsOther ? 'Other' : school;
 
   function handleSchoolSelect(value: string) {
@@ -67,21 +84,23 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
 
         <div className={styles.field}>
           <label className={styles.label}>
-            Law School <span className={styles.req}>*</span>
+            {schoolLabel} <span className={styles.req}>*</span>
           </label>
           <SearchableSelect
             value={schoolSelectValue}
             onChange={handleSchoolSelect}
-            options={SCHOOL_OPTIONS}
-            placeholder="Select your law school"
-            searchPlaceholder="Search schools..."
+            options={schoolOptions}
+            placeholder={schoolPlaceholder}
+            searchPlaceholder={searchPlaceholder}
             error={fieldErrors.schoolName}
           />
           {(schoolIsOther || schoolSelectValue === 'Other') && (
             <input
               className={`${styles.input} ${styles.inputMt}`}
               type="text"
-              placeholder="Enter your law school name"
+              placeholder={
+                isLawSchool ? 'Enter your law school name' : 'Enter your university name'
+              }
               value={school}
               onChange={(e) => onSchoolChange(e.target.value)}
               aria-invalid={!!fieldErrors.schoolName}
@@ -97,7 +116,7 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
             Phone Number <span className={styles.req}>*</span>
           </label>
           <div className={styles.phoneWrap}>
-            <span className={styles.phonePrefix}>+234</span>
+            <span className={styles.phonePrefix}>{dialCode}</span>
             <input
               className={`${styles.input} ${styles.phoneInput}`}
               type="tel"

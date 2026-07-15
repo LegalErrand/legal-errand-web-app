@@ -30,6 +30,7 @@ export interface SessionOnboardingProfile {
   firstName?: string;
   lastName?: string;
   email?: string;
+  accountType?: string;
 }
 
 export function setPendingVerificationEmail(email: string): void {

@@ -56,6 +56,7 @@ export default function SignupPage() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: trimmed,
+        accountType: accountType === 'undergraduate' ? 'Undergraduate' : 'Law School Student',
       });
       router.push(`/verify-email?email=${encodeURIComponent(trimmed)}`);
     } catch (err) {
