@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getQuestion, submitAnswer, getFetchErrorMessage, getAccessToken } from '@/lib';
 import type { Question, QuestionAttempt } from '@/lib';
+import { Spinner } from '@/components';
 import styles from './page.module.scss';
 
 export default function QuizPage() {
@@ -93,7 +94,9 @@ export default function QuizPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <p className={styles.stateMsg}>Loading question…</p>
+        <div className={styles.stateMsg}>
+          <Spinner size={22} label="Loading question…" />
+        </div>
       </div>
     );
   }
@@ -101,30 +104,81 @@ export default function QuizPage() {
   // ── Result / graded state ────────────────────────────────────────────────────
   if (result) {
     const total = result.scores?.total ?? 0;
+    const passed = total >= 50;
+    const scoreColor = passed ? '#16a34a' : '#d97706';
     return (
       <div className={styles.page}>
         <div className={styles.topBar}>
           <nav className={styles.breadcrumb} aria-label="breadcrumb">
-            <Link href="/dashboard/progress" className={styles.breadLink}>
+            <Link href="/dashboard/reasoning" className={styles.breadLink}>
               Question Bank
             </Link>
             <span className={styles.breadSep}>›</span>
             <span className={styles.breadCurrent}>Result</span>
           </nav>
+          <button className={styles.saveNotesBtn}>Save feedback to Notes</button>
         </div>
-        <div className={styles.submittedBox}>
-          <div
-            className={`${styles.submittedIcon} ${total >= 50 ? styles.submittedIconPass : styles.submittedIconFail}`}
-          >
-            {total}%
-          </div>
-          <h2 className={styles.submittedTitle}>AI Grading Complete</h2>
-          {result.aiFeedback && <p className={styles.submittedSub}>{result.aiFeedback}</p>}
-          {result.scores && <ScoreBreakdown scores={result.scores} />}
-          <div className={styles.submittedActions}>
-            <Link href="/dashboard/progress" className={styles.backToBank}>
-              Back to Question Bank
-            </Link>
+        <div className={styles.resultScroll}>
+          <div className={styles.resultCard}>
+            <h2 className={styles.resultTitle}>AI Grading Result</h2>
+            <p className={styles.resultScore} style={{ color: scoreColor }}>
+              Score: <strong>{total}/100</strong>
+            </p>
+
+            {result.scores && (
+              <div className={styles.scoreChips}>
+                <div className={styles.scoreChip}>
+                  <span className={styles.scoreChipLabel}>Issue identification</span>
+                  <span className={styles.scoreChipVal}>
+                    {result.scores.issueIdentification}/25
+                  </span>
+                </div>
+                <div className={styles.scoreChip}>
+                  <span className={styles.scoreChipLabel}>Rule Statement</span>
+                  <span className={styles.scoreChipVal}>{result.scores.ruleStatement}/25</span>
+                </div>
+                <div className={styles.scoreChip}>
+                  <span className={styles.scoreChipLabel}>Application</span>
+                  <span className={styles.scoreChipVal}>{result.scores.application}/35</span>
+                </div>
+                <div className={styles.scoreChip}>
+                  <span className={styles.scoreChipLabel}>Conclusion</span>
+                  <span className={styles.scoreChipVal}>{result.scores.conclusion}/15</span>
+                </div>
+              </div>
+            )}
+
+            {result.aiFeedback && (
+              <div className={styles.feedbackBlock}>
+                <h3 className={styles.feedbackTitle}>AI Feedback</h3>
+                <p className={styles.feedbackText}>{result.aiFeedback}</p>
+              </div>
+            )}
+
+            {result.modelAnswer && (
+              <div className={styles.modelAnswerBlock}>
+                <h3 className={styles.feedbackTitle}>Model Answer (IRAC)</h3>
+                <div className={styles.modelAnswerBox}>
+                  {result.modelAnswer
+                    .split('\n')
+                    .filter(Boolean)
+                    .map((line, i) => (
+                      <p key={i} className={styles.modelAnswerLine}>
+                        {line}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.resultActions}>
+              <Link href="/dashboard/reasoning" className={styles.backToBank}>
+                ← Back to Question Bank
+              </Link>
+              <Link href={`/dashboard/quiz/${id}`} className={styles.tryAgainBtn}>
+                Try Again
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -159,7 +213,13 @@ export default function QuizPage() {
           onClick={handleSubmit}
           disabled={submitting || !answer.trim()}
         >
-          {submitting ? 'Submitting…' : 'Submit for AI Grading'}
+          {submitting ? (
+            <span className={styles.btnLoading}>
+              <Spinner size={15} light /> Submitting…
+            </span>
+          ) : (
+            'Submit for AI Grading'
+          )}
         </button>
       </div>
 
@@ -274,30 +334,6 @@ export default function QuizPage() {
       <div className={styles.bottomBar}>
         <button className={styles.saveProgressBtn}>Save Progress</button>
       </div>
-    </div>
-  );
-}
-
-function ScoreBreakdown({ scores }: { scores: QuestionAttempt['scores'] }) {
-  if (!scores) return null;
-  const rows: Array<[string, number]> = [
-    ['Issue Identification', scores.issueIdentification],
-    ['Rule Statement', scores.ruleStatement],
-    ['Application', scores.application],
-    ['Conclusion', scores.conclusion],
-  ];
-  return (
-    <div className={styles.scoreBreakdown}>
-      {rows.map(([label, val]) => (
-        <div key={label} className={styles.scoreRow}>
-          <span>{label}</span>
-          <strong
-            className={`${styles.scoreVal} ${val >= 20 ? styles.scoreValHigh : val >= 12 ? styles.scoreValMedium : styles.scoreValLow}`}
-          >
-            {val}/25
-          </strong>
-        </div>
-      ))}
     </div>
   );
 }

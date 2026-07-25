@@ -5,11 +5,32 @@ const PENDING_EMAIL = 'le_pending_verification_email';
 const SESSION_EMAIL = 'le_session_email';
 const SESSION_PROFILE = 'le_session_onboarding_profile';
 
+function migrateItem(key: string): string | null {
+  if (typeof window === 'undefined') return null;
+  const fromLocal = localStorage.getItem(key);
+  if (fromLocal) return fromLocal;
+  const fromSession = sessionStorage.getItem(key);
+  if (!fromSession) return null;
+  localStorage.setItem(key, fromSession);
+  sessionStorage.removeItem(key);
+  return fromSession;
+}
+
+function clearAuthKeys(): void {
+  if (typeof window === 'undefined') return;
+  for (const store of [localStorage, sessionStorage]) {
+    store.removeItem(ACCESS);
+    store.removeItem(SESSION_EMAIL);
+    store.removeItem(SESSION_PROFILE);
+  }
+}
+
 /** Names (and email) carried from signup / verify for bio-data prefills. */
 export interface SessionOnboardingProfile {
   firstName?: string;
   lastName?: string;
   email?: string;
+  accountType?: string;
 }
 
 export function setPendingVerificationEmail(email: string): void {
@@ -28,40 +49,37 @@ export function clearPendingVerificationEmail(): void {
 }
 
 export function setAccessToken(token: string): void {
-  if (typeof sessionStorage === 'undefined') return;
-  sessionStorage.setItem(ACCESS, token);
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(ACCESS, token);
 }
 
 export function getAccessToken(): string | null {
-  if (typeof sessionStorage === 'undefined') return null;
-  return sessionStorage.getItem(ACCESS);
+  return migrateItem(ACCESS);
 }
 
 export function clearAccessToken(): void {
-  if (typeof sessionStorage === 'undefined') return;
-  sessionStorage.removeItem(ACCESS);
+  clearAuthKeys();
 }
 
 export function setSessionEmail(email: string): void {
-  if (typeof sessionStorage === 'undefined') return;
-  sessionStorage.setItem(SESSION_EMAIL, email);
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(SESSION_EMAIL, email);
 }
 
 export function getSessionEmail(): string | null {
-  if (typeof sessionStorage === 'undefined') return null;
-  return sessionStorage.getItem(SESSION_EMAIL);
+  return migrateItem(SESSION_EMAIL);
 }
 
 export function setSessionProfile(patch: SessionOnboardingProfile): void {
-  if (typeof sessionStorage === 'undefined') return;
+  if (typeof window === 'undefined') return;
   const prev = getSessionProfile();
-  sessionStorage.setItem(SESSION_PROFILE, JSON.stringify({ ...prev, ...patch }));
+  localStorage.setItem(SESSION_PROFILE, JSON.stringify({ ...prev, ...patch }));
 }
 
 export function getSessionProfile(): SessionOnboardingProfile {
-  if (typeof sessionStorage === 'undefined') return {};
+  if (typeof window === 'undefined') return {};
   try {
-    const raw = sessionStorage.getItem(SESSION_PROFILE);
+    const raw = migrateItem(SESSION_PROFILE);
     if (!raw) return {};
     const parsed = JSON.parse(raw) as SessionOnboardingProfile;
     return parsed && typeof parsed === 'object' ? parsed : {};

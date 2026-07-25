@@ -1,0 +1,65 @@
+@use '../../styles/variables' as *;
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+%shimmer-base {
+  display: block;
+  background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.shimmer {
+  @extend %shimmer-base;
+}
+
+.card {
+  background: $white;
+  border: 1px solid $card-border;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.resultItem {
+  background: $white;
+  border: 1px solid $card-border;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.resultTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-3;
+}
+
+.noteCard {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.analysis {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-3 0;
+}

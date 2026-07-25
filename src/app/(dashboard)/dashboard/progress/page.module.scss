@@ -8,13 +8,15 @@
 }
 
 .topBar {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: $space-5 $space-6 $space-4;
+  padding: $space-4 $space-5;
   border-bottom: 1px solid $gray-200;
   background: $white;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  flex-wrap: wrap;
 }
 
 .pageTitle {
@@ -31,253 +33,453 @@
   margin: 0;
 }
 
+.errorMsg {
+  font-size: 13px;
+  color: $accent-red;
+  padding: $space-3 $space-5;
+  flex-shrink: 0;
+}
+
+.shimmerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+  padding: $space-5;
+}
+
+// ─── Main two-column layout ───────────────────────────────────────────────────
+
 .content {
   flex: 1;
-  overflow-y: auto;
-  padding: $space-5 $space-6;
-  display: flex;
-  flex-direction: column;
-  gap: $space-5;
-}
-
-// ─── Tab row ──────────────────────────────────────────────────────────────────
-
-.tabRow {
-  display: flex;
-  gap: $space-2;
-  flex-wrap: wrap;
-}
-
-.tab {
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 1.5px solid $gray-200;
-  background: $white;
-  font-size: 13px;
-  font-weight: 500;
-  color: $gray-600;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    background 0.15s,
-    color 0.15s;
-
-  &:hover {
-    border-color: $primary;
-    color: $primary;
-  }
-}
-
-.tabActive {
-  background: $primary;
-  border-color: $primary;
-  color: $white;
-  font-weight: 600;
-
-  &:hover {
-    color: $white;
-  }
-}
-
-// ─── Subject mastery cards ────────────────────────────────────────────────────
-
-.masteryRow {
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: $space-4;
+  padding: $space-4 $space-5;
+  overflow-y: auto;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
   }
 }
 
-.masteryCard {
-  background: $white;
-  border-radius: 12px;
-  padding: $space-4;
-  border: 1px solid $gray-200;
+.left,
+.right {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: $space-3;
+  min-width: 0;
 }
 
-.masteryLabel {
+// ─── Shared card shell ────────────────────────────────────────────────────────
+
+.scoreCard,
+.achievementsCard,
+.calendar,
+.masteryCard,
+.goalsCard {
+  background: $white;
+  border-radius: $radius-lg;
+  border: 1px solid $gray-200;
+  padding: $space-4;
+}
+
+.sectionLabel {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: $gray-400;
-  letter-spacing: 0.06em;
-  margin: 0;
   text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0 0 $space-3;
 }
 
-.masteryScoreRow {
+// ─── Score card ───────────────────────────────────────────────────────────────
+
+.scoreLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  margin: 0 0 $space-3;
+}
+
+.scoreBody {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.donutWrap {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donutInner {
+  position: absolute;
   display: flex;
   align-items: baseline;
+  gap: 1px;
+}
+
+.donutScore {
+  font-size: 32px;
+  font-weight: 800;
+  color: $dark;
+  font-family: $font-heading;
+}
+
+.donutMax {
+  font-size: 16px;
+  font-weight: 500;
+  color: $gray-400;
+}
+
+.subScores {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.subScore {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.subScoreTop {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 }
 
-.masterySubject {
-  font-size: 14px;
+.subScoreLabel {
+  font-size: 12px;
+  color: $gray-600;
+  font-weight: 500;
+}
+
+.subScoreVal {
+  font-size: 13px;
   font-weight: 700;
   color: $dark;
 }
 
-.masteryScore {
-  font-size: 18px;
-  font-weight: 700;
-  color: $primary;
-}
-
-.masteryTrack {
-  width: 100%;
+.subScoreTrack {
   height: 6px;
   background: $gray-100;
   border-radius: 3px;
   overflow: hidden;
 }
 
-.masteryFill {
+.subScoreFill {
   height: 100%;
-  width: var(--pct, 0%);
   background: $primary;
   border-radius: 3px;
   transition: width 0.4s ease;
 }
 
-// ─── Question grid ────────────────────────────────────────────────────────────
+// ─── Achievements / Badges ────────────────────────────────────────────────────
 
-.questionGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: $space-4;
-
-  @media (max-width: 1100px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  @media (max-width: 700px) {
-    grid-template-columns: 1fr;
-  }
+.badgeRow {
+  display: flex;
+  gap: $space-3;
+  flex-wrap: wrap;
 }
 
-.qCard {
-  background: $white;
-  border-radius: 12px;
-  border: 1px solid $gray-200;
-  padding: $space-4;
+.badge {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: $space-2;
-  transition: box-shadow 0.15s;
-
-  &:hover {
-    box-shadow: $shadow-sm;
-  }
-}
-
-.qCardTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.qCategory {
-  font-size: 11px;
-  font-weight: 600;
-  color: $primary;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: rgba($primary, 0.08);
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-
-.qTime {
-  font-size: 12px;
-  color: $gray-600;
-  font-weight: 500;
-}
-
-.qTitle {
-  font-size: 15px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.qDesc {
-  font-size: 13px;
-  color: $gray-600;
-  margin: 0;
-  line-height: 1.5;
-  flex: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.startBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px $space-3;
-  background: $white;
-  border: 1.5px solid $gray-200;
+  background: $gray-50;
   border-radius: $radius;
-  font-size: 13px;
-  font-weight: 600;
-  color: $dark;
-  cursor: pointer;
-  margin-top: $space-1;
-  transition:
-    border-color 0.15s,
-    background 0.15s,
-    color 0.15s;
-  width: 100%;
-  justify-content: center;
-
-  &:hover {
-    border-color: $primary;
-    color: $primary;
-    background: rgba($primary, 0.04);
-  }
+  padding: 10px 14px;
+  flex: 1;
+  min-width: 110px;
 }
 
-// ─── States ───────────────────────────────────────────────────────────────────
-
-.stateMsg {
-  font-size: 14px;
-  color: $gray-600;
-  padding: $space-6 0;
-  text-align: center;
-}
-
-.emptyState {
-  text-align: center;
-  padding: $space-7 $space-4;
-  color: $gray-600;
-  font-size: 14px;
-}
-
-.errorMsg {
-  font-size: 13px;
-  color: $accent-red;
-}
-
-.miniDonutWrap {
-  position: relative;
-  width: 60px;
-  height: 60px;
+.badgeIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: $green-100;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.miniDonutLabel {
-  position: absolute;
-  font-size: 10px;
+.badgeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badgeName {
+  font-size: 12px;
   font-weight: 700;
-  color: var(--donut-color, #d97706);
+  color: $dark;
+  margin: 0;
+}
+
+.badgeVal {
+  font-size: 11px;
+  color: $gray-600;
+  margin: 0;
+}
+
+// ─── Calendar ─────────────────────────────────────────────────────────────────
+
+.calHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-3;
+}
+
+.calTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: $dark;
+}
+
+.calStreak {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $primary;
+}
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.calDayLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: $gray-400;
+  text-align: center;
+  padding: 4px 0;
+}
+
+.calCell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: $gray-600;
+  border-radius: 6px;
+}
+
+.calEmpty {
+  pointer-events: none;
+}
+
+.calStudied {
+  background: $green-100;
+  color: $green-500;
+  font-weight: 700;
+}
+
+.calToday {
+  background: $primary;
+  color: $white;
+  font-weight: 700;
+}
+
+// ─── Subject Mastery ──────────────────────────────────────────────────────────
+
+.masteryList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.masteryRow {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.masteryTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.masterySubject {
+  font-size: 13px;
+  font-weight: 500;
+  color: $dark;
+}
+
+.masteryPct {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.masteryTrack {
+  height: 7px;
+  background: $gray-100;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.masteryFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+// ─── Study Goals ──────────────────────────────────────────────────────────────
+
+.goalsList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.goalCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3;
+  background: $gray-50;
+  border-radius: $radius;
+  border: 1px solid $gray-200;
+}
+
+.goalInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.goalTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: $dark;
+  margin: 0 0 4px;
+}
+
+.goalDesc {
+  font-size: 12px;
+  color: $gray-600;
+  margin: 0 0 6px;
+}
+
+.goalTrack {
+  height: 5px;
+  background: $gray-200;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.goalFill {
+  height: 100%;
+  background: $primary;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.goalMeta {
+  font-size: 11px;
+  color: $gray-400;
+  margin: 0;
+}
+
+.goalBtn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: $radius;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.goalBtnDone {
+  background: $green-100;
+  color: $green-500;
+  border-color: $green-100;
+}
+
+.goalBtnProgress {
+  background: transparent;
+  color: $primary;
+  border-color: $primary;
+}
+
+.goalBtnStart {
+  background: $primary;
+  color: $white;
+  border-color: $primary;
+}
+
+// ─── Header stats strip ───────────────────────────────────────────────────────
+
+.headerStats {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  padding: $space-2 $space-4;
+}
+
+.headerStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 64px;
+  text-align: center;
+}
+
+.headerStatValue {
+  font-family: $font-heading;
+  font-size: 20px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+}
+
+.headerStatLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: $gray-500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.headerStatDivider {
+  width: 1px;
+  height: 32px;
+  background: $gray-200;
+  flex-shrink: 0;
 }

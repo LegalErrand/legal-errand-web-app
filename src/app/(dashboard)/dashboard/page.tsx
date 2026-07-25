@@ -15,6 +15,7 @@ import {
 import type { DashboardData, Goal, Question, Achievement } from '@/lib';
 import DashboardLower from '@/components/DashboardLower';
 import ActivityHistoryModal from '@/components/ActivityHistoryModal';
+import { Spinner } from '@/components';
 import styles from './page.module.scss';
 
 export default function DashboardPage() {
@@ -25,9 +26,7 @@ export default function DashboardPage() {
   const [earnedBadges, setEarnedBadges] = useState<Achievement[]>([]);
   const [reasoningScore, setReasoningScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [showHistory, setShowHistory] = useState(false);
-  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = getAccessToken();
@@ -69,55 +68,15 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <div className={styles.loadingState}>Loading dashboard…</div>
+        <div className={styles.loadingState}>
+          <Spinner size={28} />
+        </div>
       </div>
     );
   }
 
   return (
     <div className={styles.page}>
-      <header className={styles.topBar}>
-        <form
-          className={styles.searchWrap}
-          onSubmit={(e) => {
-            e.preventDefault();
-            const q = searchQuery.trim();
-            router.push(
-              q ? `/dashboard/reasoning?q=${encodeURIComponent(q)}` : '/dashboard/reasoning'
-            );
-          }}
-        >
-          <svg
-            className={styles.searchIcon}
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
-            <path
-              d="M21 21l-4.35-4.35"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
-          <input
-            ref={searchRef}
-            className={styles.searchInput}
-            type="text"
-            placeholder="Ask LegalErrand AI a Legal Question"
-            aria-label="Ask a legal question"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </form>
-        <button className={styles.notifBtn} aria-label="Notifications">
-          <Image src="/icons/notifications.svg" alt="" width={22} height={22} />
-        </button>
-      </header>
-
       <div className={styles.content}>
         <div className={styles.greetRow}>
           <div>
@@ -141,67 +100,52 @@ export default function DashboardPage() {
           <div className={styles.challengeCard}>
             <div className={styles.challengeBadge}>
               <span className={styles.badgeDot}>TODAY&apos;S CHALLENGE</span>
-              {question && (
-                <span className={styles.badgeMeta}>
-                  {question.difficulty} · {question.subject}
-                </span>
-              )}
+              {question && <span className={styles.badgeMeta}>• 15 Mins • 10 Questions</span>}
             </div>
             {question ? (
               <>
-                <h2 className={styles.challengeTitle}>{question.subject} Question</h2>
+                <h2 className={styles.challengeTitle}>Daily Quiz: {question.subject}</h2>
                 <p className={styles.challengeSub}>
                   {question.prompt ??
                     question.text ??
                     question.scenario ??
                     "Test your legal knowledge with today's challenge."}
                 </p>
-                <Link href="/dashboard/reasoning" className={styles.quizBtn}>
-                  Start Challenge
+                <Link href={`/dashboard/quiz/${question.id}`} className={styles.quizBtn}>
+                  Start Quiz
                 </Link>
               </>
             ) : (
               <>
-                <h2 className={styles.challengeTitle}>Daily Challenge</h2>
+                <h2 className={styles.challengeTitle}>Daily Quiz</h2>
                 <p className={styles.challengeSub}>
-                  No challenge available right now. Check back soon.
+                  Test your legal reasoning with questions from the question bank.
                 </p>
+                <Link href="/dashboard/reasoning" className={styles.quizBtn}>
+                  Browse Questions
+                </Link>
               </>
             )}
           </div>
 
-          {nextGoal ? (
-            <div className={styles.nextCard}>
-              <div className={styles.nextCardHeader}>
-                <span className={styles.nextCardTitle}>Next Action</span>
-              </div>
-              <p className={styles.nextRecommend}>Active Goal</p>
-              <p className={styles.nextItem}>{nextGoal.title}</p>
-              {nextGoal.description && <p className={styles.nextDesc}>{nextGoal.description}</p>}
-              <div className={styles.nextProgress}>
-                <div className={styles.nextProgressTrack}>
-                  <div
-                    className={styles.nextProgressFill}
-                    style={{
-                      ['--pct' as string]: `${Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%`,
-                    }}
-                  />
-                </div>
-                <span className={styles.nextProgressPct}>
-                  {Math.min(100, Math.round((nextGoal.currentValue / nextGoal.targetValue) * 100))}%
-                </span>
-              </div>
+          <div className={styles.quickActionCard}>
+            <h3 className={styles.quickActionTitle}>Quick Action</h3>
+            <div className={styles.quickActionList}>
+              <Link href="/dashboard/reasoning" className={styles.quickActionBtn}>
+                <span className={styles.quickActionIconCase}>⚖</span> Explain a New Case
+              </Link>
+              <Link href="/dashboard/research" className={styles.quickActionBtn}>
+                <span className={styles.quickActionIconResearch}>🔍</span> Search new research
+              </Link>
+              <Link href="/dashboard/notes" className={styles.quickActionBtn}>
+                <span className={styles.quickActionIconNote}>+</span> Create new note
+              </Link>
             </div>
-          ) : (
-            <div className={styles.nextCard}>
-              <p className={styles.nextCardTitle}>No active goals yet.</p>
-            </div>
-          )}
+          </div>
         </div>
 
         <DashboardLower
           mastery={mastery}
-          activity={activity}
           earnedBadges={earnedBadges}
           reasoningScore={reasoningScore}
           onViewHistory={() => setShowHistory(true)}

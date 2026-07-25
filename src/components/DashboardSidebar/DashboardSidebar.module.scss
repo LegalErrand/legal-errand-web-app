@@ -2,14 +2,13 @@
 
 .sidebar {
   width: $sidebar-width;
-  min-height: 100vh;
+  height: 100%;
   background: $white;
   display: flex;
   flex-direction: column;
   padding: $space-3 0 $space-3;
-  position: sticky;
-  top: 0;
   flex-shrink: 0;
+  overflow-y: auto;
 
   @media (max-width: 900px) {
     display: none;

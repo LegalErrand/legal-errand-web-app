@@ -8,9 +8,14 @@ import {
   getFetchErrorMessage,
   updateBioData,
   getAccessToken,
+  getValidAccessToken,
+  isAccessTokenExpired,
+  clearAccessToken,
   getSessionEmail,
   getSessionProfile,
   validateBioDataFields,
+  loginPath,
+  COUNTRY_DIAL_CODES,
 } from '@/lib';
 import type { BioDataFormErrors } from '@/lib';
 import BioDataCredentials from './BioDataCredentials';
@@ -28,30 +33,35 @@ export default function BioDataClient() {
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [school, setSchool] = useState('');
-  const [level, setLevel] = useState('');
-  const [matric, setMatric] = useState('');
   const [phone, setPhone] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [editing, setEditing] = useState(true);
+  const [accountType, setAccountTypeState] = useState('');
   const [fieldErrors, setFieldErrors] = useState<BioDataFormErrors>({});
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    const t = getAccessToken();
-    if (!t) {
+    const raw = getAccessToken();
+    if (!raw) {
       router.replace('/signup');
       return;
     }
-    setToken(t);
+    if (isAccessTokenExpired(raw)) {
+      clearAccessToken();
+      router.replace(loginPath('/bio-data'));
+      return;
+    }
+    setToken(raw);
     setSessionEmailState(getSessionEmail() ?? '');
     const profile = getSessionProfile();
     setFirstName(profile.firstName ?? '');
     setLastName(profile.lastName ?? '');
+    setAccountTypeState(profile.accountType ?? '');
 
     void (async () => {
-      const url = await fetchAvatarDisplayUrl(t);
+      const url = await fetchAvatarDisplayUrl(raw);
       if (!cancelled && url) setAvatarUrl(url);
     })();
 
@@ -68,20 +78,20 @@ export default function BioDataClient() {
       country,
       city,
       schoolName: school,
-      levelYear: level,
       phoneDigits: phone,
     });
     setFieldErrors(errs);
     if (Object.keys(errs).length) return;
 
-    const t = getAccessToken();
+    const t = getValidAccessToken();
     if (!t) {
-      router.replace('/signup');
+      router.replace(loginPath('/bio-data'));
       return;
     }
 
+    const dialCode = COUNTRY_DIAL_CODES[country] ?? '+234';
     const digits = phone.replace(/\D/g, '').replace(/^0+/, '');
-    const phoneNumber = `+234${digits}`;
+    const phoneNumber = `${dialCode}${digits}`;
 
     setSaving(true);
     setFormError('');
@@ -94,8 +104,6 @@ export default function BioDataClient() {
           country,
           city,
           schoolName: school.trim(),
-          levelYear: level.trim(),
-          matricNumber: matric.trim() || undefined,
           phoneNumber,
         },
         t
@@ -156,15 +164,12 @@ export default function BioDataClient() {
             country={country}
             city={city}
             school={school}
-            level={level}
-            matric={matric}
             phone={phone}
+            accountType={accountType}
             fieldErrors={fieldErrors}
             onCountryChange={setCountry}
             onCityChange={setCity}
             onSchoolChange={setSchool}
-            onLevelChange={setLevel}
-            onMatricChange={setMatric}
             onPhoneChange={setPhone}
           />
 

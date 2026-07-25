@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { getFetchErrorMessage } from '@/lib';
-import type { AiChatRequest, AiChatResponse, ApiResponse } from '@/lib';
+import { streamAiChat, getFetchErrorMessage } from '@/lib';
 import styles from './StandardChat.module.scss';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   text: string;
+  streaming?: boolean;
 }
 
 interface Props {
@@ -15,16 +15,11 @@ interface Props {
   sessionId?: string;
   initialMessage?: string;
   onSessionStart: (sessionId: string) => void;
-  sendAiChat: (data: AiChatRequest, token: string) => Promise<ApiResponse<AiChatResponse>>;
+  /** Legacy prop — kept for API compat, not used (we stream directly) */
+  sendAiChat?: unknown;
 }
 
-export default function StandardChat({
-  token,
-  sessionId,
-  initialMessage,
-  onSessionStart,
-  sendAiChat,
-}: Props) {
+export default function StandardChat({ token, sessionId, initialMessage, onSessionStart }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -32,71 +27,100 @@ export default function StandardChat({
   const [currentSessionId, setCurrentSessionId] = useState<string | undefined>(sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
   const didAutoSend = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     setCurrentSessionId(sessionId);
     setMessages([]);
     setError('');
+    didAutoSend.current = false;
   }, [sessionId]);
-
-  useEffect(() => {
-    if (!initialMessage || didAutoSend.current || sending) return;
-    didAutoSend.current = true;
-    const text = initialMessage.trim();
-    if (!text) return;
-    setMessages([{ role: 'user', text }]);
-    setSending(true);
-    void sendAiChat({ message: text, sessionId: currentSessionId }, token)
-      .then((res) => {
-        if (res.data) {
-          if (!currentSessionId) {
-            setCurrentSessionId(res.data.sessionId);
-            onSessionStart(res.data.sessionId);
-          }
-          setMessages((prev) => [...prev, { role: 'assistant', text: res.data!.reply }]);
-        } else {
-          setError(res.message ?? 'No response received');
-        }
-      })
-      .catch((err: unknown) => {
-        setError(getFetchErrorMessage(err));
-      })
-      .finally(() => {
-        setSending(false);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialMessage]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Auto-send initial message (e.g. search query routed from research page)
+  useEffect(() => {
+    if (!initialMessage || didAutoSend.current || sending) return;
+    didAutoSend.current = true;
+    void sendMessage(initialMessage.trim());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialMessage]);
+
+  async function sendMessage(text: string) {
+    if (!text || !token) return;
+    setSending(true);
+    setError('');
+
+    // Add user bubble + empty assistant bubble (will fill via stream)
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', text },
+      { role: 'assistant', text: '', streaming: true },
+    ]);
+
+    try {
+      abortRef.current = new AbortController();
+      const gen = streamAiChat({ message: text, sessionId: currentSessionId }, token);
+
+      let accumulated = '';
+      let resolvedSessionId = currentSessionId;
+
+      for await (const event of gen) {
+        if (event.error) {
+          setError(event.error);
+          break;
+        }
+        if (event.chunk) {
+          accumulated += event.chunk;
+          const snapshot = accumulated;
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            if (last?.role === 'assistant') {
+              next[next.length - 1] = { ...last, text: snapshot };
+            }
+            return next;
+          });
+          bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+        if (event.done) {
+          if (event.sessionId) resolvedSessionId = event.sessionId;
+        }
+      }
+
+      // Mark streaming done
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        if (last?.role === 'assistant') {
+          next[next.length - 1] = { ...last, streaming: false };
+        }
+        return next;
+      });
+
+      if (resolvedSessionId && resolvedSessionId !== currentSessionId) {
+        setCurrentSessionId(resolvedSessionId);
+        onSessionStart(resolvedSessionId);
+      }
+    } catch (err) {
+      setError(getFetchErrorMessage(err));
+      // Remove empty assistant bubble on error
+      setMessages((prev) =>
+        prev.filter((m, i) => !(i === prev.length - 1 && m.role === 'assistant' && !m.text))
+      );
+    } finally {
+      setSending(false);
+    }
+  }
+
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     const text = input.trim();
     if (!text || sending) return;
-
-    setMessages((prev) => [...prev, { role: 'user', text }]);
     setInput('');
-    setSending(true);
-    setError('');
-
-    try {
-      const res = await sendAiChat({ message: text, sessionId: currentSessionId }, token);
-      if (res.data) {
-        if (!currentSessionId) {
-          setCurrentSessionId(res.data.sessionId);
-          onSessionStart(res.data.sessionId);
-        }
-        setMessages((prev) => [...prev, { role: 'assistant', text: res.data!.reply }]);
-      } else {
-        setError(res.message ?? 'No response received');
-      }
-    } catch (err) {
-      setError(getFetchErrorMessage(err));
-    } finally {
-      setSending(false);
-    }
+    await sendMessage(text);
   }
 
   return (
@@ -112,14 +136,19 @@ export default function StandardChat({
             key={i}
             className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant}`}
           >
-            <p className={styles.bubbleText}>{m.text}</p>
+            <p className={styles.bubbleText}>
+              {m.text}
+              {m.streaming && <span className={styles.cursor} aria-hidden="true" />}
+            </p>
           </div>
         ))}
-        {sending && (
+        {sending && messages[messages.length - 1]?.role !== 'assistant' && (
           <div className={`${styles.bubble} ${styles.bubbleAssistant}`}>
-            <p className={styles.bubbleText} aria-live="polite">
-              Thinking…
-            </p>
+            <span className={styles.typingDots} aria-live="polite">
+              <span />
+              <span />
+              <span />
+            </span>
           </div>
         )}
         <div ref={bottomRef} />

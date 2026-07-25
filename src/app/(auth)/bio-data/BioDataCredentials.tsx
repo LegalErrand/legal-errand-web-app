@@ -1,4 +1,4 @@
-import { LEVELS, NIGERIAN_UNIVERSITIES } from '@/lib';
+import { NLS_CAMPUSES, NIGERIAN_UNIVERSITIES, COUNTRY_DIAL_CODES } from '@/lib';
 import type { BioDataFormErrors } from '@/lib';
 import { SearchableSelect, CountrySelect } from '@/components';
 import styles from './page.module.scss';
@@ -7,41 +7,49 @@ export interface BioDataCredentialsProps {
   country: string;
   city: string;
   school: string;
-  level: string;
-  matric: string;
   phone: string;
+  accountType: string;
   fieldErrors: BioDataFormErrors;
   onCountryChange: (value: string) => void;
   onCityChange: (value: string) => void;
   onSchoolChange: (value: string) => void;
-  onLevelChange: (value: string) => void;
-  onMatricChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
 }
 
-const SCHOOL_OPTIONS = NIGERIAN_UNIVERSITIES as unknown as string[];
-const LEVEL_OPTIONS = LEVELS as unknown as string[];
+const NLS_OPTIONS = [...NLS_CAMPUSES, 'Other'] as string[];
+const UNI_OPTIONS = [...NIGERIAN_UNIVERSITIES, 'Other'] as string[];
 
-const isKnownSchool = (v: string) => !v || SCHOOL_OPTIONS.includes(v);
+function isKnownOption(v: string, options: string[]) {
+  return !v || options.includes(v);
+}
 
 export default function BioDataCredentials(props: BioDataCredentialsProps) {
   const {
     country,
     city,
     school,
-    level,
-    matric,
     phone,
+    accountType,
     fieldErrors,
     onCountryChange,
     onCityChange,
     onSchoolChange,
-    onLevelChange,
-    onMatricChange,
     onPhoneChange,
   } = props;
 
-  const schoolIsOther = school !== '' && !isKnownSchool(school);
+  const isLawSchool = accountType === 'Law School Student';
+  const schoolOptions = isLawSchool ? NLS_OPTIONS : UNI_OPTIONS;
+  const schoolLabel = isLawSchool ? 'Law School' : 'University / Campus';
+  const schoolPlaceholder = isLawSchool ? 'Select your NLS campus' : 'Select your university';
+  const searchPlaceholder = isLawSchool ? 'Search campuses...' : 'Search universities...';
+
+  const dialCode = COUNTRY_DIAL_CODES[country] ?? '+234';
+  const schoolIsOther =
+    school !== '' &&
+    !isKnownOption(
+      school,
+      schoolOptions.filter((o) => o !== 'Other')
+    );
   const schoolSelectValue = schoolIsOther ? 'Other' : school;
 
   function handleSchoolSelect(value: string) {
@@ -66,7 +74,7 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
           <input
             className={styles.input}
             type="text"
-            placeholder="E.g London"
+            placeholder="E.g Lagos"
             value={city}
             onChange={(e) => onCityChange(e.target.value)}
             aria-invalid={!!fieldErrors.city}
@@ -76,53 +84,31 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
 
         <div className={styles.field}>
           <label className={styles.label}>
-            School Name <span className={styles.req}>*</span>
+            {schoolLabel} <span className={styles.req}>*</span>
           </label>
           <SearchableSelect
             value={schoolSelectValue}
             onChange={handleSchoolSelect}
-            options={SCHOOL_OPTIONS}
-            placeholder="Select your school"
-            searchPlaceholder="Search schools..."
+            options={schoolOptions}
+            placeholder={schoolPlaceholder}
+            searchPlaceholder={searchPlaceholder}
             error={fieldErrors.schoolName}
           />
           {(schoolIsOther || schoolSelectValue === 'Other') && (
             <input
               className={`${styles.input} ${styles.inputMt}`}
               type="text"
-              placeholder="Enter your school name"
+              placeholder={
+                isLawSchool ? 'Enter your law school name' : 'Enter your university name'
+              }
               value={school}
               onChange={(e) => onSchoolChange(e.target.value)}
               aria-invalid={!!fieldErrors.schoolName}
             />
           )}
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>
-            Level/Year <span className={styles.req}>*</span>
-          </label>
-          <SearchableSelect
-            value={level}
-            onChange={onLevelChange}
-            options={LEVEL_OPTIONS}
-            placeholder="Select your level"
-            searchPlaceholder="Search levels..."
-            error={fieldErrors.levelYear}
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label}>
-            Matric Number <span className={styles.optional}>Optional</span>
-          </label>
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Enter your Matric Number"
-            value={matric}
-            onChange={(e) => onMatricChange(e.target.value)}
-          />
+          {fieldErrors.schoolName && (
+            <span className={styles.fieldError}>{fieldErrors.schoolName}</span>
+          )}
         </div>
 
         <div className={styles.field}>
@@ -130,10 +116,11 @@ export default function BioDataCredentials(props: BioDataCredentialsProps) {
             Phone Number <span className={styles.req}>*</span>
           </label>
           <div className={styles.phoneWrap}>
-            <span className={styles.phonePrefix}>+234</span>
+            <span className={styles.phonePrefix}>{dialCode}</span>
             <input
               className={`${styles.input} ${styles.phoneInput}`}
               type="tel"
+              placeholder="8012345678"
               value={phone}
               onChange={(e) => onPhoneChange(e.target.value)}
               aria-invalid={!!fieldErrors.phoneNumber}

@@ -15,6 +15,8 @@ interface AvatarUploaderProps {
   token: string;
   /** Fresh display URL from `GET /user/avatar-url` after upload (safe for `<img src>`). */
   onSuccess?: (avatarDisplayUrl: string) => void;
+  /** Called immediately when a file is selected so the parent can show a local preview. */
+  onPreview?: (objectUrl: string | null) => void;
 }
 
 // ─── Status type ──────────────────────────────────────────────────────────────
@@ -23,7 +25,7 @@ type Status = 'idle' | 'uploading' | 'success' | 'error';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps) {
+export default function AvatarUploader({ token, onSuccess, onPreview }: AvatarUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -41,7 +43,9 @@ export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps
     setProgress(0);
 
     if (preview) URL.revokeObjectURL(preview);
-    setPreview(selected ? URL.createObjectURL(selected) : null);
+    const objectUrl = selected ? URL.createObjectURL(selected) : null;
+    setPreview(objectUrl);
+    onPreview?.(objectUrl);
   }
 
   async function handleUpload() {
@@ -65,6 +69,7 @@ export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps
     if (result.success) {
       if (preview) URL.revokeObjectURL(preview);
       setPreview(null);
+      onPreview?.(null);
       setFile(null);
       setProgress(0);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -85,8 +90,6 @@ export default function AvatarUploader({ token, onSuccess }: AvatarUploaderProps
 
   return (
     <div className={styles.container}>
-      {preview && status !== 'success' && <img src={preview} alt="" className={styles.preview} />}
-
       <label className={styles.filePicker}>
         {file ? 'Change image' : 'Choose image'}
         <input

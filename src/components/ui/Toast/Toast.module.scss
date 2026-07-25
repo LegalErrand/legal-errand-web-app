@@ -1,0 +1,123 @@
+// Toast.module.scss
+@use '../../../styles/variables' as *;
+
+.toastContainer {
+  position: fixed;
+  bottom: $space-4;
+  right: $space-4;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  pointer-events: none; // let clicks pass through container
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3;
+  background-color: $white;
+  border-radius: $radius;
+  box-shadow: $shadow-lg;
+  min-width: 300px;
+  max-width: 400px;
+  border-left: 4px solid transparent;
+  animation: slideIn 0.3s ease-out forwards;
+  position: relative;
+  overflow: hidden;
+
+  &.success {
+    border-left-color: $green-500;
+    .icon {
+      color: $green-500;
+    }
+  }
+
+  &.error {
+    border-left-color: $accent-red;
+    .icon {
+      color: $accent-red;
+    }
+  }
+
+  &.warning {
+    border-left-color: $accent-yellow;
+    .icon {
+      color: $accent-yellow;
+    }
+  }
+
+  &.info {
+    border-left-color: $blue-600;
+    .icon {
+      color: $blue-600;
+    }
+  }
+}
+
+.toastExiting {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.title {
+  font-family: $font-body;
+  font-weight: 600;
+  font-size: 14px;
+  color: $dark;
+  margin: 0;
+}
+
+.message {
+  font-family: $font-body;
+  font-size: 13px;
+  color: $gray-600;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: $gray-400;
+  padding: $space-1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $gray-800;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}

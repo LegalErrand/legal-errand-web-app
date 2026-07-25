@@ -1,28 +1,28 @@
 @use '../styles/variables' as *;
 
-// ─── Stats strip (reasoning score + badges) ───────────────────────────────────
+// ─── Stats strip ──────────────────────────────────────────────────────────────
 
 .statsStrip {
   display: flex;
   align-items: center;
   gap: $space-3;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .statPill {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: $space-2;
   background: $white;
   border-radius: $radius;
   padding: $space-2 $space-3;
   box-shadow: $shadow-sm;
-  min-width: 90px;
 }
 
 .statPillValue {
   font-family: $font-heading;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   color: $primary;
   line-height: 1;
@@ -31,12 +31,11 @@
 .statPillLabel {
   font-size: 11px;
   color: $gray-600;
-  margin-top: 3px;
   white-space: nowrap;
 }
 
 .badge {
-  font-size: 22px;
+  font-size: 20px;
   cursor: default;
 }
 
@@ -46,12 +45,14 @@
   color: $gray-600;
 }
 
-// ─── Lower grid ───────────────────────────────────────────────────────────────
+// ─── Lower grid — takes all remaining vertical space ──────────────────────────
 
 .lowerGrid {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: $space-4;
+  gap: $space-3;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -62,20 +63,25 @@
 
 .masteryCard {
   background: $white;
-  border-radius: 12px;
-  padding: $space-4 $space-5;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
   box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .masteryHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $space-4;
+  margin-bottom: $space-2;
+  flex-shrink: 0;
 }
 
 .cardTitle {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: $dark;
 }
@@ -83,25 +89,29 @@
 .masteryList {
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  gap: $space-2;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .masteryRow {
   display: flex;
   align-items: center;
   gap: $space-3;
+  flex-shrink: 0;
 }
 
 .masteryName {
-  font-size: 13px;
+  font-size: 12px;
   color: $dark;
-  width: 140px;
+  width: 130px;
   flex-shrink: 0;
 }
 
 .masteryTrack {
   flex: 1;
-  height: 6px;
+  height: 5px;
   background: $gray-200;
   border-radius: 100px;
   overflow: hidden;
@@ -115,10 +125,10 @@
 }
 
 .masteryPct {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: $dark;
-  width: 36px;
+  width: 34px;
   text-align: right;
   flex-shrink: 0;
 }
@@ -127,17 +137,21 @@
 
 .notesCard {
   background: $white;
-  border-radius: 12px;
-  padding: $space-4 $space-5;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
   box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .notesHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $space-3;
-  color: $gray-400;
+  margin-bottom: $space-2;
+  flex-shrink: 0;
 }
 
 .notesList {
@@ -146,15 +160,18 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .noteItem {
   display: flex;
   align-items: center;
   gap: $space-3;
-  padding: 10px 0;
+  padding: 7px 0;
   border-bottom: 1px solid $gray-100;
+  flex-shrink: 0;
   cursor: pointer;
 
   &:last-child {
@@ -169,19 +186,20 @@
 }
 
 .noteIcon {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: $radius;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
   flex-shrink: 0;
 }
 
 .noteIconCase {
   background: rgba($primary, 0.1);
 }
+
 .noteIconDoc {
   background: rgba($accent-blue, 0.1);
 }
@@ -192,38 +210,44 @@
 }
 
 .noteTitle {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: $dark;
-  margin: 0 0 2px;
+  margin: 0 0 1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .noteMeta {
-  font-size: 11px;
+  font-size: 10px;
   color: $gray-400;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .noteFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: $space-3;
+  margin-top: $space-2;
+  padding-top: $space-2;
+  border-top: 1px solid $gray-100;
+  flex-shrink: 0;
   gap: $space-2;
 }
 
 .historyBtn {
-  background: none;
-  border: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: $primary;
-  cursor: pointer;
-  padding: 0;
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;
@@ -234,11 +258,11 @@
   background: none;
   border: 1px solid $gray-200;
   border-radius: $radius;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: $gray-600;
   cursor: pointer;
-  padding: 5px $space-2;
+  padding: 4px $space-2;
   font-family: inherit;
   transition:
     border-color 0.12s,
@@ -251,8 +275,9 @@
 }
 
 .emptyState {
-  font-size: 13px;
+  font-size: 12px;
   color: $gray-400;
-  margin: $space-3 0 0;
+  margin: $space-2 0 0;
   line-height: 1.5;
+  flex-shrink: 0;
 }

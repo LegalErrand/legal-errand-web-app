@@ -5,18 +5,22 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { explainCase, getCaseExplainerHistory, getFetchErrorMessage, getAccessToken } from '@/lib';
 import type { CaseHistoryItem, ExplainCaseRequest } from '@/lib';
+import { Spinner, Shimmer } from '@/components';
+import { useToast } from '@/hooks/useToast';
 import styles from './page.module.scss';
+
+type CaseTab = 'cases' | 'analysis' | 'breakdown';
 
 export default function CasesPage() {
   const router = useRouter();
   const [token, setToken] = useState('');
-  const [citation, setCitation] = useState('');
+  const [activeTab, setActiveTab] = useState<CaseTab>('cases');
   const [caseText, setCaseText] = useState('');
-  const [inputMode, setInputMode] = useState<'citation' | 'text'>('citation');
   const [history, setHistory] = useState<CaseHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const { addToast } = useToast();
 
   useEffect(() => {
     const t = getAccessToken();
@@ -43,22 +47,24 @@ export default function CasesPage() {
   async function handleExplain(e: React.FormEvent) {
     e.preventDefault();
     if (!token) return;
-    const input = inputMode === 'citation' ? citation.trim() : caseText.trim();
+    const input = caseText.trim();
     if (!input) {
-      setError('Please enter a case citation or paste case text.');
+      setError('Please paste a judgment text or enter a case citation.');
       return;
     }
 
     setError('');
     setSubmitting(true);
     try {
-      const payload: ExplainCaseRequest =
-        inputMode === 'citation' ? { citation: input } : { text: input };
+      const payload: ExplainCaseRequest = { text: input };
       const res = await explainCase(payload, token);
       if (!res.data?.id) throw new Error(res.message ?? 'Explanation failed');
+      addToast('success', 'Case analysis ready');
       router.push(`/dashboard/cases/${res.data.id}`);
     } catch (err) {
-      setError(getFetchErrorMessage(err));
+      const msg = getFetchErrorMessage(err);
+      setError(msg);
+      addToast('error', 'Analysis failed', msg);
     } finally {
       setSubmitting(false);
     }
@@ -66,67 +72,103 @@ export default function CasesPage() {
 
   return (
     <div className={styles.page}>
-      {/* Top tabs */}
-      <div className={styles.tabs}>
-        <button className={`${styles.tabBtn} ${styles.tabActive}`}>Cases</button>
-        <button className={styles.tabBtn} disabled>
-          Analysis
-        </button>
-        <button className={styles.tabBtn} disabled>
-          Breakdown
-        </button>
+      <div className={styles.header}>
+        <div className={styles.headerRow}>
+          <div>
+            <h1 className={styles.pageTitle}>Explain a New Case</h1>
+            <p className={styles.pageSub}>
+              Analyze Precedents with Legal AI-powered judicial insights
+            </p>
+          </div>
+        </div>
+        <div className={styles.tabs}>
+          <button
+            className={`${styles.tabBtn} ${activeTab === 'cases' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('cases')}
+          >
+            Cases
+          </button>
+          <button
+            className={`${styles.tabBtn} ${activeTab === 'analysis' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('analysis')}
+            disabled
+          >
+            Analysis
+          </button>
+          <button
+            className={`${styles.tabBtn} ${activeTab === 'breakdown' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('breakdown')}
+            disabled
+          >
+            Breakdown
+          </button>
+        </div>
       </div>
 
       <div className={styles.content}>
-        <h1 className={styles.pageHeading}>Explain a New case</h1>
-        <p className={styles.pageSub}>Analyze Precedents with Legal AI-powered judicial insights</p>
+        <div className={styles.explainerCard}>
+          <form onSubmit={handleExplain}>
+            <label className={styles.inputLabel}>Paste Judgment Text</label>
+            <textarea
+              className={styles.textarea}
+              value={caseText}
+              onChange={(e) => setCaseText(e.target.value)}
+              placeholder="Enter the full text of the case or judicial findings here....."
+              rows={7}
+            />
+            {error && (
+              <p className={styles.formError} role="alert">
+                {error}
+              </p>
+            )}
 
-        <form onSubmit={handleExplain}>
-          <label className={styles.inputLabel}>Paste Judgment Text</label>
-          <textarea
-            className={styles.textarea}
-            value={caseText}
-            onChange={(e) => setCaseText(e.target.value)}
-            placeholder="Enter the full text of the case or judicial findings here....."
-            rows={7}
-          />
-          {error && (
-            <p className={styles.formError} role="alert">
-              {error}
-            </p>
-          )}
-
-          <div className={styles.bottomRow}>
-            <button
-              type="button"
-              className={styles.selectLibraryLink}
-              onClick={() => setInputMode('citation')}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                />
-              </svg>
-              Select from Library
-            </button>
-            <button type="submit" className={styles.startBtn} disabled={submitting}>
-              {submitting ? 'Analysing…' : 'Start Analysis'}
-            </button>
-          </div>
-        </form>
+            <div className={styles.bottomRow}>
+              <button type="button" className={styles.selectLibraryLink}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+                Select from Library
+              </button>
+              <button type="submit" className={styles.startBtn} disabled={submitting}>
+                {submitting ? (
+                  <span className={styles.btnLoading}>
+                    <Spinner size={15} light /> Analysing…
+                  </span>
+                ) : (
+                  'Start Analysis'
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
 
         <section className={styles.historySection}>
           <h2 className={styles.sectionTitle}>Recent Cases</h2>
           {historyLoading ? (
-            <p className={styles.stateMsg}>Loading history…</p>
+            <ul className={styles.historyList}>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <li key={i} className={styles.historyItem}>
+                  <div className={styles.caseIcon} aria-hidden="true">
+                    <Shimmer width={20} height={20} radius={4} />
+                  </div>
+                  <div className={styles.caseBody}>
+                    <Shimmer height={13} width="55%" radius={5} />
+                    <div style={{ height: 6 }} />
+                    <Shimmer height={11} width="35%" radius={4} />
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : history.length === 0 ? (
             <p className={styles.stateMsg}>No cases explained yet. Try one above!</p>
           ) : (
@@ -148,7 +190,7 @@ export default function CasesPage() {
                           >
                             {item.status}
                           </span>
-                        )}{' '}
+                        )}
                         {new Date(item.createdAt).toLocaleDateString()}
                       </p>
                     </div>

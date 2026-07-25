@@ -1,0 +1,46 @@
+@use '../../styles/variables' as *;
+
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  flex-shrink: 0;
+}
+
+.svg {
+  animation: spin 0.75s linear infinite;
+  display: block;
+}
+
+.track {
+  stroke: $gray-200;
+}
+
+.arc {
+  stroke: $primary;
+  stroke-dasharray: 40 62.8;
+  stroke-dashoffset: 0;
+}
+
+.label {
+  font-size: 13px;
+  color: $gray-600;
+}
+
+.light {
+  .track {
+    stroke: rgba($white, 0.35);
+  }
+  .arc {
+    stroke: $white;
+  }
+  .label {
+    color: $white;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

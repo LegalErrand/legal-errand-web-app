@@ -3,8 +3,37 @@
 .page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
   background: $white;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+
+.header {
+  padding: $space-5 $space-5 0;
+  border-bottom: 1px solid $gray-200;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $space-4;
+}
+
+.pageTitle {
+  font-family: $font-heading;
+  font-size: 22px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 $space-1;
+}
+
+.pageSub {
+  font-size: 14px;
+  color: $gray-500;
+  margin: 0;
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
@@ -12,18 +41,16 @@
 .tabs {
   display: flex;
   gap: 0;
-  padding: $space-4 $space-5 0;
-  border-bottom: 1px solid $gray-200;
 }
 
 .tabBtn {
-  padding: 8px $space-3;
+  padding: 10px $space-4;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   font-size: 14px;
   font-weight: 500;
-  color: $gray-600;
+  color: $gray-500;
   cursor: pointer;
   transition:
     color 0.12s,
@@ -33,9 +60,10 @@
   &:hover:not(:disabled) {
     color: $dark;
   }
+
   &:disabled {
     opacity: 0.4;
-    cursor: not-allowed;
+    cursor: default;
   }
 }
 
@@ -50,32 +78,25 @@
 .content {
   flex: 1;
   padding: $space-5;
-  max-width: 800px;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
 }
 
-// ─── Heading ──────────────────────────────────────────────────────────────────
+// ─── Explainer form card ──────────────────────────────────────────────────────
 
-.pageHeading {
-  font-family: $font-heading;
-  font-size: 24px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0 0 $space-1;
+.explainerCard {
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  padding: $space-5;
+  box-shadow: $shadow-sm;
 }
-
-.pageSub {
-  font-size: 14px;
-  color: $gray-600;
-  margin: 0 0 $space-4;
-}
-
-// ─── Label & Textarea ─────────────────────────────────────────────────────────
 
 .inputLabel {
   font-size: 13px;
-  font-weight: 500;
-  color: $gray-800;
+  font-weight: 600;
+  color: $gray-700;
   display: block;
   margin-bottom: $space-2;
 }
@@ -84,8 +105,8 @@
   width: 100%;
   box-sizing: border-box;
   min-height: 160px;
-  padding: $space-3;
-  background: $gray-100;
+  padding: $space-3 $space-4;
+  background: $gray-50;
   border: 1px solid $gray-200;
   border-radius: $radius;
   font-size: 14px;
@@ -94,17 +115,17 @@
   outline: none;
   resize: vertical;
   transition: border-color 0.15s;
-  line-height: 1.6;
+  line-height: 1.65;
 
   &::placeholder {
     color: $gray-400;
   }
+
   &:focus {
     border-color: $primary;
+    background: $white;
   }
 }
-
-// ─── Bottom row ───────────────────────────────────────────────────────────────
 
 .bottomRow {
   display: flex;
@@ -116,23 +137,23 @@
 .selectLibraryLink {
   display: flex;
   align-items: center;
-  gap: $space-1;
+  gap: $space-2;
   font-size: 14px;
   font-weight: 600;
   color: $primary;
-  text-decoration: none;
   cursor: pointer;
   background: none;
   border: none;
   padding: 0;
+  transition: opacity 0.12s;
 
   &:hover {
-    opacity: 0.8;
+    opacity: 0.75;
   }
 }
 
 .startBtn {
-  padding: 11px $space-4;
+  padding: 11px $space-5;
   background: $primary;
   color: $white;
   border: none;
@@ -145,6 +166,7 @@
   &:hover:not(:disabled) {
     background: $primary-dark;
   }
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -157,62 +179,10 @@
   margin: $space-2 0 0;
 }
 
-// ─── Mode tabs (hidden — keeping for backward compat) ─────────────────────────
-
-.modeTabs {
-  display: flex;
+.btnLoading {
+  display: inline-flex;
+  align-items: center;
   gap: $space-2;
-  margin-bottom: $space-3;
-}
-
-.modeTab {
-  padding: 6px $space-3;
-  background: none;
-  border: 1px solid $gray-200;
-  border-radius: $radius;
-  font-size: 13px;
-  font-weight: 600;
-  color: $gray-600;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    background 0.15s;
-
-  &:hover {
-    border-color: $primary;
-  }
-}
-
-.modeTabActive {
-  background: $primary;
-  border-color: $primary;
-  color: $white;
-
-  &:hover {
-    background: $primary-dark;
-    border-color: $primary-dark;
-  }
-}
-
-.input {
-  height: 48px;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 $space-3;
-  border: 1px solid $gray-200;
-  border-radius: $radius;
-  font-size: 14px;
-  font-family: inherit;
-  color: $dark;
-  outline: none;
-  transition: border-color 0.15s;
-
-  &::placeholder {
-    color: $gray-400;
-  }
-  &:focus {
-    border-color: $primary;
-  }
 }
 
 // ─── History section ──────────────────────────────────────────────────────────
@@ -221,7 +191,6 @@
   display: flex;
   flex-direction: column;
   gap: $space-3;
-  margin-top: $space-5;
 }
 
 .sectionTitle {
@@ -237,8 +206,8 @@
   margin: 0;
   padding: 0;
   background: $white;
+  border: 1px solid $gray-200;
   border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
   overflow: hidden;
 }
 
@@ -254,8 +223,9 @@
   &:last-child {
     border-bottom: none;
   }
+
   &:hover {
-    background: $gray-100;
+    background: $gray-50;
   }
 
   svg {
@@ -266,10 +236,11 @@
 }
 
 .caseIcon {
-  font-size: 18px;
+  font-size: 16px;
   width: 36px;
   height: 36px;
   background: rgba($primary, 0.1);
+  color: $primary;
   border-radius: $radius;
   display: flex;
   align-items: center;
@@ -296,6 +267,9 @@
   font-size: 11px;
   color: $gray-400;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
 }
 
 .statusBadge {
@@ -303,26 +277,29 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 100px;
   background: $gray-200;
   color: $gray-600;
 }
 
 .status_complete {
-  background: rgba($green-500, 0.1);
+  background: rgba($green-500, 0.12);
   color: $green-500;
 }
+
 .status_pending {
-  background: rgba($primary, 0.1);
+  background: rgba($primary, 0.12);
   color: $primary;
 }
+
 .status_processing {
-  background: rgba($accent-blue, 0.1);
+  background: rgba($accent-blue, 0.12);
   color: $accent-blue;
 }
+
 .status_error {
-  background: rgba($accent-red, 0.1);
+  background: rgba($accent-red, 0.12);
   color: $accent-red;
 }
 
@@ -330,4 +307,5 @@
   font-size: 13px;
   color: $gray-400;
   margin: 0;
+  padding: $space-4 0;
 }

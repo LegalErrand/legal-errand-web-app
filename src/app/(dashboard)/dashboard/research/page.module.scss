@@ -2,7 +2,8 @@
 
 .page {
   background: $white;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .content {
@@ -23,13 +24,19 @@
   font-size: 22px;
   font-weight: 700;
   color: $dark;
-  margin: 0;
-  max-width: 600px;
+  margin: 0 0 $space-1;
+  max-width: 640px;
   line-height: 1.35;
 
   @media (max-width: 600px) {
     font-size: 18px;
   }
+}
+
+.pageSubhead {
+  font-size: 14px;
+  color: $gray-500;
+  margin: 0 0 $space-4;
 }
 
 // ─── Search form ──────────────────────────────────────────────────────────────
@@ -151,6 +158,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: $space-3;
 }
 
 .emptyMsg {
@@ -162,14 +170,17 @@
 // ─── Result item ──────────────────────────────────────────────────────────────
 
 .resultItem {
-  padding: $space-4 0;
-  border-bottom: 1px solid $gray-200;
+  padding: $space-4;
+  border: 1px solid $card-border;
+  border-radius: $radius-lg;
+  background: $white;
   display: flex;
   flex-direction: column;
   gap: $space-2;
+  transition: box-shadow 0.15s;
 
-  &:first-child {
-    border-top: 1px solid $gray-200;
+  &:hover {
+    box-shadow: $shadow-sm;
   }
 }
 
@@ -204,9 +215,9 @@
 .courtBadge {
   display: inline-flex;
   align-self: flex-start;
-  padding: 3px 12px;
-  background: rgba($primary, 0.1);
-  color: $primary;
+  padding: 4px 12px;
+  background: $court-green-bg;
+  color: $court-green;
   border-radius: 100px;
   font-size: 11px;
   font-weight: 600;
@@ -228,19 +239,27 @@
 
 .resultExcerpt {
   font-size: 13px;
-  color: $gray-800;
+  color: $snippet-blue;
   margin: 0;
   line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 // ─── Filter panel ─────────────────────────────────────────────────────────────
 
 .filterPanel {
-  width: 200px;
+  width: 220px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: $space-3;
+  background: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: $radius-xl;
+  padding: $space-4;
 
   @media (max-width: 900px) {
     width: 100%;
@@ -417,4 +436,43 @@
   font-size: 13px;
   color: $gray-400;
   margin: 0;
+}
+
+.btnLoading {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-top: $space-4;
+}
+
+.pageBtn {
+  background: none;
+  border: 1px solid $gray-200;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: $dark;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover:not(:disabled) {
+    background: $gray-100;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pageInfo {
+  font-size: 13px;
+  color: $gray-400;
 }

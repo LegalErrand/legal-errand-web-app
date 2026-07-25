@@ -5,102 +5,44 @@
 .page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
 }
 
 // ─── Top bar ──────────────────────────────────────────────────────────────────
-
-.topBar {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  padding: $space-3 $space-5;
-  background: $white;
-  border-bottom: 1px solid $gray-200;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.searchWrap {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  background: $gray-100;
-  border: 1px solid $gray-200;
-  border-radius: 100px;
-  padding: 0 $space-3;
-  max-width: 480px;
-}
-
-.searchIcon {
-  color: $gray-400;
-  flex-shrink: 0;
-}
-
-.searchInput {
-  flex: 1;
-  height: 38px;
-  border: none;
-  background: transparent;
-  font-size: 14px;
-  font-family: inherit;
-  color: $dark;
-  outline: none;
-
-  &::placeholder {
-    color: $gray-400;
-  }
-}
-
-.notifBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid $gray-200;
-  background: $white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-left: auto;
-  transition: background 0.12s;
-
-  &:hover {
-    background: $gray-100;
-  }
-}
 
 // ─── Content ──────────────────────────────────────────────────────────────────
 
 .content {
   flex: 1;
-  padding: $space-5;
+  min-height: 0;
+  padding: $space-4 $space-5;
   display: flex;
   flex-direction: column;
-  gap: $space-4;
+  gap: $space-3;
+  overflow: hidden;
 }
 
 // ─── Greeting row ─────────────────────────────────────────────────────────────
 
 .greetRow {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: $space-3;
+  flex-shrink: 0;
 }
 
 .greeting {
   font-family: $font-heading;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: $dark;
-  margin: 0 0 4px;
+  margin: 0 0 2px;
 }
 
 .greetSub {
-  font-size: 14px;
+  font-size: 13px;
   color: $gray-600;
   margin: 0;
 }
@@ -109,7 +51,7 @@
   display: flex;
   align-items: center;
   gap: $space-2;
-  padding: $space-2 $space-3;
+  padding: 6px $space-3;
   background: $white;
   border: 1px solid $gray-200;
   border-radius: $radius;
@@ -130,7 +72,7 @@
 }
 
 .streakDays {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: $dark;
 }
@@ -139,8 +81,9 @@
 
 .challengeRow {
   display: grid;
-  grid-template-columns: 1fr 260px;
-  gap: $space-4;
+  grid-template-columns: 1fr 240px;
+  gap: $space-3;
+  flex-shrink: 0;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -149,8 +92,8 @@
 
 .challengeCard {
   background: $primary;
-  border-radius: 12px;
-  padding: $space-4 $space-5;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
   color: $white;
 }
 
@@ -158,15 +101,15 @@
   display: flex;
   align-items: center;
   gap: $space-3;
-  margin-bottom: $space-3;
+  margin-bottom: $space-2;
 }
 
 .badgeDot {
   display: inline-block;
-  padding: 4px $space-3;
+  padding: 3px $space-3;
   background: rgba($white, 0.2);
   border-radius: 100px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -178,26 +121,30 @@
 
 .challengeTitle {
   font-family: $font-heading;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  margin: 0 0 $space-2;
+  margin: 0 0 $space-1;
 }
 
 .challengeSub {
-  font-size: 13px;
+  font-size: 12px;
   opacity: 0.9;
-  line-height: 1.6;
-  margin: 0 0 $space-4;
+  line-height: 1.55;
+  margin: 0 0 $space-3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .quizBtn {
   display: inline-block;
-  padding: 10px $space-4;
+  padding: 8px $space-3;
   background: $white;
   color: $primary;
   border: none;
   border-radius: $radius;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
@@ -210,124 +157,111 @@
 
 // ─── Next Action card ─────────────────────────────────────────────────────────
 
-.nextCard {
+.quickActionCard {
   background: $white;
-  border-radius: 12px;
-  padding: $space-3 $space-4;
+  border-radius: $radius-lg;
+  padding: $space-4 $space-5;
   box-shadow: $shadow-sm;
   display: flex;
   flex-direction: column;
-  gap: $space-1;
 }
 
-.nextCardHeader {
+.quickActionTitle {
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 $space-3;
+}
+
+.quickActionList {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.quickActionBtn {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  color: $gray-400;
-  margin-bottom: $space-2;
-}
-
-.nextCardTitle {
-  font-size: 13px;
-  font-weight: 700;
+  gap: $space-3;
+  padding: 12px $space-3;
+  background: $gray-50;
+  border-radius: 100px; // fully rounded pills
   color: $dark;
-}
-
-.nextRecommend {
-  font-size: 11px;
-  color: $gray-400;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.nextItem {
+  text-decoration: none;
   font-size: 13px;
-  font-weight: 700;
-  color: $dark;
-  margin: 0;
-  line-height: 1.4;
+  font-weight: 500;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $gray-100;
+  }
 }
 
-.nextDesc {
-  font-size: 12px;
-  color: $gray-600;
-  margin: 0;
-  line-height: 1.4;
+.quickActionIconCase {
+  color: $primary;
+}
+.quickActionIconResearch {
+  color: $primary;
+}
+.quickActionIconNote {
+  color: $primary;
+  font-size: 16px;
 }
 
-.nextProgress {
+// ─── Stats strip (reasoning score + badges) ───────────────────────────────────
+
+.statsStrip {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.statPill {
   display: flex;
   align-items: center;
   gap: $space-2;
-  margin-top: $space-2;
+  background: $white;
+  border-radius: $radius;
+  padding: $space-2 $space-3;
+  box-shadow: $shadow-sm;
 }
 
-.nextProgressTrack {
-  flex: 1;
-  height: 4px;
-  background: $gray-200;
-  border-radius: 100px;
-  overflow: hidden;
-}
-
-.nextProgressFill {
-  height: 100%;
-  width: var(--pct, 0%);
-  background: $primary;
-  border-radius: 100px;
-}
-
-.nextProgressPct {
-  font-size: 11px;
+.statPillValue {
+  font-family: $font-heading;
+  font-size: 18px;
+  font-weight: 700;
   color: $primary;
-  font-weight: 600;
+  line-height: 1;
+}
+
+.statPillLabel {
+  font-size: 11px;
+  color: $gray-600;
   white-space: nowrap;
 }
 
-.resumeBtn {
-  align-self: flex-end;
-  padding: 6px $space-3;
-  background: none;
-  border: 1px solid $primary;
-  border-radius: $radius;
-  color: $primary;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background 0.12s,
-    color 0.12s;
-  margin-top: $space-1;
-
-  &:hover {
-    background: $primary;
-    color: $white;
-  }
+.badge {
+  font-size: 20px;
+  cursor: default;
 }
 
-.viewGoalsBtn {
-  align-self: center;
-  background: none;
-  border: none;
+.badgeMore {
   font-size: 12px;
+  font-weight: 600;
   color: $gray-600;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-
-  &:hover {
-    color: $dark;
-  }
 }
 
 // ─── Lower grid ───────────────────────────────────────────────────────────────
 
 .lowerGrid {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: $space-4;
+  gap: $space-3;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -338,34 +272,36 @@
 
 .masteryCard {
   background: $white;
-  border-radius: 12px;
-  padding: $space-4 $space-5;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
   box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .masteryHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $space-4;
+  margin-bottom: $space-3;
+  flex-shrink: 0;
 }
 
 .cardTitle {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: $dark;
-}
-
-.cardTitleRight {
-  font-size: 13px;
-  font-weight: 600;
-  color: $gray-600;
 }
 
 .masteryList {
   display: flex;
   flex-direction: column;
-  gap: $space-3;
+  gap: $space-2;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .masteryRow {
@@ -375,15 +311,15 @@
 }
 
 .masteryName {
-  font-size: 13px;
+  font-size: 12px;
   color: $dark;
-  width: 140px;
+  width: 130px;
   flex-shrink: 0;
 }
 
 .masteryTrack {
   flex: 1;
-  height: 6px;
+  height: 5px;
   background: $gray-200;
   border-radius: 100px;
   overflow: hidden;
@@ -397,29 +333,33 @@
 }
 
 .masteryPct {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: $dark;
-  width: 36px;
+  width: 34px;
   text-align: right;
   flex-shrink: 0;
 }
 
-// ─── Recent Notes card ────────────────────────────────────────────────────────
+// ─── Recent Activity card ─────────────────────────────────────────────────────
 
 .notesCard {
   background: $white;
-  border-radius: 12px;
-  padding: $space-4 $space-5;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
   box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .notesHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $space-3;
-  color: $gray-400;
+  margin-bottom: $space-2;
+  flex-shrink: 0;
 }
 
 .notesList {
@@ -428,16 +368,18 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .noteItem {
   display: flex;
   align-items: center;
   gap: $space-3;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid $gray-100;
-  cursor: pointer;
+  flex-shrink: 0;
 
   &:last-child {
     border-bottom: none;
@@ -451,13 +393,13 @@
 }
 
 .noteIcon {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: $radius;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
   flex-shrink: 0;
 }
 
@@ -474,37 +416,39 @@
 }
 
 .noteTitle {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: $dark;
-  margin: 0 0 2px;
+  margin: 0 0 1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .noteMeta {
-  font-size: 11px;
+  font-size: 10px;
   color: $gray-400;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .noteFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: $space-3;
+  margin-top: $space-2;
+  padding-top: $space-2;
+  border-top: 1px solid $gray-100;
+  flex-shrink: 0;
   gap: $space-2;
 }
 
 .historyBtn {
-  background: none;
-  border: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: $primary;
-  cursor: pointer;
-  padding: 0;
   text-decoration: none;
 
   &:hover {
@@ -516,11 +460,11 @@
   background: none;
   border: 1px solid $gray-200;
   border-radius: $radius;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: $gray-600;
   cursor: pointer;
-  padding: 5px $space-2;
+  padding: 4px $space-2;
   font-family: inherit;
   transition:
     border-color 0.12s,
@@ -538,60 +482,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
+  flex: 1;
   font-size: 14px;
   color: $gray-600;
 }
 
 .emptyState {
-  font-size: 13px;
-  color: $gray-400;
-  margin: $space-3 0 0;
-  line-height: 1.5;
-}
-
-// ─── Stats strip (reasoning score + badges) ───────────────────────────────────
-
-.statsStrip {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  flex-wrap: wrap;
-}
-
-.statPill {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: $white;
-  border-radius: $radius;
-  padding: $space-2 $space-3;
-  box-shadow: $shadow-sm;
-  min-width: 90px;
-}
-
-.statPillValue {
-  font-family: $font-heading;
-  font-size: 22px;
-  font-weight: 700;
-  color: $primary;
-  line-height: 1;
-}
-
-.statPillLabel {
-  font-size: 11px;
-  color: $gray-600;
-  margin-top: 3px;
-  white-space: nowrap;
-}
-
-.badge {
-  font-size: 22px;
-  cursor: default;
-}
-
-.badgeMore {
   font-size: 12px;
-  font-weight: 600;
-  color: $gray-600;
+  color: $gray-400;
+  margin: $space-2 0 0;
+  line-height: 1.5;
 }

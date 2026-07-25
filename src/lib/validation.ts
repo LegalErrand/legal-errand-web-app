@@ -11,7 +11,6 @@ export interface BioDataFormErrors {
   country?: string;
   city?: string;
   schoolName?: string;
-  levelYear?: string;
   phoneNumber?: string;
 }
 
@@ -74,14 +73,12 @@ export function validateBioDataFields(params: {
   country: string;
   city: string;
   schoolName: string;
-  levelYear: string;
   phoneDigits: string;
 }): BioDataFormErrors {
   const errors: BioDataFormErrors = {};
   if (!params.country.trim()) errors.country = 'Country is required.';
   if (!params.city.trim()) errors.city = 'City is required.';
-  if (!params.schoolName.trim()) errors.schoolName = 'School name is required.';
-  if (!params.levelYear.trim()) errors.levelYear = 'Level or year is required.';
+  if (!params.schoolName.trim()) errors.schoolName = 'Law school is required.';
   const digits = params.phoneDigits.replace(/\D/g, '');
   if (digits.length < 10) errors.phoneNumber = 'Enter a valid phone number.';
   return errors;
