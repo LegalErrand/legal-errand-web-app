@@ -7,6 +7,30 @@
   justify-content: space-between;
   padding: $space-4 $space-6;
   background: transparent;
+
+  // Two rows on mobile: brand + actions, then a full-width search bar.
+  @media (max-width: 900px) {
+    flex-wrap: wrap;
+    gap: $space-3;
+    padding: $space-3 $space-3 $space-2;
+  }
+}
+
+// Only rendered on mobile — desktop keeps the logo in the sidebar.
+.mobileLogo {
+  display: none;
+
+  @media (max-width: 900px) {
+    display: flex;
+    align-items: center;
+    order: 1;
+    flex-shrink: 0;
+  }
+
+  img {
+    width: auto;
+    height: 26px;
+  }
 }
 
 .searchBar {
@@ -17,6 +41,12 @@
   padding: 10px $space-4;
   width: 480px;
   gap: $space-3;
+
+  @media (max-width: 900px) {
+    order: 3;
+    width: 100%;
+    padding: 9px $space-3;
+  }
 }
 
 .sparkleIcon {
@@ -40,6 +70,12 @@
   display: flex;
   align-items: center;
   gap: $space-4;
+
+  @media (max-width: 900px) {
+    order: 2;
+    gap: $space-2;
+    margin-left: auto;
+  }
 }
 
 .streakPill {
@@ -49,6 +85,11 @@
   background: $green-100;
   padding: 6px $space-3;
   border-radius: 20px;
+
+  @media (max-width: 900px) {
+    gap: 4px;
+    padding: 5px 10px;
+  }
 }
 
 .fireIcon {
@@ -59,6 +100,10 @@
   color: $green-500;
   font-weight: 600;
   font-size: 13px;
+
+  @media (max-width: 900px) {
+    font-size: 12px;
+  }
 }
 
 .iconBtn {
@@ -80,6 +125,11 @@
     background: color.adjust($gray-200, $lightness: -4%);
     color: $dark;
   }
+
+  @media (max-width: 900px) {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .avatar {
@@ -87,7 +137,13 @@
   height: 36px;
   border-radius: 50%;
   overflow: hidden;
+  flex-shrink: 0;
   img {
     object-fit: cover;
+  }
+
+  @media (max-width: 900px) {
+    width: 32px;
+    height: 32px;
   }
 }

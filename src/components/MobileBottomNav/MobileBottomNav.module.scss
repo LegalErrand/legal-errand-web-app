@@ -1,0 +1,214 @@
+@use '../../styles/variables' as *;
+
+// ─── Bar ──────────────────────────────────────────────────────────────────────
+
+.bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: $white;
+  border-top: 1px solid $gray-200;
+  padding: $space-2 $space-2 calc(#{$space-2} + env(safe-area-inset-bottom));
+  align-items: flex-end;
+  justify-content: space-around;
+
+  @media (max-width: 900px) {
+    display: flex;
+  }
+}
+
+// ─── Items ────────────────────────────────────────────────────────────────────
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  padding: $space-1 0;
+  border: none;
+  background: transparent;
+  font-family: $font-body;
+  font-size: 11px;
+  font-weight: 500;
+  color: $gray-600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.12s;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    color: $dark;
+  }
+}
+
+.itemActive {
+  color: $primary;
+  font-weight: 600;
+}
+
+// ─── Centre FAB ───────────────────────────────────────────────────────────────
+
+.fabWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: $gray-600;
+}
+
+.fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-top: -20px;
+  border-radius: 50%;
+  background: $primary;
+  color: $white;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+  transition:
+    transform 0.15s,
+    background 0.15s;
+
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+.fabActive {
+  color: $primary;
+
+  .fab {
+    background: $primary-dark;
+  }
+}
+
+// ─── "More" sheet ─────────────────────────────────────────────────────────────
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  @media (min-width: 901px) {
+    display: none;
+  }
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 51;
+  background: $white;
+  border-radius: $radius-xl $radius-xl 0 0;
+  padding: $space-2 $space-3 calc(#{$space-4} + env(safe-area-inset-bottom));
+  max-height: 75vh;
+  overflow-y: auto;
+
+  @media (min-width: 901px) {
+    display: none;
+  }
+}
+
+.sheetHandle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: $gray-300;
+  margin: 0 auto $space-3;
+}
+
+.sheetTitle {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $gray-400;
+  padding: 0 $space-2 $space-2;
+}
+
+.sheetLink {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: 13px $space-2;
+  border-radius: $radius;
+  font-size: 15px;
+  font-weight: 500;
+  color: $dark;
+  text-decoration: none;
+  transition: background 0.12s;
+
+  svg {
+    flex-shrink: 0;
+    color: $gray-600;
+  }
+
+  &:hover {
+    background: $gray-100;
+  }
+}
+
+.sheetLinkActive {
+  background: $gray-100;
+  color: $primary;
+
+  svg {
+    color: $primary;
+  }
+}
+
+.sheetDivider {
+  height: 1px;
+  background: $gray-200;
+  margin: $space-2 0;
+}
+
+.sheetLogout {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  width: 100%;
+  padding: 13px $space-2;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  font-family: $font-body;
+  font-size: 15px;
+  font-weight: 500;
+  color: #dc2626;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover:not(:disabled) {
+    background: #fef2f2;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

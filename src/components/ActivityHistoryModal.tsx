@@ -69,10 +69,10 @@ export default function ActivityHistoryModal({ data, onClose }: Props) {
 
   // Stats derived from fetched items
   const quizzesCompleted = items.filter((i) => i.type === 'quiz').length;
-  const topSubject = data?.subjectMastery?.[0]?.subject ?? '—';
-  // streak is { current, longest } — extract current days, estimate hours at 1.5h/day for last 7
-  const streakObj = data?.streak as unknown as { current?: number } | number | undefined;
-  const streakDays = typeof streakObj === 'object' ? (streakObj?.current ?? 0) : (streakObj ?? 0);
+  const mastery = Array.isArray(data?.subjectMastery) ? data.subjectMastery : [];
+  const topSubject = mastery[0]?.subject ?? '—';
+  // Estimate hours at 1.5h/day across the last 7 days of the streak.
+  const streakDays = data?.streak?.current ?? 0;
   const weeklyHours = (Math.min(streakDays, 7) * 1.5).toFixed(1);
 
   return (

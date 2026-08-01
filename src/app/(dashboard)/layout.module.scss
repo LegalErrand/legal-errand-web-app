@@ -15,4 +15,9 @@
   // Needed so children that want height: 100% / flex fill get a defined height
   display: flex;
   flex-direction: column;
+
+  // Clear the fixed mobile bottom nav so the last row is never trapped under it.
+  @media (max-width: 900px) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
 }
