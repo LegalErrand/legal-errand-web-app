@@ -5,6 +5,7 @@ export { SearchableSelect } from './SearchableSelect';
 export { default as CountrySelect } from './CountrySelect';
 export { default as DashboardSidebar } from './DashboardSidebar';
 export { default as DashboardNavbar } from './DashboardNavbar';
+export { default as MobileBottomNav } from './MobileBottomNav';
 export { default as DocumentUploader } from './DocumentUploader';
 export { default as AnimateOnScroll } from './AnimateOnScroll';
 export { default as ErrorBoundary } from './ErrorBoundary';
