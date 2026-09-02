@@ -1033,6 +1033,33 @@
   display: none;
 }
 
+.footerMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $space-2;
+
+  @media (max-width: 640px) {
+    align-items: flex-start;
+  }
+}
+
+.footerLinks {
+  display: flex;
+  gap: $space-4;
+
+  a {
+    font-size: 13px;
+    font-weight: 600;
+    color: $gray-600;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
 .footerCopy {
   font-size: 12px;
   color: $gray-400;
