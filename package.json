@@ -2,10 +2,16 @@
   "name": "legalerrand-web-app",
   "version": "0.1.0",
   "private": true,
+  "allowScripts": {
+    "@parcel/watcher": true,
+    "@sentry/cli": true,
+    "sharp": true
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "validate": "npm run build",
     "prepare": "husky",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

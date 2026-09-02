@@ -12,7 +12,7 @@ import {
   setSessionProfile,
   validateSignupFields,
 } from '@/lib';
-import { GoogleAuthButton } from '@/components';
+import GoogleAuthButton from '@/components/GoogleAuthButton';
 import styles from './page.module.scss';
 
 type AccountType = 'undergraduate' | 'law-school';
