@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import styles from '../legal.module.scss';
 
+export const dynamic = 'force-static';
+
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
@@ -75,9 +77,13 @@ export default function PrivacyPage() {
       <section className={styles.section} id="collect">
         <h2>2. Information we collect</h2>
         <h3>Account and profile</h3>
-        <p>When you register or complete your profile we may collect:</p>
+        <p>When you register, sign in, or complete your profile we may collect:</p>
         <ul>
           <li>Name, email address, and password (stored as a one-way hash)</li>
+          <li>
+            If you use Google sign-in: your Google account ID, verified email address, and name, as
+            provided by Google
+          </li>
           <li>Account type (undergraduate or law school student)</li>
           <li>
             Optional profile details such as school, country, city, phone number, username, and
@@ -125,17 +131,54 @@ export default function PrivacyPage() {
       <section className={styles.section} id="google">
         <h2>4. Google sign-in</h2>
         <p>
-          If you choose “Sign in with Google”, Google authenticates you and we receive a limited
-          profile: Google account ID, verified email, and name. We use this only to create or link
-          your LegalErrand account. We do not receive your Google password.
+          If you choose “Sign in with Google”, Google authenticates you. We then receive a limited
+          set of Google user data: your Google account ID, verified email address, and name. We do
+          not receive your Google password, Gmail contents, Drive files, contacts, calendar, or
+          other Google product data.
+        </p>
+        <p>We use that Google user data only to:</p>
+        <ul>
+          <li>
+            Create your LegalErrand account, or link it to an existing account with the same email
+          </li>
+          <li>Sign you in on later visits</li>
+          <li>Show your name and email in the product and in account-related messages</li>
+        </ul>
+        <p>
+          We do not sell Google user data. We do not use it for advertising, retargeting, or
+          credit-worthiness. We do not use it to train general-purpose AI models. We do not transfer
+          Google user data to third parties except our hosting and database providers as needed to
+          operate the Service, or if required by law.
+        </p>
+        <p>
+          LegalErrand’s use and transfer to any other app of information received from Google APIs
+          will adhere to the{' '}
+          <a
+            href="https://developers.google.com/terms/api-services-user-data-policy"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Google API Services User Data Policy
+          </a>
+          , including the Limited Use requirements.
         </p>
         <p>
           Google’s own processing is described in the{' '}
           <a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank">
             Google Privacy Policy
           </a>
-          . You can disconnect Google access from your Google account settings at any time; you may
-          still need a LegalErrand password to sign in afterwards.
+          . You can revoke LegalErrand’s access from your{' '}
+          <a
+            href="https://myaccount.google.com/permissions"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Google account permissions
+          </a>
+          . After you revoke access you may still need a LegalErrand password to sign in. To delete
+          the Google data we hold, email{' '}
+          <a href="mailto:info@legalerrand.com">info@legalerrand.com</a> or delete your LegalErrand
+          account.
         </p>
       </section>
 
@@ -164,8 +207,9 @@ export default function PrivacyPage() {
           <li>Analytics and error-monitoring tools</li>
         </ul>
         <p>
-          We do not sell your personal information. We may disclose data if required by Nigerian law
-          or to protect the Service, our users, or our legal rights.
+          We do not sell your personal information, including information received from Google. We
+          may disclose data if required by Nigerian law or to protect the Service, our users, or our
+          legal rights.
         </p>
       </section>
 

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import styles from '../legal.module.scss';
 
+export const dynamic = 'force-static';
+
 export const metadata: Metadata = {
   title: 'Terms of Use',
   description:
