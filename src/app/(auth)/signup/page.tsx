@@ -12,6 +12,7 @@ import {
   setSessionProfile,
   validateSignupFields,
 } from '@/lib';
+import { GoogleAuthButton } from '@/components';
 import styles from './page.module.scss';
 
 type AccountType = 'undergraduate' | 'law-school';
@@ -194,6 +195,17 @@ export default function SignupPage() {
             <button type="submit" className={styles.submitBtn} disabled={loading}>
               {loading ? 'Please wait…' : 'Continue'}
             </button>
+
+            <div className={styles.orDivider}>
+              <span>Or</span>
+            </div>
+
+            <GoogleAuthButton
+              label="Sign up With Google"
+              accountType={accountType === 'undergraduate' ? 'Undergraduate' : 'Law School Student'}
+              disabled={loading}
+              onError={setFormError}
+            />
           </form>
 
           <p className={styles.loginLine}>
