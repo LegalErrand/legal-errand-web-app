@@ -551,7 +551,13 @@ export default function LandingPage() {
               Built for the next generation of legal minds.
             </p>
           </div>
-          <p className={styles.footerCopy}>© 2026 LegalErrand. All rights reserved.</p>
+          <div className={styles.footerMeta}>
+            <nav className={styles.footerLinks} aria-label="Legal">
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms-of-use">Terms of Use</Link>
+            </nav>
+            <p className={styles.footerCopy}>© 2026 LegalErrand. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

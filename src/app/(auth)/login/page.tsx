@@ -148,6 +148,12 @@ export default function LoginPage() {
               disabled={loading}
               onError={setFormError}
             />
+
+            <p className={styles.legalLine}>
+              By continuing with Google, you agree to our{' '}
+              <Link href="/terms-of-use">Terms of Use</Link> and{' '}
+              <Link href="/privacy">Privacy Policy</Link>.
+            </p>
           </form>
 
           <p className={styles.footerLine}>

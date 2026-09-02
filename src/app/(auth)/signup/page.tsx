@@ -206,6 +206,11 @@ export default function SignupPage() {
               disabled={loading}
               onError={setFormError}
             />
+
+            <p className={styles.legalLine}>
+              By continuing, you agree to our <Link href="/terms-of-use">Terms of Use</Link> and{' '}
+              <Link href="/privacy">Privacy Policy</Link>.
+            </p>
           </form>
 
           <p className={styles.loginLine}>
