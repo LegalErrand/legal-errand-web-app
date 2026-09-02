@@ -58,6 +58,7 @@ export interface LoginRequest {
 
 export interface LoginResponseData extends AuthTokens {
   user?: AuthUserSummary;
+  isNewUser?: boolean;
 }
 
 export interface RegisterRequest {

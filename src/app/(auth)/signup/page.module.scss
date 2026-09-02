@@ -219,6 +219,22 @@
   }
 }
 
+.orDivider {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 13px;
+  color: $gray-400;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $gray-200;
+  }
+}
+
 // ─── Footer line ──────────────────────────────────────────────────────────────
 
 .loginLine {
