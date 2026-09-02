@@ -13,6 +13,12 @@ export default withSentryConfig(nextConfig, {
   silent: true,
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
+  sourcemaps: {
+    disable: !process.env.SENTRY_AUTH_TOKEN,
+  },
+  errorHandler: (err) => {
+    console.warn(err);
+  },
   webpack: {
     treeshake: {
       removeDebugLogging: true,

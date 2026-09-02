@@ -13,7 +13,7 @@ import {
   pickAccessTokenFromPayload,
   getValidAccessToken,
 } from '@/lib';
-import { GoogleAuthButton } from '@/components';
+import GoogleAuthButton from '@/components/GoogleAuthButton';
 import styles from './page.module.scss';
 
 export default function LoginPage() {
