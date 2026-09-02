@@ -1,0 +1,263 @@
+@use '../../styles/variables' as *;
+
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+}
+
+.header {
+  border-bottom: 1px solid $gray-200;
+  background: $white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.headerInner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px $space-8;
+  gap: $space-4;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr auto;
+    padding: 14px $space-4;
+  }
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  justify-self: start;
+
+  img {
+    height: 32px;
+    width: auto;
+  }
+}
+
+.headerNav {
+  display: flex;
+  align-items: center;
+  gap: $space-5;
+  justify-self: center;
+
+  a {
+    font-size: 14px;
+    font-weight: 500;
+    color: $gray-700;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  justify-self: end;
+}
+
+.loginBtn {
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-800;
+  text-decoration: none;
+  padding: 10px $space-2;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: $primary;
+  color: $white;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: $space-8 $space-5 $space-8;
+
+  @media (max-width: 640px) {
+    padding: $space-6 $space-4;
+  }
+}
+
+.kicker {
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 $space-2;
+}
+
+.title {
+  font-family: $font-heading;
+  font-size: 40px;
+  font-weight: 800;
+  color: $dark;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 0 0 $space-2;
+
+  @media (max-width: 640px) {
+    font-size: 32px;
+  }
+}
+
+.updated {
+  font-size: 14px;
+  color: $gray-500;
+  margin: 0 0 $space-6;
+}
+
+.lead {
+  font-size: 17px;
+  line-height: 1.7;
+  color: $gray-700;
+  margin: 0 0 $space-6;
+}
+
+.toc {
+  list-style: none;
+  margin: 0 0 $space-7;
+  padding: $space-4;
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  display: grid;
+  gap: $space-2;
+
+  a {
+    font-size: 14px;
+    font-weight: 500;
+    color: $gray-700;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
+.section {
+  margin: 0 0 $space-6;
+  scroll-margin-top: 88px;
+
+  h2 {
+    font-family: $font-heading;
+    font-size: 22px;
+    font-weight: 700;
+    color: $dark;
+    margin: 0 0 $space-3;
+  }
+
+  h3 {
+    font-family: $font-heading;
+    font-size: 17px;
+    font-weight: 700;
+    color: $dark;
+    margin: $space-4 0 $space-2;
+  }
+
+  p,
+  li {
+    font-size: 15px;
+    line-height: 1.7;
+    color: $gray-700;
+  }
+
+  p {
+    margin: 0 0 $space-3;
+  }
+
+  ul,
+  ol {
+    margin: 0 0 $space-3;
+    padding-left: 1.25rem;
+  }
+
+  li + li {
+    margin-top: $space-1;
+  }
+
+  a {
+    color: $primary-dark;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
+.footer {
+  border-top: 1px solid $gray-200;
+  padding: $space-5 $space-8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+
+  p {
+    font-size: 12px;
+    color: $gray-400;
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    gap: $space-4;
+
+    a {
+      font-size: 13px;
+      font-weight: 600;
+      color: $gray-600;
+      text-decoration: none;
+
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: $space-5 $space-4;
+  }
+}

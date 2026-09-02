@@ -237,6 +237,25 @@
 
 // ─── Footer line ──────────────────────────────────────────────────────────────
 
+.legalLine {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: $gray-500;
+  margin: 0;
+
+  a {
+    color: $gray-700;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
 .loginLine {
   text-align: center;
   font-size: 14px;
