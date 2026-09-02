@@ -52,6 +52,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3003/
 
 const PUBLIC_AUTH_PATHS = [
   '/auth/login',
+  '/auth/google',
   '/auth/register',
   '/auth/verify-email',
   '/auth/resend-verification-otp',
@@ -149,6 +150,18 @@ export async function fetchWithCache<T>(path: string, revalidate = 60): Promise<
 
 export async function login(data: LoginRequest): Promise<ApiResponse<LoginResponseData>> {
   return apiFetch<ApiResponse<LoginResponseData>>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    cache: 'no-store',
+  });
+}
+
+export async function googleAuth(data: {
+  accessToken: string;
+  accountType?: 'Undergraduate' | 'Law School Student';
+  referralCode?: string;
+}): Promise<ApiResponse<LoginResponseData>> {
+  return apiFetch<ApiResponse<LoginResponseData>>('/auth/google', {
     method: 'POST',
     body: JSON.stringify(data),
     cache: 'no-store',

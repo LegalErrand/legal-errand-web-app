@@ -15,6 +15,7 @@ export { default as Navbar } from './Navbar';
 export { default as PricingGrid } from './PricingGrid';
 export { default as SuccessModal } from './SuccessModal';
 export { default as WaitlistForm } from './WaitlistForm';
+export { default as GoogleAuthButton } from './GoogleAuthButton';
 export * from './icons';
 export * from './ui';
 export { default as Spinner } from './Spinner';
