@@ -312,6 +312,7 @@ export interface RelatedCase {
 
 export interface CaseExplanation {
   id: string;
+  _id?: string;
   citation?: string;
   documentId?: string;
   facts?: string;

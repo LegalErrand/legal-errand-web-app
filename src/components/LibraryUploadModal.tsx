@@ -103,6 +103,11 @@ export default function LibraryUploadModal({
           </p>
         )}
 
+        <p className={styles.hint}>
+          Upload a PDF judgment or study material. Word (.doc/.docx) is not supported yet — export
+          to PDF first.
+        </p>
+
         <div className={styles.field}>
           <label className={styles.label}>
             Title <span className={styles.req}>*</span>
