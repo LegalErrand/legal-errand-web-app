@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { streamAiChat, getFetchErrorMessage } from '@/lib';
+import { streamAiChat, sendAiChat, getFetchErrorMessage } from '@/lib';
 import styles from './StandardChat.module.scss';
 
 interface ChatMessage {
@@ -40,6 +40,12 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
   // Auto-send initial message (e.g. search query routed from research page)
   useEffect(() => {
     if (!initialMessage || didAutoSend.current || sending) return;
@@ -48,68 +54,107 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);
 
+  function updateAssistantText(text: string, streaming: boolean) {
+    setMessages((prev) => {
+      const next = [...prev];
+      const last = next[next.length - 1];
+      if (last?.role === 'assistant') {
+        next[next.length - 1] = { ...last, text, streaming };
+      }
+      return next;
+    });
+  }
+
+  function removeEmptyAssistant() {
+    setMessages((prev) =>
+      prev.filter((m, i) => !(i === prev.length - 1 && m.role === 'assistant' && !m.text.trim()))
+    );
+  }
+
+  async function fallbackNonStream(text: string, sessionIdForRequest?: string) {
+    const res = await sendAiChat({ message: text, sessionId: sessionIdForRequest }, token);
+    const reply = res.data?.reply?.trim() ?? '';
+    if (!reply) {
+      throw new Error(res.message ?? 'The AI returned an empty reply. Please try again.');
+    }
+    updateAssistantText(reply, false);
+    const sid = res.data?.sessionId;
+    if (sid && sid !== currentSessionId) {
+      setCurrentSessionId(sid);
+      onSessionStart(sid);
+    }
+  }
+
   async function sendMessage(text: string) {
     if (!text || !token) return;
     setSending(true);
     setError('');
 
-    // Add user bubble + empty assistant bubble (will fill via stream)
     setMessages((prev) => [
       ...prev,
       { role: 'user', text },
       { role: 'assistant', text: '', streaming: true },
     ]);
 
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+    const signal = abortRef.current.signal;
+
     try {
-      abortRef.current = new AbortController();
-      const gen = streamAiChat({ message: text, sessionId: currentSessionId }, token);
+      const gen = streamAiChat({ message: text, sessionId: currentSessionId }, token, signal);
 
       let accumulated = '';
       let resolvedSessionId = currentSessionId;
+      let streamError = '';
 
       for await (const event of gen) {
+        if (signal.aborted) break;
         if (event.error) {
-          setError(event.error);
+          streamError = event.error;
           break;
         }
         if (event.chunk) {
           accumulated += event.chunk;
-          const snapshot = accumulated;
-          setMessages((prev) => {
-            const next = [...prev];
-            const last = next[next.length - 1];
-            if (last?.role === 'assistant') {
-              next[next.length - 1] = { ...last, text: snapshot };
-            }
-            return next;
-          });
+          updateAssistantText(accumulated, true);
           bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
-        if (event.done) {
-          if (event.sessionId) resolvedSessionId = event.sessionId;
+        if (event.done && event.sessionId) {
+          resolvedSessionId = event.sessionId;
         }
       }
 
-      // Mark streaming done
-      setMessages((prev) => {
-        const next = [...prev];
-        const last = next[next.length - 1];
-        if (last?.role === 'assistant') {
-          next[next.length - 1] = { ...last, streaming: false };
+      if (signal.aborted) return;
+
+      if (!accumulated.trim()) {
+        // Stream failed or returned nothing — fall back to non-stream chat.
+        try {
+          await fallbackNonStream(text, currentSessionId);
+          return;
+        } catch (fallbackErr) {
+          removeEmptyAssistant();
+          setError(
+            streamError ||
+              getFetchErrorMessage(fallbackErr) ||
+              'The AI returned an empty reply. Please try again.'
+          );
+          return;
         }
-        return next;
-      });
+      }
+
+      updateAssistantText(accumulated, false);
 
       if (resolvedSessionId && resolvedSessionId !== currentSessionId) {
         setCurrentSessionId(resolvedSessionId);
         onSessionStart(resolvedSessionId);
       }
     } catch (err) {
-      setError(getFetchErrorMessage(err));
-      // Remove empty assistant bubble on error
-      setMessages((prev) =>
-        prev.filter((m, i) => !(i === prev.length - 1 && m.role === 'assistant' && !m.text))
-      );
+      if (signal.aborted) return;
+      try {
+        await fallbackNonStream(text, currentSessionId);
+      } catch {
+        removeEmptyAssistant();
+        setError(getFetchErrorMessage(err));
+      }
     } finally {
       setSending(false);
     }
@@ -129,6 +174,9 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
         {messages.length === 0 && (
           <div className={styles.emptyChat}>
             <p className={styles.emptyChatTitle}>Ready when you are!!!</p>
+            <p className={styles.emptyChatSub}>
+              Ask a full legal question — concepts, cases, or statutes — for a complete answer.
+            </p>
           </div>
         )}
         {messages.map((m, i) => (

@@ -16,7 +16,7 @@ import { Spinner, Shimmer } from '@/components';
 import { useToast } from '@/hooks/useToast';
 import styles from './page.module.scss';
 
-type CaseTab = 'cases' | 'analysis' | 'breakdown';
+type CaseTab = 'cases';
 
 function looksLikeCitation(input: string): boolean {
   const t = input.trim();
@@ -167,22 +167,12 @@ export default function CasesPage() {
           >
             Cases
           </button>
-          <button
-            className={`${styles.tabBtn} ${activeTab === 'analysis' ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab('analysis')}
-            disabled
-            title="Open a recent case to view its Analysis tab"
+          <span
+            className={`${styles.tabBtn} ${styles.tabHint}`}
+            title="After you analyse a case, open it from Recent Cases to view Analysis and Breakdown"
           >
-            Analysis
-          </button>
-          <button
-            className={`${styles.tabBtn} ${activeTab === 'breakdown' ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab('breakdown')}
-            disabled
-            title="Open a recent case to view its Breakdown tab"
-          >
-            Breakdown
-          </button>
+            Analysis / Breakdown → open a recent case
+          </span>
         </div>
       </div>
 
