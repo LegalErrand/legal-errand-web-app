@@ -411,6 +411,13 @@
   display: inline-block;
 }
 
+.pageSub {
+  font-size: 13px;
+  color: $gray-500;
+  margin: $space-2 0 0;
+  line-height: 1.5;
+}
+
 .caseRef {
   font-size: 13px;
   color: $primary;

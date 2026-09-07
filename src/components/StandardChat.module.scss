@@ -92,7 +92,8 @@
   min-width: 0;
 
   @media (max-width: 900px) {
-    padding: $space-2 $space-3 $space-3;
+    // Extra room so the fixed bottom-nav FAB does not cover the send button
+    padding: $space-2 $space-3 calc(#{$space-3} + 8px);
   }
 }
 

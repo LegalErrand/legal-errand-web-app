@@ -45,7 +45,11 @@ export default function LibraryUploadModal({
     setUploading(true);
     try {
       const urlRes = await getUploadUrl(
-        { fileName: file.name, mimeType: file.type, folder: 'LIBRARY' },
+        {
+          fileName: file.name,
+          mimeType: file.type || (/\.pdf$/i.test(file.name) ? 'application/pdf' : file.type),
+          folder: 'LIBRARY',
+        },
         token
       );
       if (!urlRes.data?.uploadUrl) throw new Error('Failed to get upload URL');

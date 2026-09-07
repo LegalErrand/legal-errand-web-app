@@ -550,24 +550,50 @@ export function sendAiChat(
 /** Stream AI chat via SSE. Yields `chunk` strings until `done: true`. */
 export async function* streamAiChat(
   data: AiChatRequest,
-  token: string
+  token: string,
+  signal?: AbortSignal
 ): AsyncGenerator<{ chunk?: string; done?: boolean; sessionId?: string; error?: string }> {
   const url = `${BASE_URL}/ai/chat/stream`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-    cache: 'no-store',
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+      cache: 'no-store',
+      signal,
+    });
+  } catch (err) {
+    if (signal?.aborted) {
+      yield { error: 'Request cancelled' };
+      return;
+    }
+    yield { error: getFetchErrorMessage(err) };
+    return;
+  }
 
   if (!response.ok || !response.body) {
     if (response.status === 401) {
       forceLogoutToLogin();
     }
-    yield { error: `HTTP ${response.status}` };
+    let detail = `HTTP ${response.status}`;
+    try {
+      const body = await response.text();
+      if (body) {
+        try {
+          const parsed = JSON.parse(body) as { message?: string; error?: string };
+          detail = parsed.message || parsed.error || body.slice(0, 200);
+        } catch {
+          detail = body.slice(0, 200);
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    yield { error: detail };
     return;
   }
 
