@@ -1,8 +1,5 @@
 @use '../../../../styles/variables' as *;
 
-// The reasoning page has its own full-page layout that overlays the global shell.
-// It fills the entire viewport independently.
-
 .page {
   display: flex;
   flex: 1;
@@ -11,7 +8,7 @@
   overflow: hidden;
 }
 
-// ─── Left sidebar (replaces global sidebar for this page) ────────────────────
+// Chat-history column only — shell sidebar/nav already own branding + profile
 
 .sidebar {
   width: $sidebar-width;
@@ -26,10 +23,6 @@
   @media (max-width: 900px) {
     display: none;
   }
-}
-
-.logoWrap {
-  padding: 0 $space-3 $space-4;
 }
 
 .chatHistoryLabel {
@@ -136,48 +129,6 @@
   }
 }
 
-.sidebarUser {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  padding: $space-3;
-  margin-top: auto;
-}
-
-.sidebarAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: $gray-200;
-  flex-shrink: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebarUserInfo {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.sidebarUserName {
-  font-size: 12px;
-  font-weight: 600;
-  color: $dark;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebarUserRole {
-  font-size: 11px;
-  color: $gray-600;
-}
-
-// ─── Main area ────────────────────────────────────────────────────────────────
-
 .main {
   flex: 1;
   display: flex;
@@ -190,7 +141,6 @@
 .mainTopBar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: $space-2;
   padding: $space-3 $space-4;
   flex-shrink: 0;
@@ -269,103 +219,4 @@
   @media (max-width: 900px) {
     margin: 0 $space-3 $space-2;
   }
-}
-
-.topBarActions {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  flex-shrink: 0;
-}
-
-.bellBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: $gray-100;
-  border: 1px solid $gray-200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: $gray-600;
-}
-
-.avatarBtn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: $gray-200;
-  border: none;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-// ─── Old topBar kept for backwards compat with child components ───────────────
-
-.topBar {
-  display: none;
-}
-
-.pageTitle {
-  display: none;
-}
-
-.newChatBtn {
-  display: none;
-}
-
-.modeSwitch {
-  display: none;
-}
-
-.modeBtn {
-  display: none;
-}
-
-.modeBtnActive {
-  display: none;
-}
-
-.userRow {
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-  padding: $space-3;
-  border-top: 1px solid $gray-200;
-  margin-top: auto;
-  flex-shrink: 0;
-}
-
-.userAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: $gray-200;
-  border: none;
-  flex-shrink: 0;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.userInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.userName {
-  font-size: 12px;
-  font-weight: 600;
-  color: $dark;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.userRole {
-  font-size: 10px;
-  color: $gray-500;
-  text-transform: capitalize;
 }

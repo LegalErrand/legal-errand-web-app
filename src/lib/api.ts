@@ -35,6 +35,7 @@ import type {
   SearchResearchRequest,
   SearchResearchResponse,
   AiConversation,
+  AiConversationDetail,
   AiChatRequest,
   AiChatResponse,
   SocraticStartRequest,
@@ -631,8 +632,15 @@ export async function* streamAiChat(
 export function getAiConversations(
   token: string,
   params?: { page?: number; limit?: number }
-): Promise<ApiResponse<PaginatedResponse<AiConversation>>> {
+): Promise<ApiResponse<AiConversation[] | PaginatedResponse<AiConversation>>> {
   return authedGet('/ai/conversations', token, params as Record<string, number | undefined>);
+}
+
+export function getAiConversation(
+  sessionId: string,
+  token: string
+): Promise<ApiResponse<AiConversationDetail>> {
+  return authedGet<ApiResponse<AiConversationDetail>>(`/ai/conversations/${sessionId}`, token);
 }
 
 export function deleteAiConversation(sessionId: string, token: string): Promise<ApiResponse> {

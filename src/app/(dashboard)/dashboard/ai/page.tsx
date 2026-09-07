@@ -9,11 +9,9 @@ import {
   startSocraticSession,
   respondSocratic,
   endSocraticSession,
-  getCurrentUser,
-  getFetchErrorMessage,
   getAccessToken,
 } from '@/lib';
-import type { AiConversation, AuthUserSummary } from '@/lib';
+import type { AiConversation } from '@/lib';
 import StandardChat from '@/components/StandardChat';
 import SocraticChat from '@/components/SocraticChat';
 import { Spinner } from '@/components';
@@ -29,7 +27,6 @@ export default function ReasoningPage() {
   const [activeSessionId, setActiveSessionId] = useState<string | undefined>();
   const [convsLoading, setConvsLoading] = useState(true);
   const [initialQuery, setInitialQuery] = useState('');
-  const [user, setUser] = useState<AuthUserSummary | null>(null);
 
   useEffect(() => {
     const t = getAccessToken();
@@ -39,11 +36,6 @@ export default function ReasoningPage() {
     }
     setToken(t);
     void loadConversations(t);
-    void getCurrentUser(t)
-      .then((res) => {
-        if (res.data) setUser(res.data);
-      })
-      .catch(() => undefined);
     const q = new URLSearchParams(window.location.search).get('q') ?? '';
     if (q) setInitialQuery(q);
   }, [router]);
@@ -52,7 +44,9 @@ export default function ReasoningPage() {
     setConvsLoading(true);
     try {
       const res = await getAiConversations(t, { limit: 30 });
-      setConversations(res.data?.data ?? []);
+      const raw = res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.data ?? []);
+      setConversations(list);
     } catch {
       /* silent */
     } finally {
@@ -84,23 +78,8 @@ export default function ReasoningPage() {
 
   return (
     <div className={styles.page}>
-      {/* Left sidebar — own logo, chat history, new conv button */}
+      {/* Chat history only — branding/profile live in the dashboard shell */}
       <div className={styles.sidebar}>
-        <div className={styles.logoWrap}>
-          <svg width="120" height="28" viewBox="0 0 140 32" fill="none" aria-label="LegalErrand">
-            <text
-              x="0"
-              y="24"
-              fontFamily="sans-serif"
-              fontWeight="700"
-              fontSize="18"
-              fill="#D97706"
-            >
-              LegalErrand
-            </text>
-          </svg>
-        </div>
-
         <p className={styles.chatHistoryLabel}>Chat history</p>
 
         <button className={styles.newConvBtn} onClick={() => setActiveSessionId(undefined)}>
@@ -148,23 +127,9 @@ export default function ReasoningPage() {
             ))
           )}
         </div>
-
-        {user && (
-          <div className={styles.userRow}>
-            <div className={styles.userAvatar} aria-label="User profile" />
-            <div className={styles.userInfo}>
-              <span className={styles.userName}>
-                {[user.firstName, user.lastName].filter(Boolean).join(' ') || 'Student'}
-              </span>
-              <span className={styles.userRole}>Student</span>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Main content area */}
       <main className={styles.main}>
-        {/* Top bar: mode toggle + bell + avatar */}
         <div className={styles.mainTopBar}>
           <div className={styles.modePills}>
             <button
@@ -198,21 +163,6 @@ export default function ReasoningPage() {
               Socratic
             </button>
           </div>
-
-          <div className={styles.topBarActions}>
-            <button className={styles.bellBtn} aria-label="Notifications">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            <button className={styles.avatarBtn} aria-label="User menu" />
-          </div>
         </div>
 
         <aside className={styles.modeInfo} aria-live="polite">
@@ -244,8 +194,20 @@ export default function ReasoningPage() {
                 }
               }
             }}
-            onSessionStart={(sid) => {
+            onSessionStart={(sid, title) => {
               setActiveSessionId(sid);
+              setConversations((prev) => {
+                if (prev.some((c) => c.sessionId === sid)) return prev;
+                return [
+                  {
+                    sessionId: sid,
+                    title: title || 'Chat',
+                    messageCount: 1,
+                    createdAt: new Date().toISOString(),
+                  },
+                  ...prev,
+                ];
+              });
               void loadConversations(token);
             }}
             sendAiChat={sendAiChat}

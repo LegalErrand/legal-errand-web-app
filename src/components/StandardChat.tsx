@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { streamAiChat, sendAiChat, getFetchErrorMessage } from '@/lib';
+import { streamAiChat, sendAiChat, getAiConversation, getFetchErrorMessage } from '@/lib';
 import styles from './StandardChat.module.scss';
 
 interface ChatMessage {
@@ -14,7 +14,7 @@ interface Props {
   token: string;
   sessionId?: string;
   initialMessage?: string;
-  onSessionStart: (sessionId: string) => void;
+  onSessionStart: (sessionId: string, title?: string) => void;
   onInitialMessageConsumed?: () => void;
   /** Legacy prop — kept for API compat, not used (we stream directly) */
   sendAiChat?: unknown;
@@ -41,12 +41,14 @@ export default function StandardChat({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [error, setError] = useState('');
   const [currentSessionId, setCurrentSessionId] = useState<string | undefined>(sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
   const didAutoSend = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const adoptingSessionRef = useRef(false);
+  const historyLoadIdRef = useRef(0);
 
   // Only clear the thread when the user explicitly starts a new conversation
   // (sessionId becomes undefined). Adopting a newly created sessionId must not wipe messages.
@@ -59,20 +61,23 @@ export default function StandardChat({
 
     if (sessionId === undefined && currentSessionId !== undefined) {
       abortRef.current?.abort();
+      historyLoadIdRef.current += 1;
       setCurrentSessionId(undefined);
       setMessages([]);
       setError('');
+      setLoadingHistory(false);
       didAutoSend.current = false;
       return;
     }
 
     if (sessionId && sessionId !== currentSessionId && !adoptingSessionRef.current) {
-      // User picked an older conversation from the sidebar — clear local draft thread.
+      // User picked an older conversation from the sidebar — load saved transcript.
       abortRef.current?.abort();
       setCurrentSessionId(sessionId);
       setMessages([]);
       setError('');
       didAutoSend.current = false;
+      void loadHistory(sessionId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
@@ -95,6 +100,31 @@ export default function StandardChat({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);
 
+  async function loadHistory(sid: string) {
+    const loadId = ++historyLoadIdRef.current;
+    setLoadingHistory(true);
+    setError('');
+    try {
+      const res = await getAiConversation(sid, token);
+      if (loadId !== historyLoadIdRef.current) return;
+      const rows = res.data?.messages ?? [];
+      setMessages(
+        rows.map((m) => ({
+          role: m.role,
+          text: m.content,
+        }))
+      );
+      if (!rows.length) {
+        setError('This conversation has no saved messages yet.');
+      }
+    } catch (err) {
+      if (loadId !== historyLoadIdRef.current) return;
+      setError(getFetchErrorMessage(err) || 'Could not load conversation.');
+    } finally {
+      if (loadId === historyLoadIdRef.current) setLoadingHistory(false);
+    }
+  }
+
   function updateAssistantText(text: string, streaming: boolean) {
     setMessages((prev) => {
       const next = [...prev];
@@ -112,11 +142,11 @@ export default function StandardChat({
     );
   }
 
-  function adoptSession(sid: string | undefined) {
+  function adoptSession(sid: string | undefined, title?: string) {
     if (!sid || sid === currentSessionId) return;
     adoptingSessionRef.current = true;
     setCurrentSessionId(sid);
-    onSessionStart(sid);
+    onSessionStart(sid, title);
   }
 
   async function fallbackNonStream(text: string, sessionIdForRequest?: string) {
@@ -126,7 +156,7 @@ export default function StandardChat({
       throw new Error(res.message ?? 'The AI returned an empty reply. Please try again.');
     }
     updateAssistantText(reply, false);
-    adoptSession(res.data?.sessionId);
+    adoptSession(res.data?.sessionId, text.slice(0, 80));
   }
 
   async function sendMessage(text: string) {
@@ -191,7 +221,7 @@ export default function StandardChat({
         } catch (fallbackErr) {
           if (accumulated.trim() && !looksIncomplete(accumulated)) {
             updateAssistantText(accumulated, false);
-            adoptSession(resolvedSessionId);
+            adoptSession(resolvedSessionId, text.slice(0, 80));
             return;
           }
           removeEmptyAssistant();
@@ -205,7 +235,7 @@ export default function StandardChat({
       }
 
       updateAssistantText(accumulated, false);
-      adoptSession(resolvedSessionId);
+      adoptSession(resolvedSessionId, text.slice(0, 80));
     } catch (err) {
       clearTimeout(timeoutId);
       if (signal.aborted) {
@@ -233,7 +263,7 @@ export default function StandardChat({
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     const text = input.trim();
-    if (!text || sending) return;
+    if (!text || sending || loadingHistory) return;
     setInput('');
     await sendMessage(text);
   }
@@ -241,7 +271,12 @@ export default function StandardChat({
   return (
     <div className={styles.chat}>
       <div className={styles.messages}>
-        {messages.length === 0 && (
+        {loadingHistory && (
+          <div className={styles.emptyChat}>
+            <p className={styles.emptyChatSub}>Loading conversation…</p>
+          </div>
+        )}
+        {!loadingHistory && messages.length === 0 && (
           <div className={styles.emptyChat}>
             <p className={styles.emptyChatTitle}>Ready when you are!!!</p>
             <p className={styles.emptyChatSub}>
@@ -287,13 +322,13 @@ export default function StandardChat({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask Legal AI a question...."
-            disabled={sending}
+            disabled={sending || loadingHistory}
             aria-label="Message"
           />
           <button
             type="submit"
             className={styles.sendBtn}
-            disabled={sending || !input.trim()}
+            disabled={sending || loadingHistory || !input.trim()}
             aria-label="Send"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
