@@ -391,6 +391,16 @@ export interface AiConversation {
   createdAt: string;
 }
 
+export interface AiConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp?: string;
+}
+
+export interface AiConversationDetail extends AiConversation {
+  messages: AiConversationMessage[];
+}
+
 export interface AiChatRequest {
   message: string;
   sessionId?: string;
