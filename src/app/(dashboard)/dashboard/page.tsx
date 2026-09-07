@@ -67,8 +67,17 @@ export default function DashboardPage() {
   }, [router]);
 
   const streak = data?.streak?.current ?? 0;
-  // The API sends `{}` rather than `[]` until there is mastery data.
-  const mastery: SubjectMastery[] = Array.isArray(data?.subjectMastery) ? data.subjectMastery : [];
+  const mastery: SubjectMastery[] = (() => {
+    const raw = data?.subjectMastery;
+    if (Array.isArray(raw)) return raw;
+    if (raw && typeof raw === 'object') {
+      return Object.entries(raw as Record<string, number>).map(([subject, score]) => ({
+        subject,
+        score: Number(score) || 0,
+      }));
+    }
+    return [];
+  })();
   const nextGoal = goals.find((g) => !g.isCompleted) ?? null;
 
   if (loading) {

@@ -15,11 +15,29 @@ interface Props {
   sessionId?: string;
   initialMessage?: string;
   onSessionStart: (sessionId: string) => void;
+  onInitialMessageConsumed?: () => void;
   /** Legacy prop — kept for API compat, not used (we stream directly) */
   sendAiChat?: unknown;
 }
 
-export default function StandardChat({ token, sessionId, initialMessage, onSessionStart }: Props) {
+const STREAM_TIMEOUT_MS = 45000;
+
+function looksIncomplete(text: string): boolean {
+  const t = text.trim();
+  if (!t) return true;
+  if (t.length < 40) return true;
+  if (/\|$/.test(t) || /Section\s*\|$/i.test(t)) return true;
+  if (/^[A-Z]$/.test(t)) return true; // lone "I" style stubs
+  return false;
+}
+
+export default function StandardChat({
+  token,
+  sessionId,
+  initialMessage,
+  onSessionStart,
+  onInitialMessageConsumed,
+}: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -28,12 +46,35 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
   const bottomRef = useRef<HTMLDivElement>(null);
   const didAutoSend = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
+  const adoptingSessionRef = useRef(false);
 
+  // Only clear the thread when the user explicitly starts a new conversation
+  // (sessionId becomes undefined). Adopting a newly created sessionId must not wipe messages.
   useEffect(() => {
-    setCurrentSessionId(sessionId);
-    setMessages([]);
-    setError('');
-    didAutoSend.current = false;
+    if (adoptingSessionRef.current && sessionId) {
+      adoptingSessionRef.current = false;
+      setCurrentSessionId(sessionId);
+      return;
+    }
+
+    if (sessionId === undefined && currentSessionId !== undefined) {
+      abortRef.current?.abort();
+      setCurrentSessionId(undefined);
+      setMessages([]);
+      setError('');
+      didAutoSend.current = false;
+      return;
+    }
+
+    if (sessionId && sessionId !== currentSessionId && !adoptingSessionRef.current) {
+      // User picked an older conversation from the sidebar — clear local draft thread.
+      abortRef.current?.abort();
+      setCurrentSessionId(sessionId);
+      setMessages([]);
+      setError('');
+      didAutoSend.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   useEffect(() => {
@@ -46,10 +87,10 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
     };
   }, []);
 
-  // Auto-send initial message (e.g. search query routed from research page)
   useEffect(() => {
     if (!initialMessage || didAutoSend.current || sending) return;
     didAutoSend.current = true;
+    onInitialMessageConsumed?.();
     void sendMessage(initialMessage.trim());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);
@@ -71,6 +112,13 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
     );
   }
 
+  function adoptSession(sid: string | undefined) {
+    if (!sid || sid === currentSessionId) return;
+    adoptingSessionRef.current = true;
+    setCurrentSessionId(sid);
+    onSessionStart(sid);
+  }
+
   async function fallbackNonStream(text: string, sessionIdForRequest?: string) {
     const res = await sendAiChat({ message: text, sessionId: sessionIdForRequest }, token);
     const reply = res.data?.reply?.trim() ?? '';
@@ -78,11 +126,7 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
       throw new Error(res.message ?? 'The AI returned an empty reply. Please try again.');
     }
     updateAssistantText(reply, false);
-    const sid = res.data?.sessionId;
-    if (sid && sid !== currentSessionId) {
-      setCurrentSessionId(sid);
-      onSessionStart(sid);
-    }
+    adoptSession(res.data?.sessionId);
   }
 
   async function sendMessage(text: string) {
@@ -99,6 +143,7 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
     abortRef.current?.abort();
     abortRef.current = new AbortController();
     const signal = abortRef.current.signal;
+    const timeoutId = window.setTimeout(() => abortRef.current?.abort(), STREAM_TIMEOUT_MS);
 
     try {
       const gen = streamAiChat({ message: text, sessionId: currentSessionId }, token, signal);
@@ -106,6 +151,7 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
       let accumulated = '';
       let resolvedSessionId = currentSessionId;
       let streamError = '';
+      let sawDone = false;
 
       for await (const event of gen) {
         if (signal.aborted) break;
@@ -118,37 +164,60 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
           updateAssistantText(accumulated, true);
           bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
-        if (event.done && event.sessionId) {
-          resolvedSessionId = event.sessionId;
+        if (event.done) {
+          sawDone = true;
+          if (event.sessionId) resolvedSessionId = event.sessionId;
         }
       }
 
-      if (signal.aborted) return;
-
-      if (!accumulated.trim()) {
-        // Stream failed or returned nothing — fall back to non-stream chat.
+      clearTimeout(timeoutId);
+      if (signal.aborted && !accumulated.trim()) {
         try {
           await fallbackNonStream(text, currentSessionId);
           return;
         } catch (fallbackErr) {
           removeEmptyAssistant();
+          setError(getFetchErrorMessage(fallbackErr) || 'The AI took too long. Please try again.');
+          return;
+        }
+      }
+
+      const shouldFallback = Boolean(streamError) || !sawDone || looksIncomplete(accumulated);
+
+      if (shouldFallback) {
+        try {
+          await fallbackNonStream(text, currentSessionId);
+          return;
+        } catch (fallbackErr) {
+          if (accumulated.trim() && !looksIncomplete(accumulated)) {
+            updateAssistantText(accumulated, false);
+            adoptSession(resolvedSessionId);
+            return;
+          }
+          removeEmptyAssistant();
           setError(
             streamError ||
               getFetchErrorMessage(fallbackErr) ||
-              'The AI returned an empty reply. Please try again.'
+              'The AI returned an incomplete reply. Please try again.'
           );
           return;
         }
       }
 
       updateAssistantText(accumulated, false);
-
-      if (resolvedSessionId && resolvedSessionId !== currentSessionId) {
-        setCurrentSessionId(resolvedSessionId);
-        onSessionStart(resolvedSessionId);
-      }
+      adoptSession(resolvedSessionId);
     } catch (err) {
-      if (signal.aborted) return;
+      clearTimeout(timeoutId);
+      if (signal.aborted) {
+        try {
+          await fallbackNonStream(text, currentSessionId);
+          return;
+        } catch (fallbackErr) {
+          removeEmptyAssistant();
+          setError(getFetchErrorMessage(fallbackErr));
+          return;
+        }
+      }
       try {
         await fallbackNonStream(text, currentSessionId);
       } catch {
@@ -156,6 +225,7 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
         setError(getFetchErrorMessage(err));
       }
     } finally {
+      clearTimeout(timeoutId);
       setSending(false);
     }
   }
@@ -179,26 +249,28 @@ export default function StandardChat({ token, sessionId, initialMessage, onSessi
             </p>
           </div>
         )}
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant}`}
-          >
-            <p className={styles.bubbleText}>
-              {m.text}
-              {m.streaming && <span className={styles.cursor} aria-hidden="true" />}
-            </p>
-          </div>
-        ))}
-        {sending && messages[messages.length - 1]?.role !== 'assistant' && (
-          <div className={`${styles.bubble} ${styles.bubbleAssistant}`}>
-            <span className={styles.typingDots} aria-live="polite">
-              <span />
-              <span />
-              <span />
-            </span>
-          </div>
-        )}
+        {messages.map((m, i) => {
+          const showTyping = m.role === 'assistant' && m.streaming && !m.text.trim();
+          return (
+            <div
+              key={i}
+              className={`${styles.bubble} ${m.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant}`}
+            >
+              {showTyping ? (
+                <span className={styles.typingDots} aria-live="polite">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              ) : (
+                <p className={styles.bubbleText}>
+                  {m.text}
+                  {m.streaming && <span className={styles.cursor} aria-hidden="true" />}
+                </p>
+              )}
+            </div>
+          );
+        })}
         <div ref={bottomRef} />
       </div>
 

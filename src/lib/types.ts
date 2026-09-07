@@ -338,6 +338,8 @@ export interface CaseHistoryItem {
 
 export interface ExplainCaseRequest {
   documentId?: string;
+  /** Preferred by API; also send as `text` for older clients. */
+  caseText?: string;
   text?: string;
   citation?: string;
 }
