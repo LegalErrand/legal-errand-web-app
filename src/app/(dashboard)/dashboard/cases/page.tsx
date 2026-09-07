@@ -3,23 +3,47 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { explainCase, getCaseExplainerHistory, getFetchErrorMessage, getAccessToken } from '@/lib';
-import type { CaseHistoryItem, ExplainCaseRequest } from '@/lib';
+import {
+  explainCase,
+  getCaseExplainerHistory,
+  getFetchErrorMessage,
+  getAccessToken,
+  getLibraryDocuments,
+  getMyDocuments,
+} from '@/lib';
+import type { CaseHistoryItem, ExplainCaseRequest, LibraryDocument } from '@/lib';
 import { Spinner, Shimmer } from '@/components';
 import { useToast } from '@/hooks/useToast';
 import styles from './page.module.scss';
 
 type CaseTab = 'cases' | 'analysis' | 'breakdown';
 
+function looksLikeCitation(input: string): boolean {
+  const t = input.trim();
+  if (!t || t.length > 400) return false;
+  return (
+    /\bv\.?\s+/i.test(t) ||
+    /\bvs\.?\s+/i.test(t) ||
+    /\(\d{4}\)/.test(t) ||
+    /\[\d{4}\]/.test(t) ||
+    /\b(NWLR|All\s?NLR|SCNLR|WRN|NCLR)\b/i.test(t)
+  );
+}
+
 export default function CasesPage() {
   const router = useRouter();
   const [token, setToken] = useState('');
   const [activeTab, setActiveTab] = useState<CaseTab>('cases');
   const [caseText, setCaseText] = useState('');
+  const [selectedDoc, setSelectedDoc] = useState<LibraryDocument | null>(null);
   const [history, setHistory] = useState<CaseHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  const [libraryDocs, setLibraryDocs] = useState<LibraryDocument[]>([]);
+  const [librarySearch, setLibrarySearch] = useState('');
   const { addToast } = useToast();
 
   useEffect(() => {
@@ -36,7 +60,14 @@ export default function CasesPage() {
     setHistoryLoading(true);
     try {
       const res = await getCaseExplainerHistory(t, { limit: 20 });
-      setHistory(res.data?.data ?? []);
+      const raw = res.data as CaseHistoryItem[] | { data?: CaseHistoryItem[] } | undefined;
+      const items = Array.isArray(raw) ? raw : (raw?.data ?? []);
+      setHistory(
+        items.map((item) => ({
+          ...item,
+          id: item.id || (item as CaseHistoryItem & { _id?: string })._id || '',
+        }))
+      );
     } catch {
       /* silent */
     } finally {
@@ -44,23 +75,60 @@ export default function CasesPage() {
     }
   }
 
+  async function openLibraryPicker() {
+    if (!token) return;
+    setLibraryOpen(true);
+    setLibraryLoading(true);
+    try {
+      const [mine, shared] = await Promise.all([
+        getMyDocuments(token, { limit: 40 }),
+        getLibraryDocuments(token, { limit: 40 }),
+      ]);
+      const merged = [...(mine.data ?? []), ...(shared.data ?? [])];
+      const seen = new Set<string>();
+      setLibraryDocs(
+        merged.filter((doc) => {
+          const id = doc.id ?? doc._id;
+          if (!id || seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        })
+      );
+    } catch (err) {
+      addToast('error', 'Could not load Library', getFetchErrorMessage(err));
+      setLibraryOpen(false);
+    } finally {
+      setLibraryLoading(false);
+    }
+  }
+
   async function handleExplain(e: React.FormEvent) {
     e.preventDefault();
     if (!token) return;
     const input = caseText.trim();
-    if (!input) {
-      setError('Please paste a judgment text or enter a case citation.');
+    if (!input && !selectedDoc) {
+      setError('Enter a case name/citation, paste judgment text, or select a Library document.');
       return;
     }
 
     setError('');
     setSubmitting(true);
     try {
-      const payload: ExplainCaseRequest = { text: input };
+      const payload: ExplainCaseRequest = {};
+      if (selectedDoc) {
+        payload.documentId = selectedDoc.id ?? selectedDoc._id;
+      } else if (looksLikeCitation(input)) {
+        payload.citation = input;
+        payload.text = input;
+      } else {
+        payload.text = input;
+      }
+
       const res = await explainCase(payload, token);
-      if (!res.data?.id) throw new Error(res.message ?? 'Explanation failed');
+      const explanationId = res.data?.id ?? res.data?._id;
+      if (!explanationId) throw new Error(res.message ?? 'Explanation failed');
       addToast('success', 'Case analysis ready');
-      router.push(`/dashboard/cases/${res.data.id}`);
+      router.push(`/dashboard/cases/${explanationId}`);
     } catch (err) {
       const msg = getFetchErrorMessage(err);
       setError(msg);
@@ -70,6 +138,16 @@ export default function CasesPage() {
     }
   }
 
+  const filteredLibrary = libraryDocs.filter((doc) => {
+    if (!librarySearch.trim()) return true;
+    const q = librarySearch.toLowerCase();
+    return (
+      doc.title.toLowerCase().includes(q) ||
+      (doc.metadata?.citation ?? '').toLowerCase().includes(q) ||
+      (doc.subject ?? '').toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -77,7 +155,8 @@ export default function CasesPage() {
           <div>
             <h1 className={styles.pageTitle}>Explain a New Case</h1>
             <p className={styles.pageSub}>
-              Analyze Precedents with Legal AI-powered judicial insights
+              Analyse Nigerian authorities from a case name, citation, pasted judgment, or Library
+              document.
             </p>
           </div>
         </div>
@@ -92,6 +171,7 @@ export default function CasesPage() {
             className={`${styles.tabBtn} ${activeTab === 'analysis' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('analysis')}
             disabled
+            title="Open a recent case to view its Analysis tab"
           >
             Analysis
           </button>
@@ -99,6 +179,7 @@ export default function CasesPage() {
             className={`${styles.tabBtn} ${activeTab === 'breakdown' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('breakdown')}
             disabled
+            title="Open a recent case to view its Breakdown tab"
           >
             Breakdown
           </button>
@@ -106,16 +187,47 @@ export default function CasesPage() {
       </div>
 
       <div className={styles.content}>
+        <aside className={styles.infoCard} aria-label="How case explainer works">
+          <p className={styles.infoTitle}>How to use Case Explainer</p>
+          <ul className={styles.infoList}>
+            <li>
+              Type a case name or citation (e.g. <em>Madukolu v. Nkemdilim (1962)</em>) — we look it
+              up in the Library first, then brief it from established case knowledge if needed.
+            </li>
+            <li>Or paste the full judgment text for a stricter, text-only analysis.</li>
+            <li>Or tap Select from Library to analyse a judgment you already uploaded.</li>
+            <li>Analysis and Breakdown open after you start — pick any case under Recent Cases.</li>
+          </ul>
+        </aside>
+
         <div className={styles.explainerCard}>
           <form onSubmit={handleExplain}>
-            <label className={styles.inputLabel}>Paste Judgment Text</label>
+            <label className={styles.inputLabel} htmlFor="case-input">
+              Case name, citation, or judgment text
+            </label>
             <textarea
+              id="case-input"
               className={styles.textarea}
               value={caseText}
-              onChange={(e) => setCaseText(e.target.value)}
-              placeholder="Enter the full text of the case or judicial findings here....."
+              onChange={(e) => {
+                setCaseText(e.target.value);
+                if (selectedDoc) setSelectedDoc(null);
+              }}
+              placeholder="e.g. Madukolu v. Nkemdilim (1962)  — or paste the full judgment text"
               rows={7}
             />
+            {selectedDoc && (
+              <p className={styles.selectedDoc}>
+                Using Library document: <strong>{selectedDoc.title}</strong>
+                <button
+                  type="button"
+                  className={styles.clearDoc}
+                  onClick={() => setSelectedDoc(null)}
+                >
+                  Clear
+                </button>
+              </p>
+            )}
             {error && (
               <p className={styles.formError} role="alert">
                 {error}
@@ -123,7 +235,11 @@ export default function CasesPage() {
             )}
 
             <div className={styles.bottomRow}>
-              <button type="button" className={styles.selectLibraryLink}>
+              <button
+                type="button"
+                className={styles.selectLibraryLink}
+                onClick={() => void openLibraryPicker()}
+              >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"
@@ -210,6 +326,68 @@ export default function CasesPage() {
           )}
         </section>
       </div>
+
+      {libraryOpen && (
+        <div
+          className={styles.pickerOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Select library document"
+        >
+          <div className={styles.pickerModal}>
+            <div className={styles.pickerHeader}>
+              <h2 className={styles.pickerTitle}>Select from Library</h2>
+              <button
+                type="button"
+                className={styles.pickerClose}
+                onClick={() => setLibraryOpen(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <input
+              className={styles.pickerSearch}
+              value={librarySearch}
+              onChange={(e) => setLibrarySearch(e.target.value)}
+              placeholder="Search by title or citation"
+            />
+            {libraryLoading ? (
+              <div className={styles.pickerEmpty}>
+                <Spinner size={20} />
+              </div>
+            ) : filteredLibrary.length === 0 ? (
+              <p className={styles.pickerEmpty}>
+                No documents found. Upload a judgment in Library.
+              </p>
+            ) : (
+              <ul className={styles.pickerList}>
+                {filteredLibrary.map((doc) => {
+                  const id = doc.id ?? doc._id;
+                  return (
+                    <li key={id}>
+                      <button
+                        type="button"
+                        className={styles.pickerItem}
+                        onClick={() => {
+                          setSelectedDoc(doc);
+                          setCaseText(doc.metadata?.citation || doc.title);
+                          setLibraryOpen(false);
+                        }}
+                      >
+                        <span className={styles.pickerItemTitle}>{doc.title}</span>
+                        <span className={styles.pickerItemMeta}>
+                          {doc.metadata?.citation || doc.subject || doc.type || 'Document'}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

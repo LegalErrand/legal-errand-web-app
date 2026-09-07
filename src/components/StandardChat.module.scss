@@ -46,6 +46,10 @@
   padding: $space-3 $space-4;
   border-radius: 16px;
   line-height: 1.6;
+
+  @media (max-width: 900px) {
+    max-width: 88%;
+  }
 }
 
 .bubbleUser {
@@ -85,6 +89,11 @@
   gap: $space-2;
   padding: $space-3 $space-4 $space-4;
   flex-shrink: 0;
+  min-width: 0;
+
+  @media (max-width: 900px) {
+    padding: $space-2 $space-3 $space-3;
+  }
 }
 
 .inputWrap {
@@ -97,7 +106,14 @@
   border-radius: $radius-xl;
   padding: 0 $space-2 0 $space-3;
   height: 52px;
+  min-width: 0;
   transition: border-color 0.15s;
+
+  @media (max-width: 900px) {
+    height: 48px;
+    gap: 4px;
+    padding: 0 6px 0 $space-2;
+  }
 
   &:focus-within {
     border-color: $primary;
@@ -107,6 +123,7 @@
 .msgInput {
   flex: 1;
   height: 100%;
+  min-width: 0;
   border: none;
   background: transparent;
   font-size: 14px;
@@ -136,6 +153,11 @@
   flex-shrink: 0;
   transition: background 0.12s;
 
+  @media (max-width: 900px) {
+    width: 32px;
+    height: 32px;
+  }
+
   &:hover {
     background: rgba($primary, 0.15);
   }
@@ -154,6 +176,11 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.12s;
+
+  @media (max-width: 900px) {
+    width: 32px;
+    height: 32px;
+  }
 
   &:hover:not(:disabled) {
     background: rgba($primary, 0.15);

@@ -161,6 +161,7 @@ export default function ReasoningPage() {
             <button
               className={`${styles.modePill} ${mode === 'standard' ? styles.modePillActive : ''}`}
               onClick={() => setMode('standard')}
+              title="Ask Legal AI for direct answers and explanations"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
@@ -175,6 +176,7 @@ export default function ReasoningPage() {
             <button
               className={`${styles.modePill} ${mode === 'socratic' ? styles.modePillActive : ''}`}
               onClick={() => setMode('socratic')}
+              title="Guided Q&A that coaches you toward the answer"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
@@ -203,6 +205,20 @@ export default function ReasoningPage() {
             <button className={styles.avatarBtn} aria-label="User menu" />
           </div>
         </div>
+
+        <aside className={styles.modeInfo} aria-live="polite">
+          {mode === 'standard' ? (
+            <>
+              <strong>Standard</strong> gives direct explanations (concepts, cases, statutes). Ask a
+              full question for the best answer.
+            </>
+          ) : (
+            <>
+              <strong>Socratic</strong> coaches you with follow-up questions instead of dumping the
+              full answer at once.
+            </>
+          )}
+        </aside>
 
         {mode === 'standard' ? (
           <StandardChat
