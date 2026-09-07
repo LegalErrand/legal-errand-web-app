@@ -411,7 +411,10 @@ export interface SocraticStartResponse {
 
 export interface SocraticRespondRequest {
   sessionId: string;
-  message: string;
+  /** Preferred field expected by the API */
+  response: string;
+  /** Alias kept for older clients */
+  message?: string;
 }
 
 // ─── Achievements ─────────────────────────────────────────────────────────────

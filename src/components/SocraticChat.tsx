@@ -107,7 +107,7 @@ export default function SocraticChat({
     setError('');
     scrollBottom();
     try {
-      const res = await respondSocratic({ sessionId, message: text }, token);
+      const res = await respondSocratic({ sessionId, response: text, message: text }, token);
       if (res.data) {
         // backend field is `aiResponse`
         const aiText = res.data.aiResponse;
@@ -131,7 +131,15 @@ export default function SocraticChat({
     try {
       const res = await endSocraticSession(sessionId, token);
       if (res.data) {
-        setEndSummary(res.data);
+        const raw = res.data as {
+          summary: string;
+          score?: number;
+          understanding?: number;
+        };
+        setEndSummary({
+          summary: raw.summary,
+          score: typeof raw.score === 'number' ? raw.score : (raw.understanding ?? 0),
+        });
         setPhase('ended');
       }
     } catch (err) {
