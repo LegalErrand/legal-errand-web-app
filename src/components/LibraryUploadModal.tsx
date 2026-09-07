@@ -10,6 +10,21 @@ import type {
 } from '@/lib';
 import styles from './LibraryUploadModal.module.scss';
 
+const SUBJECT_OPTIONS = [
+  'Contract Law',
+  'Criminal Law',
+  'Tort Law',
+  'Constitutional Law',
+  'Property Law',
+  'Evidence Law',
+  'Jurisprudence',
+  'Commercial Law',
+  'Equity & Trusts',
+  'Administrative Law',
+  'Family Law',
+  'International Law',
+] as const;
+
 interface Props {
   token: string;
   getUploadUrl: (
@@ -19,6 +34,12 @@ interface Props {
   completeUpload: (data: UploadCompleteRequest, token: string) => Promise<ApiResponse>;
   onClose: () => void;
   onSuccess: () => void;
+}
+
+function resolveMimeType(file: File): string {
+  if (file.type) return file.type;
+  if (/\.pdf$/i.test(file.name)) return 'application/pdf';
+  return 'application/octet-stream';
 }
 
 export default function LibraryUploadModal({
@@ -41,14 +62,21 @@ export default function LibraryUploadModal({
       setError('Title and file are required.');
       return;
     }
+    if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
+      setError('Only PDF files are supported. Export Word documents to PDF first.');
+      return;
+    }
+
     setError('');
     setUploading(true);
+    setProgress(0);
     try {
+      const mimeType = resolveMimeType(file);
       const urlRes = await getUploadUrl(
         {
           fileName: file.name,
-          mimeType: file.type || (/\.pdf$/i.test(file.name) ? 'application/pdf' : file.type),
-          folder: 'LIBRARY',
+          mimeType,
+          folder: 'DOCUMENTS',
         },
         token
       );
@@ -63,11 +91,18 @@ export default function LibraryUploadModal({
         xhr.addEventListener('load', () =>
           xhr.status >= 200 && xhr.status < 300
             ? resolve()
-            : reject(new Error(`Upload failed: ${xhr.status}`))
+            : reject(
+                new Error(
+                  `Could not upload the file to storage (HTTP ${xhr.status}). Please try again.`
+                )
+              )
         );
-        xhr.addEventListener('error', () => reject(new Error('Network error')));
+        xhr.addEventListener('error', () =>
+          reject(new Error('Network error while uploading. Check your connection and try again.'))
+        );
         xhr.open('PUT', uploadUrl);
-        xhr.setRequestHeader('Content-Type', file.type);
+        // Must match the Content-Type used when the presigned URL was created.
+        xhr.setRequestHeader('Content-Type', mimeType);
         xhr.send(file);
       });
 
@@ -113,10 +148,11 @@ export default function LibraryUploadModal({
         </p>
 
         <div className={styles.field}>
-          <label className={styles.label}>
+          <label className={styles.label} htmlFor="upload-title">
             Title <span className={styles.req}>*</span>
           </label>
           <input
+            id="upload-title"
             className={styles.input}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -125,13 +161,22 @@ export default function LibraryUploadModal({
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Subject</label>
-          <input
+          <label className={styles.label} htmlFor="upload-subject">
+            Subject
+          </label>
+          <select
+            id="upload-subject"
             className={styles.input}
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            placeholder="e.g. Constitutional Law"
-          />
+          >
+            <option value="">Select a subject (optional)</option>
+            {SUBJECT_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={styles.field}>
@@ -147,9 +192,15 @@ export default function LibraryUploadModal({
             <input
               ref={fileRef}
               type="file"
-              accept="application/pdf"
+              accept="application/pdf,.pdf"
               className={styles.fileInput}
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                const next = e.target.files?.[0] ?? null;
+                setFile(next);
+                if (next && !title.trim()) {
+                  setTitle(next.name.replace(/\.pdf$/i, '').replace(/[-_]+/g, ' '));
+                }
+              }}
             />
           </div>
         </div>
