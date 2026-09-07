@@ -158,7 +158,7 @@ const FEATURES_GRID = [
     tag: 'LIBRARY',
     tagVariant: 'new' as const,
     title: 'Case Law Library',
-    body: 'Browse and search 40,000+ Nigerian Supreme Court decisions with AI-generated summaries, key ratios, and cross-subject tagging.',
+    body: 'Browse and search 1,500+ Nigerian judgments from NigeriaLII — Supreme Court, Court of Appeal, and High Courts — with subject tagging for study and research.',
   },
   {
     icon: <IconChart />,

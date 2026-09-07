@@ -22,7 +22,14 @@ function cleanSnippet(text: string | undefined): string {
 }
 
 const COURT_LEVELS = ['Supreme court', 'Appeal Court', 'High Court'];
-const SUBJECT_TAGS = ['Tort law', 'Cases', 'Statute', 'Principles'];
+const SUBJECT_TAGS = [
+  'Contract Law',
+  'Criminal Law',
+  'Tort Law',
+  'Constitutional Law',
+  'Property Law',
+  'Evidence Law',
+];
 const PAGE_SIZE = 5;
 
 export default function ResearchPage() {
@@ -151,7 +158,7 @@ export default function ResearchPage() {
           Explore the entire corpus of Nigerian law using natural language.
         </h1>
         <p className={styles.pageSubhead}>
-          Search statutes, case law, and legal principles with AI-powered precision.
+          Search Nigerian case law and legal principles with AI-powered precision.
         </p>
 
         <form onSubmit={handleSearch} className={styles.searchForm}>

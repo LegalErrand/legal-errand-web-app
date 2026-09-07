@@ -20,10 +20,16 @@ type Tab = 'my-document' | 'free-library' | 'marketplace';
 
 const FREE_SUBJECTS = [
   'All Resources',
+  'Contract Law',
+  'Criminal Law',
+  'Tort Law',
   'Constitutional Law',
-  'Torts',
-  'Criminal Procedure',
-  'Taxation',
+  'Property Law',
+  'Evidence Law',
+  'Commercial Law',
+  'Equity & Trusts',
+  'Administrative Law',
+  'Family Law',
 ] as const;
 type FreeSubject = (typeof FREE_SUBJECTS)[number];
 
@@ -190,7 +196,7 @@ export default function LibraryPage() {
           </svg>
           <input
             className={styles.searchInput}
-            placeholder="Search archives, statutes..."
+            placeholder="Search cases, citations, subjects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -257,8 +263,8 @@ export default function LibraryPage() {
             <span className={styles.openAccessBadge}>OPEN ACCESS</span>
             <h1 className={styles.pageTitle}>Free Library</h1>
             <p className={styles.pageSub}>
-              Access verified copies of the Nigerian constitution, statutes, and landmark Supreme
-              Court rulings curated by legal experts.
+              Access NigeriaLII case judgments across major courts — browse by subject or search the
+              free library.
             </p>
           </div>
 
