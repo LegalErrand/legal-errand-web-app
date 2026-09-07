@@ -71,7 +71,16 @@ export default function ReasoningPage() {
     }
   }
 
-  if (!token) return null;
+  if (!token) {
+    return (
+      <div
+        className={styles.page}
+        style={{ display: 'grid', placeItems: 'center', minHeight: 240 }}
+      >
+        <Spinner size={28} />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -224,7 +233,17 @@ export default function ReasoningPage() {
           <StandardChat
             token={token}
             sessionId={activeSessionId}
-            initialMessage={initialQuery}
+            initialMessage={initialQuery || undefined}
+            onInitialMessageConsumed={() => {
+              setInitialQuery('');
+              if (typeof window !== 'undefined') {
+                const url = new URL(window.location.href);
+                if (url.searchParams.has('q')) {
+                  url.searchParams.delete('q');
+                  window.history.replaceState({}, '', url.pathname + url.search);
+                }
+              }
+            }}
             onSessionStart={(sid) => {
               setActiveSessionId(sid);
               void loadConversations(token);
