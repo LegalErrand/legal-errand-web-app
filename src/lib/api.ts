@@ -90,6 +90,10 @@ export function getFetchErrorMessage(error: unknown): string {
     }
     try {
       const parsed = JSON.parse(error.message) as { message?: string; error?: string };
+      if (parsed.error && parsed.message && /failed|error/i.test(parsed.message)) {
+        // Prefer the specific validation/detail when the top-level message is generic.
+        return parsed.error.length < 180 ? parsed.error : parsed.message;
+      }
       return parsed.message ?? parsed.error ?? error.message;
     } catch {
       return error.message;
