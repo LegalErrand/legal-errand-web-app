@@ -13,6 +13,10 @@
 .header {
   padding: $space-5 $space-5 0;
   border-bottom: 1px solid $gray-200;
+
+  @media (max-width: 900px) {
+    padding: $space-4 $space-3 0;
+  }
 }
 
 .headerRow {
@@ -28,12 +32,17 @@
   font-weight: 700;
   color: $dark;
   margin: 0 0 $space-1;
+
+  @media (max-width: 900px) {
+    font-size: 20px;
+  }
 }
 
 .pageSub {
   font-size: 14px;
   color: $gray-500;
   margin: 0;
+  line-height: 1.5;
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
@@ -41,6 +50,8 @@
 .tabs {
   display: flex;
   gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabBtn {
@@ -56,6 +67,8 @@
     color 0.12s,
     border-color 0.12s;
   margin-bottom: -1px;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   &:hover:not(:disabled) {
     color: $dark;
@@ -81,6 +94,46 @@
   display: flex;
   flex-direction: column;
   gap: $space-5;
+
+  @media (max-width: 900px) {
+    padding: $space-4 $space-3;
+    gap: $space-4;
+  }
+}
+
+// ─── Info card ────────────────────────────────────────────────────────────────
+
+.infoCard {
+  background: rgba($primary, 0.04);
+  border: 1px solid rgba($primary, 0.25);
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
+}
+
+.infoTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0 0 $space-2;
+}
+
+.infoList {
+  margin: 0;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 6px;
+
+  li {
+    font-size: 13px;
+    line-height: 1.55;
+    color: $gray-700;
+  }
+
+  em {
+    font-style: normal;
+    font-weight: 600;
+    color: $dark;
+  }
 }
 
 // ─── Explainer form card ──────────────────────────────────────────────────────
@@ -91,6 +144,10 @@
   border-radius: $radius-lg;
   padding: $space-5;
   box-shadow: $shadow-sm;
+
+  @media (max-width: 900px) {
+    padding: $space-4;
+  }
 }
 
 .inputLabel {
@@ -127,28 +184,61 @@
   }
 }
 
+.selectedDoc {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin: $space-2 0 0;
+  font-size: 13px;
+  color: $gray-700;
+}
+
+.clearDoc {
+  border: none;
+  background: none;
+  color: $primary;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
 .bottomRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: $space-3;
   margin-top: $space-3;
+
+  @media (max-width: 900px) {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
 }
 
 .selectLibraryLink {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: $space-2;
   font-size: 14px;
   font-weight: 600;
   color: $primary;
   cursor: pointer;
   background: none;
-  border: none;
-  padding: 0;
+  border: 1px solid transparent;
+  padding: 10px 0;
   transition: opacity 0.12s;
 
   &:hover {
     opacity: 0.75;
+  }
+
+  @media (max-width: 900px) {
+    border: 1px solid $gray-200;
+    border-radius: $radius;
+    padding: 12px $space-3;
   }
 }
 
@@ -162,6 +252,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
+  white-space: nowrap;
 
   &:hover:not(:disabled) {
     background: $primary-dark;
@@ -171,18 +262,144 @@
     opacity: 0.6;
     cursor: not-allowed;
   }
+
+  @media (max-width: 900px) {
+    width: 100%;
+    padding: 14px $space-4;
+  }
 }
 
 .formError {
   font-size: 13px;
   color: $accent-red;
   margin: $space-2 0 0;
+  line-height: 1.4;
 }
 
 .btnLoading {
   display: inline-flex;
   align-items: center;
   gap: $space-2;
+}
+
+// ─── Library picker ───────────────────────────────────────────────────────────
+
+.pickerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: $space-3;
+  padding-bottom: calc(#{$space-3} + env(safe-area-inset-bottom));
+
+  @media (min-width: 901px) {
+    align-items: center;
+  }
+}
+
+.pickerModal {
+  background: $white;
+  border-radius: $radius-xl $radius-xl 0 0;
+  width: 100%;
+  max-width: 520px;
+  max-height: min(80vh, 640px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: $shadow-lg;
+  overflow: hidden;
+
+  @media (min-width: 901px) {
+    border-radius: $radius-xl;
+  }
+}
+
+.pickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-4 $space-4 $space-2;
+}
+
+.pickerTitle {
+  font-family: $font-heading;
+  font-size: 17px;
+  font-weight: 700;
+  color: $dark;
+  margin: 0;
+}
+
+.pickerClose {
+  border: none;
+  background: none;
+  color: $gray-500;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.pickerSearch {
+  margin: 0 $space-4 $space-3;
+  height: 42px;
+  padding: 0 $space-3;
+  border: 1px solid $gray-200;
+  border-radius: $radius;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+.pickerList {
+  list-style: none;
+  margin: 0;
+  padding: 0 $space-2 $space-3;
+  overflow-y: auto;
+}
+
+.pickerItem {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 12px $space-3;
+  border-radius: $radius;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  &:hover {
+    background: $gray-50;
+  }
+}
+
+.pickerItemTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: $dark;
+}
+
+.pickerItemMeta {
+  font-size: 12px;
+  color: $gray-500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pickerEmpty {
+  padding: $space-5;
+  text-align: center;
+  color: $gray-500;
+  font-size: 13px;
+  display: flex;
+  justify-content: center;
 }
 
 // ─── History section ──────────────────────────────────────────────────────────
@@ -303,7 +520,7 @@
   color: $accent-red;
 }
 
-.stateMsg {
+.emptyMsg {
   font-size: 13px;
   color: $gray-400;
   margin: 0;
