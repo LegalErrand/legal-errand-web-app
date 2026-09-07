@@ -7,6 +7,12 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+
+  // Mobile scrolls naturally — the fixed-height shell is a desktop-only device.
+  @media (max-width: 900px) {
+    height: auto;
+    overflow: visible;
+  }
 }
 
 // ─── Top bar ──────────────────────────────────────────────────────────────────
@@ -21,6 +27,12 @@
   flex-direction: column;
   gap: $space-3;
   overflow: hidden;
+
+  @media (max-width: 900px) {
+    flex: none;
+    overflow: visible;
+    padding: $space-3;
+  }
 }
 
 // ─── Greeting row ─────────────────────────────────────────────────────────────
@@ -39,12 +51,25 @@
   font-weight: 700;
   color: $dark;
   margin: 0 0 2px;
+
+  // Design leads with an orange greeting on mobile.
+  @media (max-width: 900px) {
+    font-size: 22px;
+    color: $primary;
+  }
 }
 
 .greetSub {
   font-size: 13px;
   color: $gray-600;
   margin: 0;
+
+  @media (max-width: 900px) {
+    font-size: 15px;
+    font-weight: 600;
+    color: $gray-700;
+    line-height: 1.35;
+  }
 }
 
 .streak {
@@ -87,6 +112,12 @@
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
+  }
+
+  // Grid items default to `min-width: auto`, so a wide child (the horizontal
+  // chip row) would otherwise force the track past the viewport.
+  > * {
+    min-width: 0;
   }
 }
 
@@ -164,6 +195,13 @@
   box-shadow: $shadow-sm;
   display: flex;
   flex-direction: column;
+
+  // Design shows a bare label + chip row on mobile, not a raised card.
+  @media (max-width: 900px) {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
 }
 
 .quickActionTitle {
@@ -172,12 +210,31 @@
   font-weight: 700;
   color: $dark;
   margin: 0 0 $space-3;
+
+  @media (max-width: 900px) {
+    font-size: 13px;
+    color: $gray-600;
+    margin-bottom: $space-2;
+  }
 }
 
 .quickActionList {
   display: flex;
   flex-direction: column;
   gap: $space-2;
+
+  // Horizontal, scrollable chip row — matches the mobile design.
+  @media (max-width: 900px) {
+    flex-direction: row;
+    gap: $space-2;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 .quickActionBtn {
@@ -195,6 +252,16 @@
 
   &:hover {
     background: $gray-100;
+  }
+
+  @media (max-width: 900px) {
+    flex-shrink: 0;
+    gap: $space-2;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    background: $white;
+    border: 1px solid $gray-200;
+    white-space: nowrap;
   }
 }
 

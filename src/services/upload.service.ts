@@ -310,7 +310,9 @@ export function uploadToS3WithProgress(
     });
 
     x.open('PUT', uploadUrl);
-    x.setRequestHeader('Content-Type', file.type);
+    const contentType =
+      file.type || (/\.pdf$/i.test(file.name) ? 'application/pdf' : 'application/octet-stream');
+    x.setRequestHeader('Content-Type', contentType);
     x.send(file);
   });
 

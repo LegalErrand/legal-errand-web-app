@@ -120,8 +120,10 @@ export default function CasesPage() {
       } else if (looksLikeCitation(input)) {
         payload.citation = input;
         payload.text = input;
+        payload.caseText = input;
       } else {
         payload.text = input;
+        payload.caseText = input;
       }
 
       const res = await explainCase(payload, token);

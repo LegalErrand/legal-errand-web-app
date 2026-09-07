@@ -1,14 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getAccessToken, getDashboard } from '@/lib';
 import { SparklesIcon, BellIcon } from '../icons';
 import styles from './DashboardNavbar.module.scss';
 
 export default function DashboardNavbar() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token) return;
+    void getDashboard(token)
+      .then((res) => setStreak(res.data?.streak?.current ?? 0))
+      .catch(() => {
+        /* streak is decorative — stay silent on failure */
+      });
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +31,10 @@ export default function DashboardNavbar() {
 
   return (
     <header className={styles.navbar}>
+      {/* Sidebar (and its logo) is hidden under 900px — restore brand here. */}
+      <Link href="/dashboard" className={styles.mobileLogo}>
+        <Image src="/logo.svg" alt="LegalErrand" width={132} height={30} priority />
+      </Link>
       <form className={styles.searchBar} onSubmit={handleSearch}>
         <SparklesIcon size={18} className={styles.sparkleIcon} />
         <input
@@ -29,10 +46,14 @@ export default function DashboardNavbar() {
         />
       </form>
       <div className={styles.actions}>
-        <div className={styles.streakPill}>
-          <span className={styles.fireIcon}>🔥</span>
-          <span className={styles.streakText}>5 day streak</span>
-        </div>
+        {streak > 0 && (
+          <div className={styles.streakPill}>
+            <span className={styles.fireIcon}>🔥</span>
+            <span className={styles.streakText}>
+              {streak} day{streak === 1 ? '' : 's'} streak
+            </span>
+          </div>
+        )}
         <button className={styles.iconBtn}>
           <BellIcon size={20} />
         </button>

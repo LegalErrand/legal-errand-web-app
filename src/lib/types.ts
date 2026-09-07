@@ -214,14 +214,24 @@ export interface Goal {
   isCompleted: boolean;
 }
 
+/** `GET /dashboard` returns streak as an object, not a bare count. */
+export interface DashboardStreak {
+  current?: number;
+  longest?: number;
+  datesStudied?: string[];
+}
+
 export interface DashboardData {
-  streak?: number;
+  streak?: DashboardStreak;
   lastStudyDate?: string;
-  subjectMastery?: SubjectMastery[];
+  /** Empty object (not an array) until the user has mastery data. */
+  subjectMastery?: SubjectMastery[] | Record<string, never>;
   recentActivity?: unknown[];
   activeGoals?: Goal[];
   reasoningScore?: { latest: number };
   stats?: Record<string, number>;
+  weakAreas?: unknown[];
+  /** Not returned by `/dashboard` — the profile comes from `/auth/me`. */
   user?: AuthUserSummary;
 }
 
@@ -328,6 +338,8 @@ export interface CaseHistoryItem {
 
 export interface ExplainCaseRequest {
   documentId?: string;
+  /** Preferred by API; also send as `text` for older clients. */
+  caseText?: string;
   text?: string;
   citation?: string;
 }

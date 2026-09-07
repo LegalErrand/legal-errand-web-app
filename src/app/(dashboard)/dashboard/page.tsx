@@ -10,9 +10,10 @@ import {
   getRandomQuestion,
   getAchievements,
   getReasoningScore,
+  getCurrentUser,
   getAccessToken,
 } from '@/lib';
-import type { DashboardData, Goal, Question, Achievement } from '@/lib';
+import type { DashboardData, Goal, Question, Achievement, SubjectMastery } from '@/lib';
 import DashboardLower from '@/components/DashboardLower';
 import ActivityHistoryModal from '@/components/ActivityHistoryModal';
 import { Spinner } from '@/components';
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   const [question, setQuestion] = useState<Question | null>(null);
   const [earnedBadges, setEarnedBadges] = useState<Achievement[]>([]);
   const [reasoningScore, setReasoningScore] = useState<number | null>(null);
+  const [firstName, setFirstName] = useState('');
   const [loading, setLoading] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -37,14 +39,19 @@ export default function DashboardPage() {
 
     void (async () => {
       try {
-        const [dashRes, goalsRes, qRes, achRes, rsRes] = await Promise.allSettled([
+        const [dashRes, goalsRes, qRes, achRes, rsRes, meRes] = await Promise.allSettled([
           getDashboard(token),
           getDashboardGoals(token),
           getRandomQuestion(token),
           getAchievements(token),
           getReasoningScore(token),
+          getCurrentUser(token),
         ]);
         if (dashRes.status === 'fulfilled' && dashRes.value.data) setData(dashRes.value.data);
+        // `/dashboard` carries no profile — the name comes from `/auth/me`.
+        if (meRes.status === 'fulfilled' && meRes.value.data) {
+          setFirstName(meRes.value.data.firstName ?? '');
+        }
         if (goalsRes.status === 'fulfilled' && goalsRes.value.data) setGoals(goalsRes.value.data);
         if (qRes.status === 'fulfilled' && qRes.value.data) setQuestion(qRes.value.data);
         if (achRes.status === 'fulfilled' && achRes.value.data) {
@@ -59,10 +66,18 @@ export default function DashboardPage() {
     })();
   }, [router]);
 
-  const firstName = data?.user?.firstName ?? '';
-  const streak = data?.streak ?? 0;
-  const mastery = data?.subjectMastery ?? [];
-  const activity = data?.recentActivity ?? [];
+  const streak = data?.streak?.current ?? 0;
+  const mastery: SubjectMastery[] = (() => {
+    const raw = data?.subjectMastery;
+    if (Array.isArray(raw)) return raw;
+    if (raw && typeof raw === 'object') {
+      return Object.entries(raw as Record<string, number>).map(([subject, score]) => ({
+        subject,
+        score: Number(score) || 0,
+      }));
+    }
+    return [];
+  })();
   const nextGoal = goals.find((g) => !g.isCompleted) ?? null;
 
   if (loading) {

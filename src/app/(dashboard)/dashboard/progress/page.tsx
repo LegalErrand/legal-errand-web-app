@@ -318,13 +318,13 @@ export default function ProgressPage() {
     void load(t);
   }, [router, load]);
 
-  const streak = achievements?.currentStreak ?? dashboard?.streak ?? 0;
+  const streak = achievements?.currentStreak ?? dashboard?.streak?.current ?? 0;
   const lastStudy = dashboard?.lastStudyDate;
   const latestScore = reasoningScore?.latest?.overall ?? 10;
   const goals: Goal[] = dashboard?.activeGoals ?? FALLBACK_GOALS;
 
   const subjectList: SubjectMastery[] = (() => {
-    if (dashboard?.subjectMastery && dashboard.subjectMastery.length > 0)
+    if (Array.isArray(dashboard?.subjectMastery) && dashboard.subjectMastery.length > 0)
       return dashboard.subjectMastery;
     if (questionStats?.subjectBreakdown) {
       return Object.entries(questionStats.subjectBreakdown).map(([subject, d]) => ({

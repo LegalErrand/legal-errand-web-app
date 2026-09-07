@@ -98,7 +98,12 @@ export default function DashboardLower({
               ))}
             </div>
           ) : (
-            <p className={styles.emptyState}>Complete quizzes to see your subject mastery.</p>
+            <div className={styles.emptyState}>
+              <p>Complete quizzes to see your subject mastery.</p>
+              <Link href="/dashboard/quiz" className={styles.historyBtn}>
+                Start a quiz →
+              </Link>
+            </div>
           )}
         </section>
 
@@ -151,7 +156,12 @@ export default function DashboardLower({
               ))}
             </ul>
           ) : (
-            <p className={styles.emptyState}>No recent activity yet. Start learning!</p>
+            <div className={styles.emptyState}>
+              <p>No recent activity yet. Ask AI, explain a case, or take a quiz to get started.</p>
+              <Link href="/dashboard/ai" className={styles.historyBtn}>
+                Ask Legal AI →
+              </Link>
+            </div>
           )}
           <div className={styles.noteFooter}>
             <Link href="/dashboard/notes" className={styles.historyBtn}>
