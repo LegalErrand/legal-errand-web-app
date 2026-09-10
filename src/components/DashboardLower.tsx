@@ -100,7 +100,7 @@ export default function DashboardLower({
           ) : (
             <div className={styles.emptyState}>
               <p>Complete quizzes to see your subject mastery.</p>
-              <Link href="/dashboard/quiz" className={styles.historyBtn}>
+              <Link href="/dashboard/reasoning" className={styles.historyBtn}>
                 Start a quiz →
               </Link>
             </div>

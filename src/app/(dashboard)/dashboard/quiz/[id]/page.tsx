@@ -4,9 +4,41 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getQuestion, submitAnswer, getFetchErrorMessage, getAccessToken } from '@/lib';
-import type { Question, QuestionAttempt } from '@/lib';
+import type { Question, QuestionAttempt, QuestionSubmitResult } from '@/lib';
 import { Spinner } from '@/components';
 import styles from './page.module.scss';
+
+const IRAC_PLACEHOLDER = `Issue:
+Identify the legal issue(s) raised by the facts.
+
+Rule:
+State the applicable Nigerian law / authorities.
+
+Application:
+Apply the rules to these facts.
+
+Conclusion:
+State your conclusion clearly.`;
+
+function normalizeAttempt(
+  data: QuestionAttempt | QuestionSubmitResult | undefined
+): QuestionAttempt | null {
+  if (!data) return null;
+  if ('attempt' in data || 'gradingResult' in data) {
+    const nested = data as QuestionSubmitResult;
+    const attempt = nested.attempt;
+    if (!attempt) return null;
+    return {
+      ...attempt,
+      id: attempt.id || attempt._id || '',
+      scores: attempt.scores ?? nested.gradingResult?.scores ?? attempt.scores,
+      aiFeedback:
+        attempt.aiFeedback || nested.gradingResult?.feedback?.overall || attempt.aiFeedback || '',
+      modelAnswer: attempt.modelAnswer || nested.gradingResult?.modelAnswerHints,
+    };
+  }
+  return data as QuestionAttempt;
+}
 
 export default function QuizPage() {
   const router = useRouter();
@@ -28,6 +60,12 @@ export default function QuizPage() {
       return;
     }
     setToken(t);
+
+    if (!id || id === 'undefined') {
+      setError('Invalid question link. Go back to the question bank and try again.');
+      setLoading(false);
+      return;
+    }
 
     void (async () => {
       try {
@@ -78,8 +116,9 @@ export default function QuizPage() {
     setSubmitting(true);
     try {
       const res = await submitAnswer(id, trimmed, token);
-      if (res.data) {
-        setResult(res.data);
+      const attempt = normalizeAttempt(res.data);
+      if (attempt) {
+        setResult(attempt);
       } else {
         setError(res.message ?? 'Submission failed. Please try again.');
       }
@@ -90,7 +129,6 @@ export default function QuizPage() {
     }
   }
 
-  // ── Loading state ────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className={styles.page}>
@@ -101,7 +139,6 @@ export default function QuizPage() {
     );
   }
 
-  // ── Result / graded state ────────────────────────────────────────────────────
   if (result) {
     const total = result.scores?.total ?? 0;
     const passed = total >= 50;
@@ -116,11 +153,10 @@ export default function QuizPage() {
             <span className={styles.breadSep}>›</span>
             <span className={styles.breadCurrent}>Result</span>
           </nav>
-          <button className={styles.saveNotesBtn}>Save feedback to Notes</button>
         </div>
         <div className={styles.resultScroll}>
           <div className={styles.resultCard}>
-            <h2 className={styles.resultTitle}>AI Grading Result</h2>
+            <h2 className={styles.resultTitle}>AI Grading Result (IRAC)</h2>
             <p className={styles.resultScore} style={{ color: scoreColor }}>
               Score: <strong>{total}/100</strong>
             </p>
@@ -128,13 +164,13 @@ export default function QuizPage() {
             {result.scores && (
               <div className={styles.scoreChips}>
                 <div className={styles.scoreChip}>
-                  <span className={styles.scoreChipLabel}>Issue identification</span>
+                  <span className={styles.scoreChipLabel}>Issue</span>
                   <span className={styles.scoreChipVal}>
                     {result.scores.issueIdentification}/25
                   </span>
                 </div>
                 <div className={styles.scoreChip}>
-                  <span className={styles.scoreChipLabel}>Rule Statement</span>
+                  <span className={styles.scoreChipLabel}>Rule</span>
                   <span className={styles.scoreChipVal}>{result.scores.ruleStatement}/25</span>
                 </div>
                 <div className={styles.scoreChip}>
@@ -157,7 +193,7 @@ export default function QuizPage() {
 
             {result.modelAnswer && (
               <div className={styles.modelAnswerBlock}>
-                <h3 className={styles.feedbackTitle}>Model Answer (IRAC)</h3>
+                <h3 className={styles.feedbackTitle}>Model answer hints</h3>
                 <div className={styles.modelAnswerBox}>
                   {result.modelAnswer
                     .split('\n')
@@ -175,9 +211,17 @@ export default function QuizPage() {
               <Link href="/dashboard/reasoning" className={styles.backToBank}>
                 ← Back to Question Bank
               </Link>
-              <Link href={`/dashboard/quiz/${id}`} className={styles.tryAgainBtn}>
+              <button
+                type="button"
+                className={styles.tryAgainBtn}
+                onClick={() => {
+                  setResult(null);
+                  setAnswer('');
+                  setError('');
+                }}
+              >
                 Try Again
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -185,28 +229,32 @@ export default function QuizPage() {
     );
   }
 
-  // ── Error / not found state ──────────────────────────────────────────────────
   if (!question) {
     return (
       <div className={styles.page}>
         <p className={styles.stateMsg}>{error || 'Question not found.'}</p>
+        <div className={styles.bottomBar}>
+          <Link href="/dashboard/reasoning" className={styles.prevBtn}>
+            ← Question bank
+          </Link>
+        </div>
       </div>
     );
   }
 
-  const scenarioText = question.scenario ?? question.text ?? question.prompt ?? '';
+  const promptText = (question.prompt ?? question.text ?? '').trim();
+  const scenarioText = (question.scenario ?? '').trim();
+  const showScenario = Boolean(scenarioText && scenarioText !== promptText);
 
   return (
     <div className={styles.page}>
-      {/* Top bar */}
       <div className={styles.topBar}>
         <nav className={styles.breadcrumb} aria-label="breadcrumb">
           <Link href="/dashboard/reasoning" className={styles.breadLink}>
             Quizzes
           </Link>
           <span className={styles.breadSep}>›</span>
-          <span className={styles.breadCurrent}>Question 1 of 10</span>
-          <span className={styles.breadSep}>›</span>
+          <span className={styles.breadCurrent}>{question.subject || 'Practice'}</span>
         </nav>
         <button
           className={styles.submitBtn}
@@ -229,26 +277,24 @@ export default function QuizPage() {
         </p>
       )}
 
-      {/* Main split layout */}
       <div className={styles.split}>
-        {/* Left — Scenario + question */}
         <div className={styles.casePanel}>
           <div className={styles.caseCard}>
-            {scenarioText && (
-              <>
-                <h2 className={styles.caseTitle}>
-                  Case Study: {question.subject ?? 'Legal Scenario'}
-                </h2>
-                <div className={styles.caseText}>
-                  {scenarioText
-                    .split('\n')
-                    .map((para, i) => (para.trim() ? <p key={i}>{para.trim()}</p> : null))}
-                </div>
-              </>
+            <p className={styles.iracHint}>
+              Answer using IRAC (Issue · Rule · Application · Conclusion)
+            </p>
+            <h2 className={styles.caseTitle}>{question.subject ?? 'Legal scenario'}</h2>
+            {showScenario && (
+              <div className={styles.caseText}>
+                {scenarioText
+                  .split('\n')
+                  .map((para, i) => (para.trim() ? <p key={i}>{para.trim()}</p> : null))}
+              </div>
             )}
             <div className={styles.questionBox}>
+              <p className={styles.questionLabel}>Question</p>
               <p className={styles.questionText}>
-                {question.prompt ?? question.text ?? 'Answer the question below.'}
+                {promptText || 'Answer the question in the workspace.'}
               </p>
             </div>
             <div className={styles.caseNavRow}>
@@ -262,25 +308,12 @@ export default function QuizPage() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                Prev
+                Back
               </Link>
-              <button className={styles.nextBtn} onClick={() => router.push('/dashboard/progress')}>
-                Next
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M5 12h14M13 6l6 6-6 6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Right — Reasoning workspace */}
         <div className={styles.workspacePanel}>
           <div className={styles.workspaceHeader}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -291,7 +324,7 @@ export default function QuizPage() {
                 strokeLinejoin="round"
               />
             </svg>
-            <span className={styles.workspaceTitle}>Reasoning workspace</span>
+            <span className={styles.workspaceTitle}>IRAC workspace</span>
           </div>
           <div className={styles.toolbar}>
             <button
@@ -318,21 +351,37 @@ export default function QuizPage() {
             >
               ≡
             </button>
+            <button
+              className={styles.toolBtnWide}
+              type="button"
+              onClick={() => {
+                if (!answer.trim()) setAnswer(IRAC_PLACEHOLDER);
+              }}
+              title="Insert IRAC outline"
+            >
+              Insert IRAC
+            </button>
           </div>
           <textarea
             ref={textareaRef}
             className={styles.workspace}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Start drafting the legal issues here...."
-            aria-label="Your answer"
+            placeholder={IRAC_PLACEHOLDER}
+            aria-label="Your IRAC answer"
           />
         </div>
       </div>
 
-      {/* Bottom bar */}
       <div className={styles.bottomBar}>
-        <button className={styles.saveProgressBtn}>Save Progress</button>
+        <button
+          className={styles.submitBtn}
+          onClick={handleSubmit}
+          disabled={submitting || !answer.trim()}
+          type="button"
+        >
+          {submitting ? 'Submitting…' : 'Submit for AI Grading'}
+        </button>
       </div>
     </div>
   );

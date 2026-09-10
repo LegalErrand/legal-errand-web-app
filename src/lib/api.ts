@@ -24,6 +24,7 @@ import type {
   ActivityItem,
   Question,
   QuestionAttempt,
+  QuestionSubmitResult,
   Note,
   NoteTemplate,
   NoteAnalysis,
@@ -262,6 +263,73 @@ export async function completeUpload(
   });
 }
 
+/**
+ * Upload a library PDF through the API (server → S3). Prefer this on mobile —
+ * direct browser→S3 PUTs frequently fail CORS/network checks in Safari.
+ */
+export function uploadLibraryDocumentViaApi(params: {
+  file: File;
+  title: string;
+  subject?: string;
+  token: string;
+  onProgress?: (percent: number) => void;
+}): Promise<ApiResponse> {
+  const { file, title, subject, token, onProgress } = params;
+  const form = new FormData();
+  form.append('file', file);
+  form.append('title', title);
+  if (subject) form.append('subject', subject);
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${BASE_URL}/library/upload`);
+    xhr.timeout = 180_000;
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    // Do NOT set Content-Type — browser sets multipart boundary.
+
+    xhr.upload.addEventListener('progress', (e) => {
+      if (!onProgress) return;
+      if (e.lengthComputable && e.total > 0) {
+        onProgress(Math.max(1, Math.round((e.loaded / e.total) * 100)));
+      } else if (e.loaded > 0) {
+        onProgress(10);
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      let body: ApiResponse = { success: false, message: 'Upload failed' };
+      try {
+        body = JSON.parse(xhr.responseText) as ApiResponse;
+      } catch {
+        /* keep default */
+      }
+      if (xhr.status >= 200 && xhr.status < 300 && body.success !== false) {
+        onProgress?.(100);
+        resolve({ ...body, success: true });
+        return;
+      }
+      if (xhr.status === 401) {
+        handleUnauthorized('/library/upload', new Headers({ Authorization: `Bearer ${token}` }));
+      }
+      reject(
+        new Error(
+          body.message || body.error || `Upload failed (HTTP ${xhr.status || 0}). Please try again.`
+        )
+      );
+    });
+
+    xhr.addEventListener('error', () =>
+      reject(new Error('Unable to reach the server. Check your connection and try again.'))
+    );
+    xhr.addEventListener('timeout', () =>
+      reject(new Error('Upload timed out. Try a smaller PDF or a stronger connection.'))
+    );
+
+    onProgress?.(1);
+    xhr.send(form);
+  });
+}
+
 // ─── User ─────────────────────────────────────────────────────────────────────
 
 /** Ensures every field exists so backends can destructure `req.body` safely. */
@@ -395,8 +463,14 @@ export function submitAnswer(
   id: string,
   answer: string,
   token: string
-): Promise<ApiResponse<QuestionAttempt>> {
-  return authedPost<ApiResponse<QuestionAttempt>>(`/questions/${id}/submit`, token, { answer });
+): Promise<ApiResponse<QuestionAttempt | QuestionSubmitResult>> {
+  return authedPost(`/questions/${id}/submit`, token, { answer });
+}
+
+/** Prefer mongoose virtual `id`, fall back to `_id`. */
+export function questionIdOf(q: { id?: string; _id?: string } | null | undefined): string {
+  if (!q) return '';
+  return String(q.id || q._id || '');
 }
 
 // ─── Library ──────────────────────────────────────────────────────────────────
@@ -681,8 +755,16 @@ export function endSocraticSession(
 export function getQuestions(
   token: string,
   params?: { subject?: string; difficulty?: string; type?: string; page?: number; limit?: number }
-): Promise<ApiResponse<PaginatedResponse<Question>>> {
+): Promise<ApiResponse<Question[] | PaginatedResponse<Question>>> {
   return authedGet('/questions', token, params as Record<string, string | number | undefined>);
+}
+
+/** Normalize list endpoints that return either `data: T[]` or `data: { data: T[] }`. */
+export function unwrapList<T>(payload: T[] | PaginatedResponse<T> | undefined | null): T[] {
+  if (!payload) return [];
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.data)) return payload.data;
+  return [];
 }
 
 export function getQuestion(id: string, token: string): Promise<ApiResponse<Question>> {

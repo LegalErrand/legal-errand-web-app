@@ -6,6 +6,13 @@
   height: 100%;
   overflow: hidden;
   background: $gray-50;
+
+  // Mobile: natural document flow so the question is never clipped above the fold.
+  @media (max-width: 900px) {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
 }
 
 // ─── Top bar ──────────────────────────────────────────────────────────────────
@@ -78,14 +85,15 @@
 .split {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 380px;
+  // Mobile-first: question stacked above IRAC workspace
+  grid-template-columns: 1fr;
   gap: $space-4;
   padding: $space-4 $space-5;
-  overflow: hidden;
+  overflow: visible;
 
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-    overflow-y: auto;
+  @media (min-width: 901px) {
+    grid-template-columns: 1fr 380px;
+    overflow: hidden;
   }
 }
 
@@ -131,15 +139,30 @@
 }
 
 .questionLabel {
-  display: none;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $gray-600;
+  margin: 0 0 6px;
 }
 
 .questionText {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: $dark;
   line-height: 1.6;
   margin: 0;
+}
+
+.iracHint {
+  margin: 0 0 $space-3;
+  padding: 8px 10px;
+  background: rgba($primary, 0.08);
+  border-radius: $radius;
+  font-size: 12px;
+  font-weight: 600;
+  color: $primary-dark;
 }
 
 // ─── Navigation buttons inside case panel ─────────────────────────────────────
@@ -201,9 +224,10 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 280px;
 
-  @media (max-width: 900px) {
-    min-height: 320px;
+  @media (min-width: 901px) {
+    min-height: 0;
   }
 }
 
@@ -253,12 +277,35 @@
   }
 }
 
+.toolBtnWide {
+  height: 28px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $gray-200;
+  border-radius: 4px;
+  background: $white;
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray-800;
+  cursor: pointer;
+  margin-left: auto;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: rgba($primary, 0.05);
+  }
+}
+
 .workspace {
   flex: 1;
+  min-height: 220px;
   padding: $space-3 $space-4;
   border: none;
   outline: none;
-  resize: none;
+  resize: vertical;
   font-family: inherit;
   font-size: 13px;
   color: $dark;
@@ -267,6 +314,11 @@
 
   &::placeholder {
     color: $gray-400;
+    white-space: pre-wrap;
+  }
+
+  @media (min-width: 901px) {
+    resize: none;
   }
 }
 
@@ -276,9 +328,22 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: $space-3;
   padding: $space-3 $space-5;
   background: $gray-50;
   flex-shrink: 0;
+
+  @media (max-width: 900px) {
+    position: sticky;
+    bottom: 0;
+    border-top: 1px solid $gray-200;
+    background: $white;
+
+    .submitBtn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }
 
 .navBtn {
@@ -504,10 +569,12 @@
   padding: 9px $space-4;
   background: $primary;
   color: $white;
+  border: none;
   border-radius: $radius;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
+  cursor: pointer;
   transition: background 0.15s;
   margin-left: auto;
 

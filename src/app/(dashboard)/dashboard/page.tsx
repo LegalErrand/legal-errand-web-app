@@ -126,7 +126,10 @@ export default function DashboardPage() {
                     question.scenario ??
                     "Test your legal knowledge with today's challenge."}
                 </p>
-                <Link href={`/dashboard/quiz/${question.id}`} className={styles.quizBtn}>
+                <Link
+                  href={`/dashboard/quiz/${question.id || question._id}`}
+                  className={styles.quizBtn}
+                >
                   Start Quiz
                 </Link>
               </>
