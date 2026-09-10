@@ -36,7 +36,7 @@ export const metadata: Metadata = {
       'AI-native study platform for Nigerian law undergraduates. Break down court cases, simplify legal concepts, and prepare for your exams.',
     url: siteUrl,
     siteName: 'LegalErrand',
-    images: [{ url: '/social-share.png', width: 1200, height: 630, alt: 'LegalErrand' }],
+    images: [{ url: '/social-share.png?v=2', width: 1200, height: 630, alt: 'LegalErrand' }],
     type: 'website',
     locale: 'en_NG',
   },
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: 'LegalErrand — The study tool your lecturer never gave you',
     description:
       'AI-native study platform for Nigerian law undergraduates. Break down court cases, simplify legal concepts, and prepare for your exams.',
-    images: ['/social-share.png'],
+    images: ['/social-share.png?v=2'],
     creator: '@legalerrand',
   },
   robots: {
