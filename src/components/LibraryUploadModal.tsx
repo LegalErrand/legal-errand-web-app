@@ -1,13 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { getFetchErrorMessage } from '@/lib';
-import type {
-  PresignedUrlRequest,
-  PresignedUrlResponse,
-  UploadCompleteRequest,
-  ApiResponse,
-} from '@/lib';
+import { getFetchErrorMessage, uploadLibraryDocumentViaApi } from '@/lib';
 import styles from './LibraryUploadModal.module.scss';
 
 const SUBJECT_OPTIONS = [
@@ -27,28 +21,14 @@ const SUBJECT_OPTIONS = [
 
 interface Props {
   token: string;
-  getUploadUrl: (
-    data: PresignedUrlRequest,
-    token: string
-  ) => Promise<ApiResponse<PresignedUrlResponse>>;
-  completeUpload: (data: UploadCompleteRequest, token: string) => Promise<ApiResponse>;
+  /** Kept for call-site compatibility; uploads now go through the API. */
+  getUploadUrl?: unknown;
+  completeUpload?: unknown;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-function resolveMimeType(file: File): string {
-  if (file.type) return file.type;
-  if (/\.pdf$/i.test(file.name)) return 'application/pdf';
-  return 'application/octet-stream';
-}
-
-export default function LibraryUploadModal({
-  token,
-  getUploadUrl,
-  completeUpload,
-  onClose,
-  onSuccess,
-}: Props) {
+export default function LibraryUploadModal({ token, onClose, onSuccess }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
@@ -71,72 +51,16 @@ export default function LibraryUploadModal({
     setUploading(true);
     setProgress(0);
     try {
-      const mimeType = resolveMimeType(file);
-      const urlRes = await getUploadUrl(
-        {
-          fileName: file.name,
-          mimeType,
-          folder: 'DOCUMENTS',
-        },
-        token
-      );
-      if (!urlRes.data?.uploadUrl) throw new Error('Failed to get upload URL');
-      const { uploadUrl, s3Key, s3Url } = urlRes.data;
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.timeout = 120_000;
-        setProgress(1);
-        xhr.upload.addEventListener('loadstart', () => setProgress((p) => Math.max(p, 2)));
-        xhr.upload.addEventListener('progress', (e) => {
-          if (e.lengthComputable && e.total > 0) {
-            setProgress(Math.max(2, Math.round((e.loaded / e.total) * 100)));
-          } else if (e.loaded > 0) {
-            setProgress((p) => Math.min(90, Math.max(p, 10)));
-          }
-        });
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            setProgress(100);
-            resolve();
-            return;
-          }
-          const hint =
-            xhr.status === 0
-              ? 'Storage blocked the upload (often CORS). Ask support to allow PUT from this site on the file bucket.'
-              : xhr.status === 403
-                ? 'Upload link expired or was rejected. Please try again.'
-                : `Could not upload the file to storage (HTTP ${xhr.status}). Please try again.`;
-          reject(new Error(hint));
-        });
-        xhr.addEventListener('error', () =>
-          reject(
-            new Error(
-              'Network or CORS error while uploading. Check your connection, or ask support to verify S3 bucket CORS for PUT.'
-            )
-          )
-        );
-        xhr.addEventListener('timeout', () =>
-          reject(new Error('Upload timed out. Try a smaller PDF or a stronger connection.'))
-        );
-        xhr.open('PUT', uploadUrl);
-        // Must match the Content-Type used when the presigned URL was created.
-        xhr.setRequestHeader('Content-Type', mimeType);
-        xhr.send(file);
+      const res = await uploadLibraryDocumentViaApi({
+        file,
+        title: title.trim(),
+        subject: subject.trim() || undefined,
+        token,
+        onProgress: setProgress,
       });
-
-      const complete = await completeUpload(
-        {
-          title: title.trim(),
-          subject: subject.trim() || undefined,
-          s3Key,
-          s3Url,
-          fileSize: file.size,
-        },
-        token
-      );
-      if (!complete.success)
-        throw new Error(complete.message ?? complete.error ?? 'Could not save document');
+      if (!res.success) {
+        throw new Error(res.message ?? res.error ?? 'Could not save document');
+      }
       onSuccess();
     } catch (err) {
       setError(getFetchErrorMessage(err));

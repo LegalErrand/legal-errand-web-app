@@ -3,19 +3,26 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getQuestions, getQuestionStats, getFetchErrorMessage, getAccessToken } from '@/lib';
+import {
+  getQuestions,
+  getQuestionStats,
+  getFetchErrorMessage,
+  getAccessToken,
+  unwrapList,
+  questionIdOf,
+} from '@/lib';
 import type { Question, QuestionStats, SubjectMastery } from '@/lib';
 import { ShimmerCard } from '@/components';
 import styles from './page.module.scss';
 
-const SUBJECT_TABS = ['All question banks', 'Contract law', 'Criminal law', 'Tort law'] as const;
+const SUBJECT_TABS = ['All question banks', 'Contract Law', 'Criminal Law', 'Tort Law'] as const;
 type SubjectTab = (typeof SUBJECT_TABS)[number];
 
 const SUBJECT_PARAM: Record<SubjectTab, string | undefined> = {
   'All question banks': undefined,
-  'Contract law': 'Contract law',
-  'Criminal law': 'Criminal law',
-  'Tort law': 'Tort law',
+  'Contract Law': 'Contract Law',
+  'Criminal Law': 'Criminal Law',
+  'Tort Law': 'Tort Law',
 };
 
 function MiniDonut({ score }: { score: number }) {
@@ -74,6 +81,21 @@ function QuestionCard({ item, onStart }: { item: Question; onStart: () => void }
   );
 }
 
+function masteryFromStats(stats: QuestionStats | null): SubjectMastery[] {
+  if (!stats) return [];
+  if (stats.subjectBreakdown) {
+    return Object.entries(stats.subjectBreakdown)
+      .slice(0, 3)
+      .map(([subject, data]) => ({ subject, score: Math.round(data.averageScore) }));
+  }
+  if (stats.bySubject) {
+    return Object.entries(stats.bySubject)
+      .slice(0, 3)
+      .map(([subject, data]) => ({ subject, score: Math.round(data.avgScore) }));
+  }
+  return [];
+}
+
 export default function ReasoningPage() {
   const router = useRouter();
   const [token, setToken] = useState('');
@@ -88,7 +110,7 @@ export default function ReasoningPage() {
     setError('');
     try {
       const res = await getQuestions(t, { subject, limit: 30 });
-      setItems(res.data?.data ?? []);
+      setItems(unwrapList(res.data));
     } catch (err) {
       setError(getFetchErrorMessage(err));
     } finally {
@@ -116,11 +138,7 @@ export default function ReasoningPage() {
     void loadItems(token, SUBJECT_PARAM[tab]);
   }
 
-  const masteryDisplay: SubjectMastery[] = stats?.subjectBreakdown
-    ? Object.entries(stats.subjectBreakdown)
-        .slice(0, 3)
-        .map(([subject, data]) => ({ subject, score: Math.round(data.averageScore) }))
-    : [];
+  const masteryDisplay = masteryFromStats(stats);
 
   return (
     <div className={styles.page}>
@@ -128,7 +146,7 @@ export default function ReasoningPage() {
         <div>
           <h1 className={styles.pageTitle}>Reasoning question bank</h1>
           <p className={styles.pageSub}>
-            Master the art of legal reasoning through curated hypotheticals.
+            Practice IRAC on curated Nigerian law hypotheticals — then submit for AI grading.
           </p>
         </div>
         <Link href="/dashboard/ai" className={styles.aiChatBtn}>
@@ -194,13 +212,22 @@ export default function ReasoningPage() {
           </div>
         ) : (
           <div className={styles.questionGrid}>
-            {items.map((item) => (
-              <QuestionCard
-                key={item.id}
-                item={item}
-                onStart={() => router.push(`/dashboard/quiz/${item.id}`)}
-              />
-            ))}
+            {items.map((item) => {
+              const qid = questionIdOf(item);
+              return (
+                <QuestionCard
+                  key={qid || item.prompt}
+                  item={item}
+                  onStart={() => {
+                    if (!qid) {
+                      setError('This question is missing an id. Please refresh and try again.');
+                      return;
+                    }
+                    router.push(`/dashboard/quiz/${qid}`);
+                  }}
+                />
+              );
+            })}
           </div>
         )}
       </div>
