@@ -239,17 +239,20 @@ export interface DashboardData {
 
 export interface Question {
   id: string;
+  _id?: string;
   subject: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | string;
   type: string;
   prompt?: string;
   text?: string;
   scenario?: string;
   estimatedMinutes?: number;
+  modelAnswer?: string;
 }
 
 export interface QuestionAttempt {
   id: string;
+  _id?: string;
   questionId: string;
   answer: string;
   scores: {
@@ -262,6 +265,16 @@ export interface QuestionAttempt {
   aiFeedback: string;
   modelAnswer?: string;
   createdAt: string;
+}
+
+/** API may return the attempt nested with gradingResult */
+export interface QuestionSubmitResult {
+  attempt?: QuestionAttempt;
+  gradingResult?: {
+    scores?: QuestionAttempt['scores'];
+    feedback?: { overall?: string };
+    modelAnswerHints?: string;
+  };
 }
 
 // ─── Notes ────────────────────────────────────────────────────────────────────
@@ -460,8 +473,10 @@ export interface ReasoningScoreData {
 
 /** Shape returned by GET /questions/stats */
 export interface QuestionStats {
-  totalAttempted: number;
+  total?: number;
+  totalAttempted?: number;
   averageScore?: number;
+  bySubject?: Record<string, { count: number; avgScore: number }>;
   subjectBreakdown?: Record<string, { attempted: number; averageScore: number }>;
   topSubject?: string;
   recentAttempts?: number;
