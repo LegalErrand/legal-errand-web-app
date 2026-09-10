@@ -129,6 +129,11 @@ export default function CasesPage() {
       const res = await explainCase(payload, token);
       const explanationId = res.data?.id ?? res.data?._id;
       if (!explanationId) throw new Error(res.message ?? 'Explanation failed');
+      try {
+        sessionStorage.setItem(`le:case-explanation:${explanationId}`, JSON.stringify(res.data));
+      } catch {
+        /* ignore quota */
+      }
       addToast('success', 'Case analysis ready');
       router.push(`/dashboard/cases/${explanationId}`);
     } catch (err) {
@@ -250,7 +255,7 @@ export default function CasesPage() {
               <button type="submit" className={styles.startBtn} disabled={submitting}>
                 {submitting ? (
                   <span className={styles.btnLoading}>
-                    <Spinner size={15} light /> Analysing…
+                    <Spinner size={15} light /> Analysing… (usually 15–45s)
                   </span>
                 ) : (
                   'Start Analysis'
